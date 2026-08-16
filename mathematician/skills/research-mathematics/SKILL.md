@@ -65,25 +65,41 @@ Use exact source statements for external theorems and verify every hypothesis. P
 
 Complete this phase only when every dependency node is proved or explicitly open.
 
-## 5. Attack and repair
+## Specialist-review fork
 
-Apply the installed `destroy-theory` skill to the theorem, its critical lemmas, and the proof. If skill-to-skill invocation is unavailable, read and execute [the sibling skill](../destroy-theory/SKILL.md).
+Keep fork-and-join ownership with the coordinating research agent. Freeze the following as a versioned review candidate: the current target contract; the complete theorem-and-proof artifact, including every lemma, proof body, dependency edge, and node status; the assumption ledger; permitted axioms; the load-bearing source ledger; and any formal artifacts and their environment. Include exact source versions, imported statements, and their proof-node and hypothesis mappings in the source ledger. Treat any change to a frozen candidate field as material and create a new version; keep the specialist reports outside the candidate.
 
-Repair each verified defect, weaken the conclusion, strengthen the assumptions, or downgrade the epistemic status. When the original claim is false, search for the nearest natural true statement and explain why the counterexample no longer applies.
+Launch phases 5 and 6 concurrently when delegation is available. Assign each specialist worker only its review phase and the same frozen candidate; require it to act as a read-only critic, leave the candidate unchanged, and return an immutable, content-bound report with a unique report identifier and the candidate version it checked. Join both reports in phase 7.
 
-Complete this phase only when each fatal finding has been repaired or remains visible in the result status.
+## 5. Attack the candidate
+
+Apply the installed `destroy-theory` skill to the review candidate, including its theorem, critical lemmas, and proof. If skill-to-skill invocation is unavailable, read and execute [the sibling skill](../destroy-theory/SKILL.md). Treat proposed repairs as findings for phase 7.
+
+Complete this phase only when the latest `destroy-theory` report has met its own completion criterion on the current review candidate.
 
 ## 6. Audit hypotheses
 
-Apply the installed `audit-assumptions` skill. If skill-to-skill invocation is unavailable, read and execute [the sibling skill](../audit-assumptions/SKILL.md).
+Apply the installed `audit-assumptions` skill to the same review candidate. If skill-to-skill invocation is unavailable, read and execute [the sibling skill](../audit-assumptions/SKILL.md). Treat proposed theorem or proof revisions as findings for phase 7, and preserve the distinction between an assumption needed by this proof and one necessary for the theorem itself.
 
-Revise the theorem and proof for missing, redundant, implied, proof-specific, or weakenable assumptions. Preserve the distinction between an assumption needed by this proof and one necessary for the theorem itself.
+Complete this phase only when the latest `audit-assumptions` report has met its own completion criterion on the current review candidate.
 
-Complete this phase when every explicit and discovered hidden assumption has an exact use or is marked unused, and every claimed relaxation has explicit proof obligations.
+## 7. Reconcile, repair, and stabilize
 
-## 7. Verify independently
+Begin this phase only after phases 5 and 6 have met their completion criteria on the same review candidate. Give every finding from both reports a recorded disposition: repair it; invalidate it through specialist re-evaluation or independent adjudication with an exact reason and an immutable certificate identifying the finding, source report, and candidate version; or preserve it in the result status. Mark every preserved unresolved material finding as blocking `PROVED`.
 
-Discard the proof path as a verification aid and perform a genuinely fresh check. Give the verifier the frozen target and necessary sources, not the proposer's persuasive narrative. Use at least one of:
+Integrate the accepted repairs centrally. Repair each verified defect, weaken the conclusion, strengthen the assumptions, or downgrade the epistemic status. When the original claim is false, search for the nearest natural true statement and explain why the counterexample no longer applies.
+
+After every material repair, return to the earliest affected phase, freeze a new review candidate, and rerun phases 5 and 6 before re-entering this phase.
+
+Once the candidate remains unchanged, freeze a versioned stabilization manifest containing the candidate version; the ordered lineage and supersession relation of every specialist report, including each report's candidate version; every finding and disposition; every repair diff; and every re-evaluation or adjudication certificate. Treat any later manifest change as reopening this phase; recheck each changed load-bearing disposition before freezing a new manifest.
+
+Complete this phase only when the latest successful phase-5 and phase-6 reports identify the same current review candidate, every finding has a recorded disposition, every accepted repair has been incorporated, the candidate has remained unchanged since both reviews, and the stabilization manifest is frozen.
+
+## 8. Verify independently
+
+Promote the stabilized review candidate unchanged to the verification candidate. Mint a verification-run identifier bound to both the candidate version and stabilization-manifest version, and use it as the sole verifier launch gate. Before each verifier launch, mint and ledger a distinct invocation identifier bound to the run identifier, verifier or method, and exact input projection. Require every verifier report to cite both identifiers, and record every invocation's terminal outcome, including failure or abstention.
+
+Give each fresh verifier only the projection of the verification candidate required for its check. For a second proof or fresh derivation, give the frozen target and necessary sources while withholding the submitted proof. For proof-correctness review, give the proof DAG, formal artifacts, and necessary sources while withholding the proposer's persuasive narrative and requiring an independently reconstructed dependency trace. Use at least one of:
 
 - a second proof;
 - a fresh derivation of the crucial lemma;
@@ -91,17 +107,19 @@ Discard the proof path as a verification aid and perform a genuinely fresh check
 - a trusted checker, different model, or human specialist given only the claim and source material;
 - a complete dependency trace reconstructed from scratch.
 
-Compare the results and resolve discrepancies. Separate proof-correctness review from statement-fidelity review. A fresh-context same-model subagent is a useful correlated check but not independent evidence; after major revisions, reset the critic and, for an independence claim, also require a different proof, trusted checker, different model, or human specialist. Rereading the original derivation alone does not satisfy this phase.
+Compare the results and resolve discrepancies. Separate proof-correctness review from statement-fidelity review. Treat a material candidate revision as invalidating the verification candidate: return to the earliest affected phase, rerun phases 5--7, promote the new stabilized candidate, mint a new verification-run identifier, then launch a fresh verifier. Treat a stabilization-manifest revision as invalidating the current verification run: return to phase 7, freeze a new manifest, mint a new identifier, then launch a fresh verifier. A fresh-context same-model subagent is a useful correlated check but not independent evidence; for an independence claim, also require a different proof, trusted checker, different model, or human specialist. Rereading the original derivation alone does not satisfy this phase.
 
-Complete this phase when the central argument has an independent check or the absence of one is reported as a limitation.
+Complete this phase when every verifier invocation under the current run has a recorded terminal outcome, every returned report has a recorded disposition, every discrepancy is resolved or remains explicit in the result status, and at least one report with the current run and invocation identifiers independently checks the verification candidate's central argument; otherwise report the absence of such a check as a limitation.
 
-## 8. Improve and contextualize
+## 9. Improve and contextualize
 
 Investigate stronger conclusions, weaker hypotheses, converses, quantitative or stability results, uniqueness, characterizations, larger spaces, finite-dimensional approximations, computational consequences, and connections to other theories.
 
+Apply the material-revision rule to every accepted improvement. Whenever this phase creates a new candidate version, return to the earliest affected phase and rerun phases 5--8 before presentation.
+
 Search primary literature when priority, attribution, or novelty matters. Search the exact claim, equivalent formulations, key constructions, and proof motifs; inspect proof context rather than matching only theorem titles. Verify exact sources and state what the search covered. Treat failure to find a reference as an unresolved novelty question rather than evidence of novelty, and preserve enough provenance to distinguish a new result from rediscovery, prompted reconstruction, or human strengthening.
 
-## 9. Present the result
+## 10. Present the result
 
 Use the smallest structure that preserves checkability. For substantial work, report:
 
@@ -111,16 +129,16 @@ Use the smallest structure that preserves checkability. For substantial work, re
 4. **Mechanism and example laboratory**
 5. **Strategy comparison**
 6. **Proof and dependency structure**
-7. **Adversarial findings and repairs**
-8. **Independent verification**
-9. **Assumption analysis**
+7. **Specialist findings and repairs**
+8. **Assumption analysis**
+9. **Independent verification**
 10. **Extensions, sources, and novelty status**
 11. **Verification and provenance card**, for research-level or AI-assisted results
 12. **Exact unresolved point**, when applicable
 
 Use one terminal status:
 
-- `PROVED`: every material step is justified and the final audit, adversarial attack, assumption audit, and independent check pass;
+- `PROVED`: every material step is justified, no preserved unresolved material finding remains, the stabilization manifest closes every specialist finding, and the adversarial attack, assumption audit, and independent check pass on the same final version;
 - `INCOMPLETE`: a promising argument has a precisely located proof obligation;
 - `CONJECTURAL`: evidence exists without a proof architecture that closes;
 - `FALSE`: a certified counterexample or contradiction defeats the claim;
