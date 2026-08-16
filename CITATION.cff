@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If these skills contribute to your research, please cite them using this metadata."
+type: software
+title: "Agent Mathematician: Agent skills for mathematical research"
+abstract: "A suite of agent skills for rigorous mathematical research, verification, stress-testing, assumption auditing, and exposition."
+authors:
+  - family-names: Aune
+    given-names: Erlend
+    orcid: "https://orcid.org/0009-0008-0253-941X"
+date-released: "2026-08-16"
+repository-code: "https://github.com/Froskekongen/agent_mathematician"
+url: "https://github.com/Froskekongen/agent_mathematician"
+license: MIT
+keywords:
+  - agent skills
+  - mathematical research
+  - research software

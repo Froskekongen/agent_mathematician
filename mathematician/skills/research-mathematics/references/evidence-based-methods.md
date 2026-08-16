@@ -1,0 +1,154 @@
+# Evidence-Based Methods for AI-Assisted Mathematics
+
+Audited on **2026-08-16**. The current-evidence claims below use only work first made public in 2026. Older studies appear only in the final foundation audit, where 2026 evidence either strengthens or limits their practical use.
+
+Use this reference to choose tactics and calibrate evidence. Do not infer general reliability from rare successes, a benchmark score, a kernel-accepted encoding, or an institution's novelty claim.
+
+## Contents
+
+1. [How to grade the evidence](#how-to-grade-the-evidence)
+2. [What changed in 2026](#what-changed-in-2026)
+3. [2026 evidence ledger](#2026-evidence-ledger)
+4. [Operational consequences](#operational-consequences)
+5. [Research result card](#research-result-card)
+6. [Audit of earlier methods](#audit-of-earlier-methods)
+7. [Pre-2026 foundations retained](#pre-2026-foundations-retained)
+
+## How to grade the evidence
+
+Grade each claim on separate axes rather than using one word such as “verified”:
+
+- **Logical validity:** an expert proof audit, independent derivation, or trusted checker establishes the argument.
+- **Statement fidelity:** the proved or encoded statement matches the intended research question and is non-vacuous.
+- **Novelty and significance:** a field-aware literature audit supports the claimed contribution and importance.
+- **Provenance and autonomy:** prompts, tools, retries, selection, human interventions, and edits are disclosed.
+- **Readable reconstruction:** a mathematician can identify the mechanism and audit the crux outside the machine artifact.
+
+Describe evidence by profile; do not force these incomparable strengths into one ranking:
+
+- **Independent or peer-reviewed research evidence** strengthens external validity, semantic review, and significance when fresh problems, qualified experts, and disclosed artifacts or logs are present.
+- **Certificate-backed research evidence** can strongly establish logical validity of an encoding, but needs separate statement-fidelity, novelty, and significance review.
+- **Expert-author case evidence** can be strong on specialist semantics while remaining vulnerable to correlated review, selection, and missing replication.
+- **Institutional or vendor evidence** is useful as a lead, especially with runnable artifacts, but keep unsupported axes provisional until external review.
+
+## What changed in 2026
+
+The strongest new conclusion is not that autonomous mathematics is generally reliable. It is that frontier systems can sometimes contribute the central construction, strategy, proof, counterexample, or assumption relaxation in genuine research. The skill should therefore treat a model as a serious candidate generator rather than only a calculator or expositor.
+
+The corresponding controls must become stricter:
+
+1. **Statement fidelity is a separate theorem obligation.** Formal correctness can coexist with a weakened, vacuous, or misinterpreted target.
+2. **Truth triage belongs before expensive proof search.** Recent successes include decisive counterexamples, while false-premise benchmarks remain difficult.
+3. **Start with the smallest generator--verifier--reviser loop.** More elaborate parallel or evolutionary search can help after an observed stall, but is not a default requirement.
+4. **Persist a proof DAG and failures, not only a polished transcript.** Long searches benefit from verified nodes, failed routes, checker errors, and reusable lessons.
+5. **Use fresh-context verification.** Stateful critics can inherit target drift or converge on the proposer's framing.
+6. **Report the denominator.** Attempts, selection, reversals, abstentions, time, compute, and cost determine how much a selected success demonstrates.
+7. **Audit novelty and provenance independently of proof.** Browsing does not eliminate wrong citations, rediscovery, or memorized language.
+8. **Reconstruct formal results for humans.** A certificate needs a semantic bridge and a crux-centered explanation; human rewriting itself needs a proof-preservation check.
+
+## 2026 evidence ledger
+
+### Research-level success and its limits
+
+- **Aletheia and autonomous-research case studies.** [Towards Autonomous Mathematics Research](https://arxiv.org/abs/2602.10177) reports a generator--verifier--reviser system, public transcripts, research case studies, and a 700-problem Erdős audit. In a human audit of 200 proposed resolutions, 137 were fundamentally flawed; 63 were technically correct, but only 13 meaningfully resolved the intended problem. This is unusually direct evidence that validity, fidelity, and significance must be gated separately. The paper also motivates explicit Human--AI Interaction records, abstention, and novelty checks.
+
+- **Peer-reviewed model-generated mathematics.** [Eigenweights for arithmetic Hirzebruch Proportionality](https://academic.oup.com/pnasnexus/article/5/5/pgag143/8671739) reports mathematical content generated by Aletheia and validated by a responsible expert author, including detection of a failed commutativity assumption in a prior argument. This establishes that a model can supply substantial research content in at least one specialist setting; it does not establish broad autonomous reliability.
+
+- **Externally digested counterexample.** OpenAI's [unit-distance conjecture report](https://openai.com/index/model-disproves-discrete-geometry-conjecture/) and the mathematicians' [companion analysis](https://arxiv.org/abs/2605.20695) document a model-generated construction that experts checked, simplified, and generalized. The route transferred machinery from algebraic number theory into discrete geometry. This supports exact negation, cross-field construction search, and preserving raw output for independent expert digestion.
+
+- **Human--AI assumption relaxation.** [Lift-independence in the p-adic Simpson correspondence](https://arxiv.org/abs/2605.29947) reports model-assisted extensions, removal of hypotheses, sharper quantitative bounds, and counterexamples to further relaxation, all checked by expert authors. This supports assumption ledgers, deletion tests, explicit thresholds, and witness search when a deletion fails; it remains collaborative case evidence rather than a general theorem about agent reliability.
+
+### Formal proof search and semantic fidelity
+
+- **Research-scale formal search.** [AlphaProof Nexus](https://arxiv.org/abs/2605.22763) reports public Lean certificates for 9 of 353 formalized open Erdős problems and 44 of 492 OEIS conjectures. Its deployments also co-search parameters or constructions with proofs. In a post-hoc evaluation, the authors' simpler language-model-plus-Lean agent solved all nine Erdős targets, while heavier evolutionary search was cheaper on some hard cases. This supports compiler feedback, checkpointed lessons, joint parameter/proof search, and “start simple; escalate on evidence.” The low overall solve rate, selection toward formalizable problems, high variance, and cost must remain visible.
+
+- **Misformalization at scale.** [Formal Conjectures](https://arxiv.org/abs/2605.13171) contains 2,615 Lean statements and reports 291 corrected misformalizations; 48% of those corrections involved misrepresentation and 35% semantic errors. Every apparent solution of an open item triggers a manual fidelity audit. Its definition test statements and API sanity lemmas support unit-testing formalization before attempting the main theorem.
+
+- **Compact specification plus full-project checking.** [Automated Conjecture Resolution with Formal Verification](https://arxiv.org/abs/2604.03789) reports a new commutative-algebra counterexample with a large Lean development checked against a shorter human-reviewed specification and an explicit axiom audit. It also documents a recurrent failure mode: moving the hard obligation into an unproved helper lemma. Use a frozen compact target, check equivalence to the full artifact, and inspect the entire dependency closure.
+
+- **Proof DAGs and answer-leakage controls.** [LEAP](https://arxiv.org/abs/2606.03303) uses proof decomposition, memoized verified nodes, backtracking, and Lean feedback. [Discover and Prove](https://aclanthology.org/2026.acl-long.3/) separates answer discovery, informal checking, and formal proof, and introduces a “Hard Mode” that does not expose the desired answer in the statement. These support durable DAGs and evaluation that distinguishes discovering a witness from certifying one.
+
+- **Certified refutation.** [Learning to Disprove](https://arxiv.org/abs/2603.19514) scales hypothesis deletion and Lean-verifiable counterexample proofs. Its tasks are synthetic rather than open research, so it strengthens the method of early certified refutation without proving that the method transfers uniformly to all research domains.
+
+### Evaluation, critics, and exposition
+
+- **Fresh, independently refereed problems.** [First Proof, Second Batch](https://arxiv.org/abs/2606.18119) evaluates four public systems on ten fresh unpublished research lemmas, with logs, costs, and two or three expert referees per output. Seven problems received at least one passing solution across systems. Reviewers also observed a characteristic exposition error: over-explaining routine steps while glossing the crux, together with citation and phrase-reuse concerns. This supports contamination-resistant evaluation, attempt-level reporting, independent review, and crux-weighted exposition.
+
+- **Fresh-context critics.** [ProofCouncil](https://arxiv.org/abs/2607.09474) reports target drift and critic path dependence. In one incomplete-proof case, a stateful critic accepted seven revisions while fresh critics rejected them. Reset a verifier after major revisions and require a final fresh audit against the frozen target.
+
+- **Human rewriting can introduce errors.** [The Simplicity of the Hodge Bundle](https://arxiv.org/abs/2603.19052) reports an Aletheia-generated proof that required expert expansion of a “standard” lemma; a later version also records correction of a factor lost during human rewriting. Treat exposition as a mathematical transformation that needs its own comparison with the checked proof.
+
+- **Very recent certificate-backed claims remain provisional.** OpenAI's [Ten Advances](https://openai.com/index/ten-advances-in-mathematics/) provides [public Lean artifacts](https://github.com/openai/ten-proofs) across several fields. These are valuable reproducible objects, but as of this audit they are too recent and institutionally reported to treat every advertised semantic, novelty, or significance claim as independently settled.
+
+## Operational consequences
+
+### Freeze and test the target
+
+Write a target contract before substantial search: literal source, intended meaning, definitions, fixed and evolvable variables, permitted assumptions or axioms, and representative positive, negative, and non-vacuous examples. For formal work, prove sanity lemmas and expected laws for new definitions. Diff and re-audit every target change.
+
+### Run bounded prove-or-disprove triage
+
+Try cheap substitutions, small models, hypothesis deletion, exact computation, and construction families before investing in a long proof. Formally certify the full instantiated negation when practical. A failed bounded search means only `not falsified within scope`.
+
+### Search with durable state and explicit budgets
+
+Start with one candidate generator, an external checker where possible, and a revision loop. Preserve a frozen target, proof DAG, verified nodes, failed-route ledger, assumptions, source excerpts, examples, checker errors, and uncertainty annotations. Escalate to independent workers, populations, or evolutionary search only when a recorded bottleneck warrants the cost. Set stopping and human-escalation conditions before the campaign.
+
+### Verify four different obligations
+
+Check separately that:
+
+1. the informal claim matches the intended research question;
+2. a formal specification faithfully represents that claim;
+3. the proof proves exactly the frozen specification;
+4. the complete dependency closure contains no unresolved placeholder, unsafe axiom, hidden premise, or renamed central obligation.
+
+A same-model critic filters errors but is not independent evidence. Give a fresh verifier the target and necessary sources without the proposer's narrative. For a high-stakes result, combine formal checking or a second derivation with specialist review of statement fidelity and significance.
+
+### Audit literature and reconstruct the mechanism
+
+Search exact claims, equivalent formulations, constructions, and proof motifs. Verify citations against primary sources and record coverage. Treat novelty as provisional. When converting a formal or AI-generated artifact into prose, map the certificate's key lemmas and imported results to the human mechanism, emphasize the crux, and compare the rewrite back to the checked artifact.
+
+## Research result card
+
+For a research-level result, report:
+
+- frozen target and version history;
+- terminal truth status and exact unresolved obligations;
+- proof support, checker and library versions, and permitted axioms;
+- statement-fidelity audit and representative sanity tests;
+- literature-search scope, novelty status, and mathematical significance status;
+- model and tool versions, material prompts or hints, human interventions and edits;
+- attempts, selection rule, failed routes, reversals, abstentions, and total budget;
+- independent experts or fresh verifiers and their scope;
+- link from the machine artifact to a readable mechanism-centered proof.
+
+## Audit of earlier methods
+
+| Earlier method | 2026 verdict | Current use |
+|---|---|---|
+| Formal verification | Strongly reinforced, but narrowed | Use kernel checking for the encoded proposition; add definition tests, target equivalence, axiom scans, version pins, and a separate semantic audit. |
+| Creative proposer plus strict verifier | Reinforced at research scale | Keep roles separate; treat a same-context or same-model verifier as a filter and finish with a fresh-context or independent check. |
+| Generate, refute, then prove | Reinforced and promoted earlier | Run bounded truth triage immediately after formalization; certify witnesses and keep search limits explicit. |
+| Evaluator-guided and evolutionary search | Sometimes effective, not a default | Begin with a minimal loop. Add populations or evolution only after an observed stall and report cost and denominator. |
+| Example laboratories | Reinforced as a specification tool | Use examples not only for discovery but to unit-test definitions, formalizations, and claimed generality. Feed counterexamples back into the laboratory. |
+| Diverse candidates and step checks | Retained with stronger controls | Preserve materially different routes, proof DAGs, and earliest-failure checks; diversity and agreement do not replace verification. |
+| Hypothesis mutation and model finding | Strongly reinforced | Delete and regroup assumptions, search witnesses, certify exact negations when practical, and distinguish proof dependence from theorem necessity. |
+| Worked examples and self-explanation | Still relevant | 2026 research evaluations show that advanced systems can hide the crux and that rewrites can introduce errors. Keep progressive examples and comparison, but audit the final exposition against the proof artifact. |
+| Retrieval | Useful but conditional | Retrieve exact statements and proof context; gate additions by relevance because extra context and plausible citations can distract or mislead. |
+
+Most 2026 systems reuse older generator/checker, decomposition, retrieval, refutation, and evaluator-guided-search ideas. The important advance is stronger evidence at research scale and sharper controls for target fidelity, provenance, fresh review, durable state, and cost—not a generally reliable autonomous-mathematics recipe.
+
+## Pre-2026 foundations retained
+
+These sources remain useful foundations because 2026 research results reinforce rather than supersede their mechanisms:
+
+- Formal environments and premise retrieval: [AlphaProof](https://www.nature.com/articles/s41586-025-09833-y), [LeanDojo](https://proceedings.neurips.cc/paper_files/paper/2023/hash/4441469427094f8873d0fecb0c4e1cee-Abstract-Datasets_and_Benchmarks.html).
+- Creative proposal plus symbolic or formal checking: [AlphaGeometry](https://www.nature.com/articles/s41586-023-06747-5), [Draft, Sketch, and Prove](https://openreview.net/forum?id=SMa9EAovKMC), [Prover-Verifier Games](https://arxiv.org/abs/2407.13692).
+- Evaluator-guided discovery: [FunSearch](https://www.nature.com/articles/s41586-023-06924-6), [AlphaEvolve](https://arxiv.org/abs/2506.13131).
+- Example laboratories and interpretable patterns: [Davies et al.](https://www.nature.com/articles/s41586-021-04086-x).
+- Diverse candidates and process checking: [Self-Consistency](https://openreview.net/forum?id=1PL1NIMMrw), [Let's Verify Step by Step](https://arxiv.org/abs/2305.20050).
+- Hypothesis mutation and bounded model finding: [Nitpick](https://www21.in.tum.de/~nipkow/pubs/itp10.html).
+- Worked examples and mathematical comparison: [Chi et al.](https://doi.org/10.1207/s15516709cog1302_1), [Rittle-Johnson and Star](https://doi.org/10.1037/a0014224).
+
+The pedagogical studies are old but still methodologically relevant: 2026 systems do not supply replacement causal evidence about how mathematicians learn. The newer evidence instead shows why their prescriptions remain necessary when the source proof is machine-generated or formalized.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Research Mathematics"
+  short_description: "Research mathematical claims with referee-grade rigor"
+  default_prompt: "Use $research-mathematics to investigate this conjecture rigorously."
