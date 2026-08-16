@@ -1,0 +1,7 @@
+interface:
+  display_name: "Formalize Concepts"
+  short_description: "Turn informal ideas into mathematical formalisms"
+  default_prompt: "Use $formalize-concepts to turn this idea into a workable mathematical formalism."
+
+policy:
+  allow_implicit_invocation: false

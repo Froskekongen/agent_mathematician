@@ -10,6 +10,8 @@ from pathlib import Path
 
 SKILL_NAMES = (
     "research-mathematics",
+    "explore-proof-strategies",
+    "formalize-concepts",
     "destroy-theory",
     "explain-mathematics",
     "audit-assumptions",
@@ -44,7 +46,7 @@ def main() -> None:
     """Parse targets and install the complete suite."""
     parser = argparse.ArgumentParser(
         description=(
-            "Install all four skills globally. Codex and Cursor share the open-standard "
+            "Install all six skills globally. Codex and Cursor share the open-standard "
             "~/.agents/skills root; Claude Code uses ~/.claude/skills."
         )
     )
