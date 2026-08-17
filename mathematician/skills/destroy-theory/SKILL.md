@@ -1,6 +1,7 @@
 ---
 name: destroy-theory
 description: Falsify or stress-test a mathematical statement, proof, or theory. Use when asked to destroy, attack, red-team, referee, find counterexamples or gaps, test consistency or claimed generality, or locate the exact boundary where a claim fails.
+disable-model-invocation: true
 ---
 
 # Destroy Theory

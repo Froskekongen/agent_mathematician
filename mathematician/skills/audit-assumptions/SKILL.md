@@ -1,6 +1,7 @@
 ---
 name: audit-assumptions
 description: Audit hypotheses in a mathematical theorem, proof, or theory. Use when identifying hidden, missing, implied, or redundant assumptions; locating their exact proof uses; testing necessity; or proposing and validating weaker assumptions and alternative hypothesis sets.
+disable-model-invocation: true
 ---
 
 # Audit Assumptions
@@ -51,7 +52,7 @@ For each assumption `Ai`:
 - examine interacting groups and alternative sufficient sets, prioritizing assumptions that feed the same proof node;
 - mutate interpretation or formalization choices and test whether the theorem becomes vacuous, trivial, or a different question.
 
-Use the `destroy-theory` protocol in constrained mode to search for necessity witnesses. State the exact finite, symbolic, numerical, random, or literature search scope. A failed search leaves necessity unresolved.
+Apply `$destroy-theory` in constrained mode to search for necessity witnesses. If skill-to-skill invocation is unavailable, read and execute [the sibling skill](../destroy-theory/SKILL.md) in constrained mode. State the exact finite, symbolic, numerical, random, or literature search scope. A failed search leaves necessity unresolved.
 
 Minimize any counterexample and verify every remaining hypothesis before treating it as evidence of necessity. Retain certified witnesses in the example laboratory. When a formal certificate is practical, prove that the witness satisfies every retained assumption and violates the exact conclusion.
 

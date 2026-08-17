@@ -2,3 +2,6 @@ interface:
   display_name: "Audit Assumptions"
   short_description: "Test the necessity and relaxation of hypotheses"
   default_prompt: "Use $audit-assumptions to identify necessary hypotheses and possible weakenings."
+
+policy:
+  allow_implicit_invocation: false

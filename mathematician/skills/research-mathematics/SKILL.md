@@ -1,6 +1,7 @@
 ---
 name: research-mathematics
 description: Research, formulate, prove, verify, or repair a substantial mathematical theorem, conjecture, derivation, or theory. Use for open-ended mathematical research, rigorous proof construction, independent verification, or improving a theorem. Reserve this full workflow for nontrivial claims rather than routine calculations or exposition-only requests.
+disable-model-invocation: true
 ---
 
 # Research Mathematics
@@ -73,13 +74,13 @@ Launch phases 5 and 6 concurrently when delegation is available. Assign each spe
 
 ## 5. Attack the candidate
 
-Apply the installed `destroy-theory` skill to the review candidate, including its theorem, critical lemmas, and proof. If skill-to-skill invocation is unavailable, read and execute [the sibling skill](../destroy-theory/SKILL.md). Treat proposed repairs as findings for phase 7.
+Apply the installed `$destroy-theory` skill to the review candidate, including its theorem, critical lemmas, and proof. If skill-to-skill invocation is unavailable, read and execute [the sibling skill](../destroy-theory/SKILL.md). Treat proposed repairs as findings for phase 7.
 
 Complete this phase only when the latest `destroy-theory` report has met its own completion criterion on the current review candidate.
 
 ## 6. Audit hypotheses
 
-Apply the installed `audit-assumptions` skill to the same review candidate. If skill-to-skill invocation is unavailable, read and execute [the sibling skill](../audit-assumptions/SKILL.md). Treat proposed theorem or proof revisions as findings for phase 7, and preserve the distinction between an assumption needed by this proof and one necessary for the theorem itself.
+Apply the installed `$audit-assumptions` skill to the same review candidate. If skill-to-skill invocation is unavailable, read and execute [the sibling skill](../audit-assumptions/SKILL.md). Treat proposed theorem or proof revisions as findings for phase 7, and preserve the distinction between an assumption needed by this proof and one necessary for the theorem itself.
 
 Complete this phase only when the latest `audit-assumptions` report has met its own completion criterion on the current review candidate.
 
@@ -148,4 +149,4 @@ Keep five evidence axes separate: logical correctness, statement fidelity, novel
 
 For the provenance card, report material model and tool versions, prompts or human hints, edits or strengthened claims, retries and selection, attempt denominator, budget, checker versions, expert review, and literature-search coverage. Include failures and abstentions when they affect the evidential weight. Do not collapse a kernel-checked proof, faithful formalization, independent mathematical review, and novelty review into one claim of “verification.”
 
-When the user requests an accessible treatment, apply `explain-mathematics` after the mathematics is settled. If direct invocation is unavailable, read [the sibling skill](../explain-mathematics/SKILL.md).
+When the user requests an accessible treatment, apply `$explain-mathematics` after the mathematics is settled. If skill-to-skill invocation is unavailable, read and execute [the sibling skill](../explain-mathematics/SKILL.md).

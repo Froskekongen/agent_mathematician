@@ -5,16 +5,15 @@ Agent skills for rigorous mathematical research. The suite helps agents formulat
 ## Skills
 
 - `research-mathematics`: research, formulate, prove, verify, or repair substantial mathematical claims.
-- `explore-proof-strategies`: explicitly invoked, bounded exploration of diverse proof routes and cross-field bridges.
-- `formalize-concepts`: explicitly invoked, lightweight development of an informal idea into a selected mathematical formalism.
+- `explore-proof-strategies`: bounded exploration of diverse proof routes and cross-field bridges.
+- `formalize-concepts`: lightweight development of an informal idea into a selected mathematical formalism.
 - `destroy-theory`: stress-test statements and proofs, search for counterexamples, and identify failure boundaries.
 - `audit-assumptions`: locate hidden assumptions, trace where hypotheses are used, and test whether they can be weakened.
 - `explain-mathematics`: explain advanced mathematics to mathematically mature nonspecialists.
 
-The two exploration skills are opt-in and carry manual-only metadata for all supported hosts. Invoke either one explicitly:
+All skills are opt-in and carry manual-only metadata for all supported hosts. Invoke them explicitly with `$skill-name` in Codex or `/skill-name` in Cursor and Claude Code.
 
-- Codex: `$explore-proof-strategies` or `$formalize-concepts`
-- Cursor and Claude Code: `/explore-proof-strategies` or `/formalize-concepts`
+Manual-only metadata prevents the host from selecting a skill merely because a prompt resembles its description. It does not prevent an invoked skill from explicitly applying another skill: for example, `$research-mathematics` delegates adversarial review to `$destroy-theory` and hypothesis review to `$audit-assumptions`.
 
 ## Installation
 

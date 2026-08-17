@@ -1,6 +1,7 @@
 ---
 name: explain-mathematics
 description: Explain a mathematical theory, theorem, or proof to a mathematically mature nonspecialist. Use when teaching or unpacking prerequisites, notation, intuition, proof structure, examples, nonexamples, and connections across fields without assuming expertise in every mathematical specialty.
+disable-model-invocation: true
 ---
 
 # Explain Mathematics
