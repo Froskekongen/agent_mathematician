@@ -7,7 +7,8 @@ authors:
   - family-names: Aune
     given-names: Erlend
     orcid: "https://orcid.org/0009-0008-0253-941X"
-date-released: "2026-08-16"
+version: "0.1.0"
+date-released: "2026-08-18"
 repository-code: "https://github.com/Froskekongen/agent_mathematician"
 url: "https://github.com/Froskekongen/agent_mathematician"
 license: MIT
