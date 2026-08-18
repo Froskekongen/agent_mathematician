@@ -1,5 +1,7 @@
 # Agent Mathematician
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21996114.svg)](https://doi.org/10.5281/zenodo.21996114)
+
 Agent skills for rigorous mathematical research. The suite helps agents formulate and verify substantial claims, attack theories and proofs, audit assumptions, and explain advanced mathematics.
 
 ## Skills
@@ -49,7 +51,7 @@ Restart the agent if it does not discover the newly installed skills in the curr
 
 If these skills contribute to your research, please cite them as research software:
 
-> Aune, E. (2026). *Agent Mathematician: Agent skills for mathematical research* [Computer software]. GitHub. https://github.com/Froskekongen/agent_mathematician
+> Aune, E. (2026). *Agent Mathematician: Agent skills for mathematical research* (Version 0.1.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.21996115
 
 BibTeX:
 
@@ -57,12 +59,15 @@ BibTeX:
 @software{aune_agent_mathematician_2026,
   author = {Aune, Erlend},
   title = {Agent Mathematician: Agent Skills for Mathematical Research},
+  version = {0.1.0},
   year = {2026},
-  url = {https://github.com/Froskekongen/agent_mathematician}
+  publisher = {Zenodo},
+  doi = {10.5281/zenodo.21996115},
+  url = {https://doi.org/10.5281/zenodo.21996115}
 }
 ```
 
-The repository also includes [`CITATION.cff`](CITATION.cff), which GitHub and compatible reference tools can use to generate citations. When citing a released version, include its version and persistent DOI if available.
+The repository also includes [`CITATION.cff`](CITATION.cff), which GitHub and compatible reference tools can use to generate citations. The badge uses the [concept DOI](https://doi.org/10.5281/zenodo.21996114) for all releases; cite the version DOI above for reproducibility.
 
 ## License
 
