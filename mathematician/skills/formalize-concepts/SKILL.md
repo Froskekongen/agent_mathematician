@@ -89,7 +89,7 @@ Complete this phase when there is a selected candidate or one sharply stated unr
 
 Hand off when the next work is a substantial proof, systematic assumption test, consistency campaign, empirical validation, causal identification, or novelty investigation. Retrieve literature only when the user asks about existing formalisms, attribution, or novelty.
 
-Recommend `$explore-proof-strategies` when a precise claim now needs proof routes, or `$research-mathematics` when the user wants rigorous mathematical resolution.
+Recommend `$explore-mathematical-structure` when the selected formalism needs an iterative test bed for intuition before the user chooses what to investigate. Recommend `$explore-proof-strategies` when a precise claim now needs proof routes, or `$research-mathematics` when the user wants rigorous mathematical resolution.
 
 ## Report
 

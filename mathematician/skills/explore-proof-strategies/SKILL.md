@@ -8,6 +8,8 @@ disable-model-invocation: true
 
 Scout broadly, test cheaply, and stop with a useful proof architecture. Preserve mathematical precision and visible obligations without performing the exhaustive certification owned by `research-mathematics`.
 
+When no claim is ready and the user instead wants to discover which structures or questions deserve investigation, recommend `$explore-mathematical-structure` rather than manufacturing a proof target.
+
 ## 1. Frame the working target
 
 Record:

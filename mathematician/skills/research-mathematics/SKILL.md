@@ -10,6 +10,8 @@ Optimize for mathematical truth. Produce claims that can survive expert review, 
 
 Read [rigor-standards.md](references/rigor-standards.md) completely before working. Read [evidence-based-methods.md](references/evidence-based-methods.md) when formal verification, computation, literature retrieval, candidate search, or example-driven discovery could materially help.
 
+When no research target is ready and the user wants to explore a selected formalism before choosing what deserves rigorous investigation, recommend `$explore-mathematical-structure` rather than manufacturing a frozen claim.
+
 ## 1. Formalize
 
 Rewrite the problem as a precise claim.
