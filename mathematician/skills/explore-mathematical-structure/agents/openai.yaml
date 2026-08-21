@@ -1,7 +1,7 @@
 interface:
   display_name: "Explore Mathematical Structure"
-  short_description: "Contrast structures and choose next directions"
-  default_prompt: "Use $explore-mathematical-structure to contrast these mathematical ideas or structures and identify the next direction to test."
+  short_description: "Precise exploration with an actionable brief"
+  default_prompt: "Use $explore-mathematical-structure to compare these mathematical structures, keep a precise exploration ledger, and return an actionable brief."
 
 policy:
   allow_implicit_invocation: false
