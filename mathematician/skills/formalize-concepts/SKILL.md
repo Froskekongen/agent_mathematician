@@ -85,6 +85,13 @@ Discard cosmetic variants and transient brainstorms. If a genuine fork remains, 
 
 Complete this phase when there is a selected candidate or one sharply stated unresolved fork.
 
+When a downstream file-backed research round will retain a definition,
+mechanism, conjecture, obstruction, or open question, give that durable handoff
+unit a human-semantic lowercase-kebab research key. Sequence labels such as
+`A1` remain transient local notation. This skill does not create companions,
+manage database state, or insert generated canonical-section markers; the
+receiving writable coordinator owns that lifecycle.
+
 ## 6. Stop at the right boundary
 
 Hand off when the next work is a substantial proof, systematic assumption test, consistency campaign, empirical validation, causal identification, or novelty investigation. Retrieve literature only when the user asks about existing formalisms, attribution, or novelty.

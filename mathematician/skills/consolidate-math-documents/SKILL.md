@@ -62,8 +62,9 @@ creating a manifest file.
 
 Inventory every definition, notation choice, ambient structure, assumption,
 claim and epistemic status, proof dependency, validity boundary,
-counterexample, obligation, citation, relative link, native artifact, card,
-origin, and edge. Give each exactly one disposition:
+counterexample, obligation, citation, relative link, native artifact,
+semantic research key and alias, card, canonical link, origin, and card edge.
+Give each exactly one disposition:
 
 - `integrate`;
 - `merge-equivalent`;
@@ -87,6 +88,12 @@ coherent alternatives and unresolved conflicts explicitly. Neither modification
 time nor an existing target wins a conflict, and consolidation never upgrades
 a claim to `PROVED`.
 
+Establish human-semantic target research keys for durable mathematical
+subjects. Use one primary key only for the same subject; express other
+relationships as typed card links. Preserve an equivalent legacy opaque ID as
+an alias, not as a target primary key. Several primary keys may address one
+section when splitting the exposition would be artificial.
+
 ## Build the target pair
 
 Draft the complete self-contained target in the workpad. Include every
@@ -95,6 +102,12 @@ load-bearing negative result, and unresolved conflict needed after source
 retirement. Rewrite relative links, preserve citations, resolve anchor and
 theorem-label collisions, and keep deliberate native artifacts linked in
 place unless their promotion was explicitly requested.
+
+After the target structure stabilizes, use the shared deterministic
+canonical-section tool to assign its generated anchors and visible key labels;
+never copy or hand-edit those markers. Scan and check the target before making
+database links. Use exact key or alias lookup before broad source-memory
+search, and expand only selected source cards.
 
 Add concise consolidation provenance naming each retired source path, canonical
 and companion digests, Git recovery revision when available, source role,
@@ -118,8 +131,10 @@ For slugs:
 4. recreate an edge only when both endpoints survive and the relation remains
    useful.
 
-Source `integrated` state and canonical anchors are never copied mechanically.
-Use target-appropriate disposition, claim status, anchor, and applicability.
+Source `integrated` state, aliases, and canonical links are never copied
+mechanically. Resolve subject identity and use target-appropriate disposition,
+claim status, relation, and applicability. An integrated target card requires
+an explicit `integrated-at` link to a target research key.
 
 ## Publish, retire, and finish
 
@@ -127,10 +142,13 @@ Before publication, revalidate every frozen source digest and database
 revision, the target baseline, and the complete retirement manifest. Then:
 
 1. write or update the target canonical document;
-2. ensure its schema-2 companion and add or preserve the locator;
-3. apply one revision-checked batch of cards, origins, and edges;
-4. run `check`, require `canonical_status: current`, `show` changed cards, and
-   `export` the final target;
+2. check its research-key structure, ensure its schema-3 companion, and add or
+   preserve the locator;
+3. apply one revision-checked batch of canonical items, aliases, cards, typed
+   canonical links, origins, and card edges;
+4. explicitly refresh changed canonical items, review every affected card
+   link at the current snapshots, run `check`, use exact lookups to verify the
+   crosswalk, `show` changed cards, and `export` the final target;
 5. revalidate the retirement manifest and retire its exact source pairs;
 6. confirm the sources are absent and the target still validates; and
 7. delete the workpad.
@@ -150,3 +168,5 @@ retirement failure leaves the validated target in place but makes the run
 incomplete: retain the workpad and report exact deleted and remaining paths.
 Never restore over a recreated or concurrently edited path. A cleanup-only
 failure reports the residual workpad without invalidating the closed target.
+Section and link snapshot matches report curation state only; consolidation
+never calls them logical or mathematical freshness.

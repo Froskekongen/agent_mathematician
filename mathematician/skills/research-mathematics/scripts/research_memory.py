@@ -15,22 +15,21 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping, Optional, Sequence
 
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 DISPOSITIONS = ("open", "active", "parked", "rejected", "integrated")
 CLAIM_STATUSES = ("conjectural", "supported", "refuted", "proved", "unresolved")
-CARD_FIELDS = (
+CARD_SUMMARY_FIELDS = (
     "slug",
     "kind",
     "title",
     "summary_md",
-    "detail_md",
     "disposition",
     "claim_status",
     "reason",
     "next_test",
     "revival_condition",
-    "canonical_anchor",
 )
+CARD_FIELDS = (*CARD_SUMMARY_FIELDS[:4], "detail_md", *CARD_SUMMARY_FIELDS[4:])
 REQUIRED_CARD_FIELDS = ("slug", "kind", "title", "summary_md", "disposition")
 MUTABLE_CARD_FIELDS = tuple(name for name in CARD_FIELDS if name != "slug")
 OPTIONAL_CARD_FIELDS = frozenset(
@@ -40,7 +39,6 @@ OPTIONAL_CARD_FIELDS = frozenset(
         "reason",
         "next_test",
         "revival_condition",
-        "canonical_anchor",
     }
 )
 CARD_STATE_REQUIREMENTS = {
@@ -48,8 +46,19 @@ CARD_STATE_REQUIREMENTS = {
     "active": ("next_test",),
     "parked": ("revival_condition",),
     "rejected": ("reason",),
-    "integrated": ("canonical_anchor",),
+    "integrated": (),
 }
+CANONICAL_RELATIONS = (
+    "same-subject",
+    "addresses",
+    "supports",
+    "constrains",
+    "tests",
+    "implements",
+    "integrated-at",
+)
+CANONICAL_ITEM_FIELDS = ("canonical_key", "kind", "title")
+CANONICAL_ITEM_MUTABLE_FIELDS = ("kind", "title")
 ORIGIN_FIELDS = (
     "card_slug",
     "source_locator",
@@ -61,12 +70,19 @@ APPLY_BATCH_FIELDS = (
     "round_id",
     "batch_digest",
     "expected_database_revision",
+    "expected_canonical_digest",
     "canonical_digest",
     "card_operations",
     "origin_operations",
     "edge_operations",
+    "canonical_item_operations",
+    "canonical_alias_operations",
+    "card_canonical_link_operations",
 )
 SHA256_RE = re.compile(r"[0-9a-f]{64}\Z")
+SEMANTIC_KEY_RE = re.compile(
+    r"[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)?\Z"
+)
 REQUIRED_COLUMNS = {
     "meta": {
         "singleton",
@@ -80,10 +96,36 @@ REQUIRED_COLUMNS = {
         "created_at",
         "updated_at",
     },
-    "card": set(CARD_FIELDS)
+    "card": set(CARD_SUMMARY_FIELDS)
     | {"revision", "content_sha256", "created_at", "updated_at"},
+    "card_body": {"card_slug", "detail_md"},
     "card_origin": set(ORIGIN_FIELDS),
     "edge": {"source_slug", "relation", "target_slug", "note_md"},
+    "canonical_item": {
+        "canonical_key",
+        "kind",
+        "title",
+        "anchor",
+        "indexed_section_sha256",
+        "fingerprint_version",
+        "revision",
+        "content_sha256",
+        "created_at",
+        "updated_at",
+    },
+    "canonical_alias": {"alias", "canonical_key", "source_locator"},
+    "card_canonical_link": {
+        "card_slug",
+        "canonical_key",
+        "relation",
+        "note_md",
+        "reviewed_canonical_sha256",
+        "reviewed_section_sha256",
+        "reviewed_card_revision",
+        "revision",
+        "created_at",
+        "updated_at",
+    },
 }
 
 
@@ -101,7 +143,7 @@ class JSONArgumentParser(argparse.ArgumentParser):
 SCHEMA_SQL = """
 CREATE TABLE meta (
     singleton INTEGER PRIMARY KEY CHECK (singleton = 1),
-    schema_version INTEGER NOT NULL CHECK (schema_version = 2),
+    schema_version INTEGER NOT NULL CHECK (schema_version = 3),
     theory_slug TEXT NOT NULL CHECK (length(trim(theory_slug)) > 0),
     canonical_path TEXT NOT NULL CHECK (length(trim(canonical_path)) > 0),
     canonical_sha256 TEXT NOT NULL
@@ -124,7 +166,6 @@ CREATE TABLE card (
     kind TEXT NOT NULL CHECK (length(trim(kind)) > 0),
     title TEXT NOT NULL CHECK (length(trim(title)) > 0),
     summary_md TEXT NOT NULL CHECK (length(trim(summary_md)) > 0),
-    detail_md TEXT,
     disposition TEXT NOT NULL
         CHECK (disposition IN ('open', 'active', 'parked', 'rejected', 'integrated')),
     claim_status TEXT
@@ -133,7 +174,6 @@ CREATE TABLE card (
     reason TEXT,
     next_test TEXT,
     revival_condition TEXT,
-    canonical_anchor TEXT,
     revision INTEGER NOT NULL CHECK (revision >= 1),
     content_sha256 TEXT NOT NULL
         CHECK (length(content_sha256) = 64
@@ -145,9 +185,12 @@ CREATE TABLE card (
     CHECK (disposition <> 'parked'
            OR length(trim(coalesce(revival_condition, ''))) > 0),
     CHECK (disposition <> 'rejected'
-           OR length(trim(coalesce(reason, ''))) > 0),
-    CHECK (disposition <> 'integrated'
-           OR length(trim(coalesce(canonical_anchor, ''))) > 0)
+           OR length(trim(coalesce(reason, ''))) > 0)
+);
+
+CREATE TABLE card_body (
+    card_slug TEXT PRIMARY KEY NOT NULL REFERENCES card(slug) ON DELETE CASCADE,
+    detail_md TEXT NOT NULL CHECK (length(trim(detail_md)) > 0)
 );
 
 CREATE TABLE card_origin (
@@ -169,10 +212,62 @@ CREATE TABLE edge (
     PRIMARY KEY (source_slug, relation, target_slug)
 );
 
+CREATE TABLE canonical_item (
+    canonical_key TEXT PRIMARY KEY NOT NULL CHECK (length(trim(canonical_key)) > 0),
+    kind TEXT NOT NULL CHECK (length(trim(kind)) > 0),
+    title TEXT NOT NULL CHECK (length(trim(title)) > 0),
+    anchor TEXT NOT NULL UNIQUE CHECK (length(trim(anchor)) > 0),
+    indexed_section_sha256 TEXT NOT NULL
+        CHECK (length(indexed_section_sha256) = 64
+               AND indexed_section_sha256 NOT GLOB '*[^0-9a-f]*'),
+    fingerprint_version INTEGER NOT NULL CHECK (fingerprint_version >= 1),
+    revision INTEGER NOT NULL CHECK (revision >= 1),
+    content_sha256 TEXT NOT NULL
+        CHECK (length(content_sha256) = 64
+               AND content_sha256 NOT GLOB '*[^0-9a-f]*'),
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
+
+CREATE TABLE canonical_alias (
+    alias TEXT PRIMARY KEY NOT NULL CHECK (length(trim(alias)) > 0),
+    canonical_key TEXT NOT NULL REFERENCES canonical_item(canonical_key)
+        ON DELETE CASCADE,
+    source_locator TEXT CHECK (
+        source_locator IS NULL OR length(trim(source_locator)) > 0
+    )
+);
+
+CREATE TABLE card_canonical_link (
+    card_slug TEXT NOT NULL REFERENCES card(slug) ON DELETE CASCADE,
+    canonical_key TEXT NOT NULL REFERENCES canonical_item(canonical_key)
+        ON DELETE CASCADE,
+    relation TEXT NOT NULL CHECK (relation IN (
+        'same-subject', 'addresses', 'supports', 'constrains', 'tests',
+        'implements', 'integrated-at'
+    )),
+    note_md TEXT,
+    reviewed_canonical_sha256 TEXT NOT NULL
+        CHECK (length(reviewed_canonical_sha256) = 64
+               AND reviewed_canonical_sha256 NOT GLOB '*[^0-9a-f]*'),
+    reviewed_section_sha256 TEXT NOT NULL
+        CHECK (length(reviewed_section_sha256) = 64
+               AND reviewed_section_sha256 NOT GLOB '*[^0-9a-f]*'),
+    reviewed_card_revision INTEGER NOT NULL CHECK (reviewed_card_revision >= 1),
+    revision INTEGER NOT NULL CHECK (revision >= 1),
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    CHECK (relation <> 'same-subject' OR card_slug = canonical_key),
+    PRIMARY KEY (card_slug, canonical_key, relation)
+);
+
 CREATE INDEX card_disposition_updated_idx ON card(disposition, updated_at DESC);
 CREATE INDEX card_kind_idx ON card(kind);
 CREATE INDEX card_origin_source_idx ON card_origin(source_locator, source_slug);
 CREATE INDEX edge_target_idx ON edge(target_slug);
+CREATE INDEX canonical_alias_key_idx ON canonical_alias(canonical_key);
+CREATE INDEX card_canonical_link_key_idx
+    ON card_canonical_link(canonical_key, relation);
 """
 
 
@@ -201,7 +296,7 @@ def normalize_schema_sql(value: str) -> str:
 
 
 def expected_schema_objects() -> dict[tuple[str, str], str]:
-    """Return the exact schema-2 tables and indexes defined by this tool."""
+    """Return the exact supported tables and indexes defined by this tool."""
     connection = sqlite3.connect(":memory:")
     try:
         connection.executescript(SCHEMA_SQL)
@@ -234,17 +329,17 @@ def schema_object_errors(connection: sqlite3.Connection) -> list[str]:
     )
     if missing:
         errors.append(
-            "missing schema-v2 object(s): "
+            f"missing schema-v{SCHEMA_VERSION} object(s): "
             + ", ".join(f"{kind} {name}" for kind, name in missing)
         )
     if unexpected:
         errors.append(
-            "unexpected schema-v2 object(s): "
+            f"unexpected schema-v{SCHEMA_VERSION} object(s): "
             + ", ".join(f"{kind} {name}" for kind, name in unexpected)
         )
     if changed:
         errors.append(
-            "schema-v2 definition mismatch: "
+            f"schema-v{SCHEMA_VERSION} definition mismatch: "
             + ", ".join(f"{kind} {name}" for kind, name in changed)
         )
     return errors
@@ -308,6 +403,47 @@ def require_digest(value: Any, label: str) -> str:
     return value
 
 
+def require_semantic_key(value: Any, label: str = "canonical key") -> str:
+    key = require_text(value, label)
+    if SEMANTIC_KEY_RE.fullmatch(key) is None:
+        raise ResearchMemoryError(
+            f"{label} must be a lowercase semantic kebab-case key"
+        )
+    return key
+
+
+def scan_canonical_document(path: Path) -> Any:
+    """Load the sibling source-preserving section index behind one boundary."""
+    try:
+        from canonical_sections import CanonicalSectionsError, scan_canonical
+    except ImportError as error:
+        raise ResearchMemoryError(
+            "canonical section tooling is unavailable next to research_memory.py"
+        ) from error
+    try:
+        return scan_canonical(path)
+    except CanonicalSectionsError as error:
+        raise ResearchMemoryError(f"canonical section validation failed: {error}")
+
+
+def section_for_key(document: Any, key: str) -> Any:
+    section = document.by_key.get(key)
+    if section is None:
+        raise ResearchMemoryError(
+            f"canonical key {key!r} is not declared in the canonical document"
+        )
+    return section
+
+
+def anchor_for_key(section: Any, key: str) -> str:
+    try:
+        return section.anchor_ids[section.keys.index(key)]
+    except (AttributeError, IndexError, ValueError) as error:
+        raise ResearchMemoryError(
+            f"canonical section index has no anchor for key {key!r}"
+        ) from error
+
+
 def require_revision(value: Any, label: str, minimum: int = 0) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or value < minimum:
         raise ResearchMemoryError(f"{label} must be an integer >= {minimum}")
@@ -323,7 +459,9 @@ def normalize_card(raw: Mapping[str, Any]) -> dict[str, Any]:
     card: dict[str, Any] = {}
     for name in CARD_FIELDS:
         value = raw.get(name)
-        if name in OPTIONAL_CARD_FIELDS:
+        if name == "slug":
+            card[name] = require_semantic_key(value, "card.slug")
+        elif name in OPTIONAL_CARD_FIELDS:
             card[name] = optional_text(value, f"card.{name}")
         else:
             card[name] = require_text(value, f"card.{name}")
@@ -441,6 +579,7 @@ def create_database(canonical: Path, theory: str, db_path: Path) -> dict[str, An
             f"database parent directory does not exist: {db_path.parent}"
         )
     require_no_sidecars(db_path)
+    canonical_document = scan_canonical_document(canonical)
 
     try:
         descriptor = os.open(str(db_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
@@ -460,7 +599,7 @@ def create_database(canonical: Path, theory: str, db_path: Path) -> dict[str, An
             connection.execute(f"PRAGMA user_version={SCHEMA_VERSION}")
             timestamp = utc_now()
             relative = Path(os.path.relpath(canonical, db_path.parent)).as_posix()
-            digest = sha256_file(canonical)
+            digest = canonical_document.canonical_sha256
             connection.execute(
                 """
                 INSERT INTO meta (
@@ -525,15 +664,17 @@ def validate_batch(raw: Mapping[str, Any]) -> dict[str, Any]:
     missing = sorted(fields - set(raw))
     if missing:
         raise ResearchMemoryError(f"batch is missing field(s): {', '.join(missing)}")
-    card_operations = raw["card_operations"]
-    origin_operations = raw["origin_operations"]
-    edge_operations = raw["edge_operations"]
-    if not isinstance(card_operations, list):
-        raise ResearchMemoryError("batch.card_operations must be a JSON array")
-    if not isinstance(edge_operations, list):
-        raise ResearchMemoryError("batch.edge_operations must be a JSON array")
-    if not isinstance(origin_operations, list):
-        raise ResearchMemoryError("batch.origin_operations must be a JSON array")
+    operation_fields = (
+        "card_operations",
+        "origin_operations",
+        "edge_operations",
+        "canonical_item_operations",
+        "canonical_alias_operations",
+        "card_canonical_link_operations",
+    )
+    for field in operation_fields:
+        if not isinstance(raw[field], list):
+            raise ResearchMemoryError(f"batch.{field} must be a JSON array")
     declared_digest = require_digest(raw["batch_digest"], "batch.batch_digest")
     actual_digest = batch_content_digest(raw)
     if declared_digest != actual_digest:
@@ -546,17 +687,29 @@ def validate_batch(raw: Mapping[str, Any]) -> dict[str, Any]:
         "expected_database_revision": require_revision(
             raw["expected_database_revision"], "batch.expected_database_revision"
         ),
+        "expected_canonical_digest": require_digest(
+            raw["expected_canonical_digest"], "batch.expected_canonical_digest"
+        ),
         "canonical_digest": require_digest(
             raw["canonical_digest"], "batch.canonical_digest"
         ),
-        "card_operations": card_operations,
-        "origin_operations": origin_operations,
-        "edge_operations": edge_operations,
+        **{field: raw[field] for field in operation_fields},
     }
 
 
 def row_as_card(row: Mapping[str, Any]) -> dict[str, Any]:
     return {name: row[name] for name in CARD_FIELDS}
+
+
+def select_card(connection: sqlite3.Connection, slug: str) -> Optional[sqlite3.Row]:
+    return connection.execute(
+        """
+        SELECT card.*, card_body.detail_md
+        FROM card LEFT JOIN card_body ON card_body.card_slug = card.slug
+        WHERE card.slug = ?
+        """,
+        (slug,),
+    ).fetchone()
 
 
 def apply_card_operation(
@@ -569,16 +722,21 @@ def apply_card_operation(
         if "card" not in operation:
             raise ResearchMemoryError("card add operation requires card")
         card = normalize_card(require_mapping(operation["card"], "card"))
-        values = [card[name] for name in CARD_FIELDS]
+        values = [card[name] for name in CARD_SUMMARY_FIELDS]
         try:
             connection.execute(
                 f"""
-                INSERT INTO card ({', '.join(CARD_FIELDS)}, revision,
+                INSERT INTO card ({', '.join(CARD_SUMMARY_FIELDS)}, revision,
                                   content_sha256, created_at, updated_at)
-                VALUES ({', '.join('?' for _ in CARD_FIELDS)}, 1, ?, ?, ?)
+                VALUES ({', '.join('?' for _ in CARD_SUMMARY_FIELDS)}, 1, ?, ?, ?)
                 """,
                 (*values, card_digest(card), timestamp, timestamp),
             )
+            if card["detail_md"] is not None:
+                connection.execute(
+                    "INSERT INTO card_body (card_slug, detail_md) VALUES (?, ?)",
+                    (card["slug"], card["detail_md"]),
+                )
         except sqlite3.IntegrityError as error:
             raise ResearchMemoryError(f"cannot add card {card['slug']!r}: {error}")
         return card["slug"]
@@ -601,7 +759,7 @@ def apply_card_operation(
         require_keys(changes, MUTABLE_CARD_FIELDS, "card update operation.changes")
         if not changes:
             raise ResearchMemoryError("card update operation.changes must not be empty")
-        row = connection.execute("SELECT * FROM card WHERE slug = ?", (slug,)).fetchone()
+        row = select_card(connection, slug)
         if row is None:
             raise ResearchMemoryError(f"card does not exist: {slug}")
         if row["revision"] != expected:
@@ -611,8 +769,11 @@ def apply_card_operation(
         card = row_as_card(row)
         card.update(changes)
         card = normalize_card(card)
-        assignments = ", ".join(f"{name} = ?" for name in MUTABLE_CARD_FIELDS)
-        values = [card[name] for name in MUTABLE_CARD_FIELDS]
+        mutable_summary_fields = tuple(
+            name for name in CARD_SUMMARY_FIELDS if name != "slug"
+        )
+        assignments = ", ".join(f"{name} = ?" for name in mutable_summary_fields)
+        values = [card[name] for name in mutable_summary_fields]
         cursor = connection.execute(
             f"""
             UPDATE card
@@ -624,6 +785,16 @@ def apply_card_operation(
         )
         if cursor.rowcount != 1:
             raise ResearchMemoryError(f"card {slug!r} changed during update")
+        if card["detail_md"] is None:
+            connection.execute("DELETE FROM card_body WHERE card_slug = ?", (slug,))
+        else:
+            connection.execute(
+                """
+                INSERT INTO card_body (card_slug, detail_md) VALUES (?, ?)
+                ON CONFLICT(card_slug) DO UPDATE SET detail_md = excluded.detail_md
+                """,
+                (slug, card["detail_md"]),
+            )
         return slug
 
     if op == "delete":
@@ -765,6 +936,493 @@ def apply_edge_operation(connection: sqlite3.Connection, raw: Any) -> dict[str, 
     }
 
 
+def canonical_item_digest(item: Mapping[str, Any]) -> str:
+    return json_digest(
+        {
+            name: item[name]
+            for name in (
+                "canonical_key",
+                "kind",
+                "title",
+                "anchor",
+                "indexed_section_sha256",
+                "fingerprint_version",
+            )
+        }
+    )
+
+
+def section_snapshot(document: Any, key: str) -> dict[str, Any]:
+    section = section_for_key(document, key)
+    return {
+        "anchor": anchor_for_key(section, key),
+        "indexed_section_sha256": require_digest(
+            section.section_sha256, f"canonical section {key!r} fingerprint"
+        ),
+        "fingerprint_version": require_revision(
+            section.fingerprint_version,
+            f"canonical section {key!r} fingerprint version",
+            1,
+        ),
+    }
+
+
+def apply_canonical_item_operation(
+    connection: sqlite3.Connection, raw: Any, timestamp: str, document: Any
+) -> str:
+    operation = require_mapping(raw, "canonical item operation")
+    op = require_text(operation.get("op"), "canonical item operation.op")
+    key = require_semantic_key(
+        operation.get("canonical_key"), "canonical item operation.canonical_key"
+    )
+
+    if op == "add":
+        require_keys(
+            operation,
+            ("op", "canonical_key", "kind", "title"),
+            "canonical item add operation",
+        )
+        if connection.execute(
+            "SELECT 1 FROM canonical_alias WHERE alias = ?", (key,)
+        ).fetchone():
+            raise ResearchMemoryError(
+                f"cannot add canonical item {key!r}: key is already an alias"
+            )
+        item = {
+            "canonical_key": key,
+            "kind": require_text(operation.get("kind"), "canonical item operation.kind"),
+            "title": require_text(
+                operation.get("title"), "canonical item operation.title"
+            ),
+            **section_snapshot(document, key),
+        }
+        try:
+            connection.execute(
+                """
+                INSERT INTO canonical_item (
+                    canonical_key, kind, title, anchor, indexed_section_sha256,
+                    fingerprint_version, revision, content_sha256, created_at,
+                    updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?, ?)
+                """,
+                (
+                    item["canonical_key"],
+                    item["kind"],
+                    item["title"],
+                    item["anchor"],
+                    item["indexed_section_sha256"],
+                    item["fingerprint_version"],
+                    canonical_item_digest(item),
+                    timestamp,
+                    timestamp,
+                ),
+            )
+        except sqlite3.IntegrityError as error:
+            raise ResearchMemoryError(f"cannot add canonical item {key!r}: {error}")
+        return key
+
+    if op == "update":
+        require_keys(
+            operation,
+            ("op", "canonical_key", "expected_revision", "changes"),
+            "canonical item update operation",
+        )
+        expected = require_revision(
+            operation.get("expected_revision"),
+            "canonical item operation.expected_revision",
+            1,
+        )
+        changes = require_mapping(
+            operation.get("changes"), "canonical item operation.changes"
+        )
+        require_keys(
+            changes,
+            CANONICAL_ITEM_MUTABLE_FIELDS,
+            "canonical item operation.changes",
+        )
+        if not changes:
+            raise ResearchMemoryError(
+                "canonical item operation.changes must not be empty"
+            )
+        row = connection.execute(
+            "SELECT * FROM canonical_item WHERE canonical_key = ?", (key,)
+        ).fetchone()
+        if row is None:
+            raise ResearchMemoryError(f"canonical item does not exist: {key}")
+        if row["revision"] != expected:
+            raise ResearchMemoryError(
+                f"canonical item {key!r} revision conflict: expected {expected}, "
+                f"found {row['revision']}"
+            )
+        item = dict(row)
+        for name, value in changes.items():
+            item[name] = require_text(value, f"canonical item changes.{name}")
+        cursor = connection.execute(
+            """
+            UPDATE canonical_item
+            SET kind = ?, title = ?, revision = revision + 1,
+                content_sha256 = ?, updated_at = ?
+            WHERE canonical_key = ? AND revision = ?
+            """,
+            (
+                item["kind"],
+                item["title"],
+                canonical_item_digest(item),
+                timestamp,
+                key,
+                expected,
+            ),
+        )
+        if cursor.rowcount != 1:
+            raise ResearchMemoryError(f"canonical item {key!r} changed during update")
+        return key
+
+    if op == "refresh":
+        require_keys(
+            operation,
+            ("op", "canonical_key", "expected_revision"),
+            "canonical item refresh operation",
+        )
+        expected = require_revision(
+            operation.get("expected_revision"),
+            "canonical item operation.expected_revision",
+            1,
+        )
+        row = connection.execute(
+            "SELECT * FROM canonical_item WHERE canonical_key = ?", (key,)
+        ).fetchone()
+        if row is None:
+            raise ResearchMemoryError(f"canonical item does not exist: {key}")
+        if row["revision"] != expected:
+            raise ResearchMemoryError(
+                f"canonical item {key!r} revision conflict: expected {expected}, "
+                f"found {row['revision']}"
+            )
+        item = {**dict(row), **section_snapshot(document, key)}
+        cursor = connection.execute(
+            """
+            UPDATE canonical_item
+            SET anchor = ?, indexed_section_sha256 = ?, fingerprint_version = ?,
+                revision = revision + 1, content_sha256 = ?, updated_at = ?
+            WHERE canonical_key = ? AND revision = ?
+            """,
+            (
+                item["anchor"],
+                item["indexed_section_sha256"],
+                item["fingerprint_version"],
+                canonical_item_digest(item),
+                timestamp,
+                key,
+                expected,
+            ),
+        )
+        if cursor.rowcount != 1:
+            raise ResearchMemoryError(f"canonical item {key!r} changed during refresh")
+        return key
+
+    if op == "delete":
+        require_keys(
+            operation,
+            ("op", "canonical_key", "expected_revision"),
+            "canonical item delete operation",
+        )
+        expected = require_revision(
+            operation.get("expected_revision"),
+            "canonical item operation.expected_revision",
+            1,
+        )
+        cursor = connection.execute(
+            "DELETE FROM canonical_item WHERE canonical_key = ? AND revision = ?",
+            (key, expected),
+        )
+        if cursor.rowcount != 1:
+            row = connection.execute(
+                "SELECT revision FROM canonical_item WHERE canonical_key = ?", (key,)
+            ).fetchone()
+            if row is None:
+                raise ResearchMemoryError(f"canonical item does not exist: {key}")
+            raise ResearchMemoryError(
+                f"canonical item {key!r} revision conflict: expected {expected}, "
+                f"found {row['revision']}"
+            )
+        return key
+
+    raise ResearchMemoryError(
+        "canonical item operation.op must be add, update, refresh, or delete"
+    )
+
+
+def apply_canonical_alias_operation(
+    connection: sqlite3.Connection, raw: Any
+) -> dict[str, str]:
+    operation = require_mapping(raw, "canonical alias operation")
+    op = require_text(operation.get("op"), "canonical alias operation.op")
+    alias = require_text(operation.get("alias"), "canonical alias operation.alias")
+    key = require_semantic_key(
+        operation.get("canonical_key"), "canonical alias operation.canonical_key"
+    )
+    if op == "add":
+        require_keys(
+            operation,
+            ("op", "alias", "canonical_key", "source_locator"),
+            "canonical alias add operation",
+        )
+        if alias == key or connection.execute(
+            "SELECT 1 FROM canonical_item WHERE canonical_key = ?", (alias,)
+        ).fetchone():
+            raise ResearchMemoryError(
+                f"cannot add canonical alias {alias!r}: it is a primary canonical key"
+            )
+        source_locator = optional_text(
+            operation.get("source_locator"), "canonical alias operation.source_locator"
+        )
+        try:
+            connection.execute(
+                """
+                INSERT INTO canonical_alias (alias, canonical_key, source_locator)
+                VALUES (?, ?, ?)
+                """,
+                (alias, key, source_locator),
+            )
+        except sqlite3.IntegrityError as error:
+            raise ResearchMemoryError(f"cannot add canonical alias {alias!r}: {error}")
+    elif op == "delete":
+        require_keys(
+            operation,
+            ("op", "alias", "canonical_key"),
+            "canonical alias delete operation",
+        )
+        cursor = connection.execute(
+            "DELETE FROM canonical_alias WHERE alias = ? AND canonical_key = ?",
+            (alias, key),
+        )
+        if cursor.rowcount != 1:
+            raise ResearchMemoryError(
+                f"canonical alias does not exist: {(alias, key)!r}"
+            )
+    else:
+        raise ResearchMemoryError("canonical alias operation.op must be add or delete")
+    return {"alias": alias, "canonical_key": key}
+
+
+def normalize_card_canonical_link(
+    raw: Mapping[str, Any], *, include_note: bool
+) -> dict[str, Any]:
+    allowed = (
+        "op",
+        "card_slug",
+        "canonical_key",
+        "relation",
+        "expected_revision",
+    )
+    if include_note:
+        allowed += ("note_md",)
+    require_keys(raw, allowed, "card canonical link operation")
+    relation = require_text(
+        raw.get("relation"), "card canonical link operation.relation"
+    )
+    if relation not in CANONICAL_RELATIONS:
+        raise ResearchMemoryError(
+            "card canonical link relation must be one of: "
+            + ", ".join(CANONICAL_RELATIONS)
+        )
+    card_slug = require_text(
+        raw.get("card_slug"), "card canonical link operation.card_slug"
+    )
+    canonical_key = require_semantic_key(
+        raw.get("canonical_key"),
+        "card canonical link operation.canonical_key",
+    )
+    if relation == "same-subject" and card_slug != canonical_key:
+        raise ResearchMemoryError(
+            "same-subject links require card_slug to equal canonical_key"
+        )
+    return {
+        "card_slug": card_slug,
+        "canonical_key": canonical_key,
+        "relation": relation,
+        "note_md": (
+            optional_text(raw.get("note_md"), "card canonical link operation.note_md")
+            if include_note
+            else None
+        ),
+    }
+
+
+def apply_card_canonical_link_operation(
+    connection: sqlite3.Connection,
+    raw: Any,
+    timestamp: str,
+    document: Any,
+    canonical_digest: str,
+) -> dict[str, str]:
+    operation = require_mapping(raw, "card canonical link operation")
+    op = require_text(operation.get("op"), "card canonical link operation.op")
+    if op not in ("add", "review", "delete"):
+        raise ResearchMemoryError(
+            "card canonical link operation.op must be add, review, or delete"
+        )
+    include_note = op in ("add", "review") and "note_md" in operation
+    allowed = ["op", "card_slug", "canonical_key", "relation"]
+    if op in ("review", "delete"):
+        allowed.append("expected_revision")
+    if include_note:
+        allowed.append("note_md")
+    require_keys(operation, allowed, "card canonical link operation")
+    link = normalize_card_canonical_link(operation, include_note=include_note)
+    key = (link["card_slug"], link["canonical_key"], link["relation"])
+
+    if op == "delete":
+        expected = require_revision(
+            operation.get("expected_revision"),
+            "card canonical link operation.expected_revision",
+            1,
+        )
+        cursor = connection.execute(
+            """
+            DELETE FROM card_canonical_link
+            WHERE card_slug = ? AND canonical_key = ? AND relation = ?
+                  AND revision = ?
+            """,
+            (*key, expected),
+        )
+        if cursor.rowcount != 1:
+            raise ResearchMemoryError(
+                f"card canonical link does not exist at revision {expected}: {key!r}"
+            )
+        return {
+            "card_slug": link["card_slug"],
+            "canonical_key": link["canonical_key"],
+            "relation": link["relation"],
+        }
+
+    card = connection.execute(
+        "SELECT revision FROM card WHERE slug = ?", (link["card_slug"],)
+    ).fetchone()
+    if card is None:
+        raise ResearchMemoryError(f"card does not exist: {link['card_slug']}")
+    item = connection.execute(
+        """
+        SELECT indexed_section_sha256, fingerprint_version
+        FROM canonical_item WHERE canonical_key = ?
+        """,
+        (link["canonical_key"],),
+    ).fetchone()
+    if item is None:
+        raise ResearchMemoryError(
+            f"canonical item does not exist: {link['canonical_key']}"
+        )
+    section = section_for_key(document, link["canonical_key"])
+    section_digest = require_digest(
+        section.section_sha256,
+        f"canonical section {link['canonical_key']!r} fingerprint",
+    )
+    if (
+        item["indexed_section_sha256"] != section_digest
+        or item["fingerprint_version"] != section.fingerprint_version
+    ):
+        raise ResearchMemoryError(
+            f"canonical item {link['canonical_key']!r} must be refreshed before linking"
+        )
+
+    if op == "add":
+        try:
+            connection.execute(
+                """
+                INSERT INTO card_canonical_link (
+                    card_slug, canonical_key, relation, note_md,
+                    reviewed_canonical_sha256, reviewed_section_sha256,
+                    reviewed_card_revision, revision, created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
+                """,
+                (
+                    *key,
+                    link["note_md"],
+                    canonical_digest,
+                    section_digest,
+                    card["revision"],
+                    timestamp,
+                    timestamp,
+                ),
+            )
+        except sqlite3.IntegrityError as error:
+            raise ResearchMemoryError(
+                f"cannot add card canonical link {key!r}: {error}"
+            )
+    else:
+        expected = require_revision(
+            operation.get("expected_revision"),
+            "card canonical link operation.expected_revision",
+            1,
+        )
+        existing = connection.execute(
+            """
+            SELECT note_md, revision FROM card_canonical_link
+            WHERE card_slug = ? AND canonical_key = ? AND relation = ?
+            """,
+            key,
+        ).fetchone()
+        if existing is None:
+            raise ResearchMemoryError(f"card canonical link does not exist: {key!r}")
+        if existing["revision"] != expected:
+            raise ResearchMemoryError(
+                f"card canonical link {key!r} revision conflict: expected {expected}, "
+                f"found {existing['revision']}"
+            )
+        note = link["note_md"] if include_note else existing["note_md"]
+        cursor = connection.execute(
+            """
+            UPDATE card_canonical_link
+            SET note_md = ?, reviewed_canonical_sha256 = ?,
+                reviewed_section_sha256 = ?, reviewed_card_revision = ?,
+                revision = revision + 1, updated_at = ?
+            WHERE card_slug = ? AND canonical_key = ? AND relation = ?
+                  AND revision = ?
+            """,
+            (
+                note,
+                canonical_digest,
+                section_digest,
+                card["revision"],
+                timestamp,
+                *key,
+                expected,
+            ),
+        )
+        if cursor.rowcount != 1:
+            raise ResearchMemoryError(f"card canonical link {key!r} changed during review")
+
+    return {
+        "card_slug": link["card_slug"],
+        "canonical_key": link["canonical_key"],
+        "relation": link["relation"],
+    }
+
+
+def require_integrated_links(connection: sqlite3.Connection) -> None:
+    missing = [
+        row[0]
+        for row in connection.execute(
+            """
+            SELECT card.slug
+            FROM card
+            WHERE disposition = 'integrated'
+              AND NOT EXISTS (
+                  SELECT 1 FROM card_canonical_link AS link
+                  WHERE link.card_slug = card.slug
+                    AND link.relation = 'integrated-at'
+              )
+            ORDER BY card.slug
+            """
+        )
+    ]
+    if missing:
+        raise ResearchMemoryError(
+            "integrated cards require an integrated-at canonical link: "
+            + ", ".join(missing)
+        )
+
+
 def command_apply(args: argparse.Namespace) -> dict[str, Any]:
     db_path = Path(args.db).resolve()
     batch = validate_batch(load_batch(Path(args.input)))
@@ -772,15 +1430,6 @@ def command_apply(args: argparse.Namespace) -> dict[str, Any]:
     try:
         connection.execute("BEGIN IMMEDIATE")
         meta = require_current_schema(connection)
-        canonical = canonical_from_meta(db_path, meta)
-        if not canonical.is_file():
-            raise ResearchMemoryError(f"canonical document does not exist: {canonical}")
-        actual_canonical_digest = sha256_file(canonical)
-        if actual_canonical_digest != batch["canonical_digest"]:
-            raise ResearchMemoryError(
-                "canonical digest conflict: batch does not match the current canonical document"
-            )
-
         if meta["last_round_id"] == batch["round_id"]:
             if meta["last_batch_digest"] != batch["batch_digest"]:
                 raise ResearchMemoryError(
@@ -797,13 +1446,36 @@ def command_apply(args: argparse.Namespace) -> dict[str, Any]:
                 "changed_cards": [],
                 "changed_origins": [],
                 "changed_edges": [],
+                "changed_canonical_items": [],
+                "changed_canonical_aliases": [],
+                "changed_card_canonical_links": [],
             }
+
+        canonical = canonical_from_meta(db_path, meta)
+        if not canonical.is_file():
+            raise ResearchMemoryError(f"canonical document does not exist: {canonical}")
+        actual_canonical_digest = sha256_file(canonical)
+        if actual_canonical_digest != batch["canonical_digest"]:
+            raise ResearchMemoryError(
+                "canonical digest conflict: batch does not match the current canonical document"
+            )
 
         expected_database_revision = batch["expected_database_revision"]
         if meta["database_revision"] != expected_database_revision:
             raise ResearchMemoryError(
                 "database revision conflict: expected "
                 f"{expected_database_revision}, found {meta['database_revision']}"
+            )
+        if meta["canonical_sha256"] != batch["expected_canonical_digest"]:
+            raise ResearchMemoryError(
+                "canonical baseline conflict: expected stored digest "
+                f"{batch['expected_canonical_digest']}, found {meta['canonical_sha256']}"
+            )
+
+        document = scan_canonical_document(canonical)
+        if document.canonical_sha256 != batch["canonical_digest"]:
+            raise ResearchMemoryError(
+                "canonical section index digest does not match the published document"
             )
 
         timestamp = utc_now()
@@ -819,6 +1491,29 @@ def command_apply(args: argparse.Namespace) -> dict[str, Any]:
             apply_edge_operation(connection, operation)
             for operation in batch["edge_operations"]
         ]
+        changed_canonical_items = [
+            apply_canonical_item_operation(connection, operation, timestamp, document)
+            for operation in batch["canonical_item_operations"]
+        ]
+        changed_canonical_aliases = [
+            apply_canonical_alias_operation(connection, operation)
+            for operation in batch["canonical_alias_operations"]
+        ]
+        changed_card_canonical_links = [
+            apply_card_canonical_link_operation(
+                connection,
+                operation,
+                timestamp,
+                document,
+                batch["canonical_digest"],
+            )
+            for operation in batch["card_canonical_link_operations"]
+        ]
+        require_integrated_links(connection)
+        if sha256_file(canonical) != batch["canonical_digest"]:
+            raise ResearchMemoryError(
+                "canonical document changed while the batch was being applied"
+            )
         new_revision = expected_database_revision + 1
         connection.execute(
             """
@@ -853,6 +1548,9 @@ def command_apply(args: argparse.Namespace) -> dict[str, Any]:
         "changed_cards": changed_cards,
         "changed_origins": changed_origins,
         "changed_edges": changed_edges,
+        "changed_canonical_items": changed_canonical_items,
+        "changed_canonical_aliases": changed_canonical_aliases,
+        "changed_card_canonical_links": changed_card_canonical_links,
     }
 
 
@@ -890,14 +1588,14 @@ def command_search(args: argparse.Namespace) -> dict[str, Any]:
                 )
                 where.append(
                     "(slug LIKE ? ESCAPE '\\' OR title LIKE ? ESCAPE '\\' "
-                    "OR summary_md LIKE ? ESCAPE '\\' OR coalesce(detail_md, '') LIKE ? ESCAPE '\\')"
+                    "OR summary_md LIKE ? ESCAPE '\\')"
                 )
-                parameters.extend([f"%{escaped}%"] * 4)
+                parameters.extend([f"%{escaped}%"] * 3)
             rows = connection.execute(
                 f"""
                 SELECT slug, kind, title, summary_md, disposition, claim_status,
-                       reason, next_test, revival_condition, canonical_anchor,
-                       revision, content_sha256, updated_at
+                       reason, next_test, revival_condition, revision,
+                       content_sha256, updated_at
                 FROM card
                 WHERE {' AND '.join(where)}
                 ORDER BY CASE disposition
@@ -935,6 +1633,229 @@ def command_search(args: argparse.Namespace) -> dict[str, Any]:
     return {"ok": True, "command": "search", "count": len(cards), "cards": cards}
 
 
+def section_metadata(document: Any, key: str) -> Optional[dict[str, Any]]:
+    section = document.by_key.get(key)
+    if section is None:
+        return None
+    return {
+        "keys": list(section.keys),
+        "title": section.title,
+        "heading_level": section.level,
+        "heading_line": section.heading_line,
+        "start_line": section.start_line,
+        "end_line": section.end_line,
+        "anchor": anchor_for_key(section, key),
+        "section_sha256": section.section_sha256,
+        "fingerprint_version": section.fingerprint_version,
+    }
+
+
+def card_summary(row: Mapping[str, Any]) -> dict[str, Any]:
+    return {
+        name: row[name]
+        for name in (
+            *CARD_SUMMARY_FIELDS,
+            "revision",
+            "content_sha256",
+            "updated_at",
+        )
+    }
+
+
+def link_with_status(
+    row: Mapping[str, Any], document: Any, current_digest: str, stored_digest: str
+) -> dict[str, Any]:
+    section = document.by_key.get(row["canonical_key"])
+    return {
+        name: row[name]
+        for name in (
+            "card_slug",
+            "canonical_key",
+            "relation",
+            "note_md",
+            "reviewed_canonical_sha256",
+            "reviewed_section_sha256",
+            "reviewed_card_revision",
+            "revision",
+        )
+    } | {
+        "status": {
+            "canonical_key_present": section is not None,
+            "database_document_match": stored_digest == current_digest,
+            "canonical_item_section_match": (
+                section is not None
+                and row["indexed_section_sha256"] == section.section_sha256
+                and row["fingerprint_version"] == section.fingerprint_version
+            ),
+            "reviewed_document_match": (
+                row["reviewed_canonical_sha256"] == current_digest
+            ),
+            "reviewed_section_match": (
+                section is not None
+                and row["reviewed_section_sha256"] == section.section_sha256
+            ),
+            "reviewed_card_revision_match": (
+                row["reviewed_card_revision"] == row["current_card_revision"]
+            ),
+        }
+    }
+
+
+def command_lookup(args: argparse.Namespace) -> dict[str, Any]:
+    db_path = Path(args.db).resolve()
+    require_no_sidecars(db_path)
+    connection = connect_read_only(db_path)
+    try:
+        connection.execute("BEGIN")
+        meta = require_current_schema(connection)
+        canonical = canonical_from_meta(db_path, meta)
+        if not canonical.is_file():
+            raise ResearchMemoryError(f"canonical document does not exist: {canonical}")
+        document = scan_canonical_document(canonical)
+        current_digest = document.canonical_sha256
+        canonical_status = (
+            "current"
+            if current_digest == meta["canonical_sha256"]
+            else "requires_review"
+        )
+
+        matched_as: Optional[str] = None
+        matched_value: str
+        if args.canonical is not None:
+            matched_value = require_text(args.canonical, "canonical lookup key")
+            item = connection.execute(
+                "SELECT * FROM canonical_item WHERE canonical_key = ?",
+                (matched_value,),
+            ).fetchone()
+            if item is not None:
+                canonical_keys = [item["canonical_key"]]
+                matched_as = "canonical-key"
+            else:
+                alias = connection.execute(
+                    "SELECT canonical_key FROM canonical_alias WHERE alias = ?",
+                    (matched_value,),
+                ).fetchone()
+                if alias is None:
+                    raise ResearchMemoryError(
+                        f"canonical key or alias does not exist: {matched_value}"
+                    )
+                canonical_keys = [alias["canonical_key"]]
+                matched_as = "alias"
+            card_slugs: Optional[list[str]] = None
+        else:
+            matched_value = require_text(args.card, "card lookup slug")
+            if connection.execute(
+                "SELECT 1 FROM card WHERE slug = ?", (matched_value,)
+            ).fetchone() is None:
+                raise ResearchMemoryError(f"card does not exist: {matched_value}")
+            canonical_keys = [
+                row[0]
+                for row in connection.execute(
+                    """
+                    SELECT DISTINCT canonical_key FROM card_canonical_link
+                    WHERE card_slug = ? ORDER BY canonical_key
+                    """,
+                    (matched_value,),
+                )
+            ]
+            card_slugs = [matched_value]
+            matched_as = "card"
+
+        items: list[dict[str, Any]] = []
+        for key in canonical_keys:
+            row = connection.execute(
+                "SELECT * FROM canonical_item WHERE canonical_key = ?", (key,)
+            ).fetchone()
+            if row is None:
+                continue
+            aliases = [
+                dict(alias)
+                for alias in connection.execute(
+                    """
+                    SELECT alias, source_locator FROM canonical_alias
+                    WHERE canonical_key = ? ORDER BY alias
+                    """,
+                    (key,),
+                )
+            ]
+            item = dict(row)
+            item["aliases"] = aliases
+            item["section"] = section_metadata(document, key)
+            item["section_match"] = (
+                item["section"] is not None
+                and row["indexed_section_sha256"]
+                == item["section"]["section_sha256"]
+                and row["fingerprint_version"]
+                == item["section"]["fingerprint_version"]
+            )
+            items.append(item)
+
+        placeholders = ",".join("?" for _ in canonical_keys)
+        if args.canonical is not None:
+            link_rows = (
+                []
+                if not canonical_keys
+                else connection.execute(
+                    f"""
+                    SELECT link.*, item.indexed_section_sha256,
+                           item.fingerprint_version,
+                           card.revision AS current_card_revision
+                    FROM card_canonical_link AS link
+                    JOIN canonical_item AS item
+                      ON item.canonical_key = link.canonical_key
+                    JOIN card ON card.slug = link.card_slug
+                    WHERE link.canonical_key IN ({placeholders})
+                    ORDER BY link.card_slug, link.canonical_key, link.relation
+                    """,
+                    canonical_keys,
+                ).fetchall()
+            )
+            card_slugs = sorted({row["card_slug"] for row in link_rows})
+        else:
+            link_rows = connection.execute(
+                """
+                SELECT link.*, item.indexed_section_sha256,
+                       item.fingerprint_version,
+                       card.revision AS current_card_revision
+                FROM card_canonical_link AS link
+                JOIN canonical_item AS item
+                  ON item.canonical_key = link.canonical_key
+                JOIN card ON card.slug = link.card_slug
+                WHERE link.card_slug = ?
+                ORDER BY link.canonical_key, link.relation
+                """,
+                (matched_value,),
+            ).fetchall()
+        links = [
+            link_with_status(
+                row, document, current_digest, meta["canonical_sha256"]
+            )
+            for row in link_rows
+        ]
+        cards = [
+            card_summary(row)
+            for slug in card_slugs or []
+            for row in [
+                connection.execute("SELECT * FROM card WHERE slug = ?", (slug,)).fetchone()
+            ]
+            if row is not None
+        ]
+    finally:
+        connection.rollback()
+        connection.close()
+    return {
+        "ok": True,
+        "command": "lookup",
+        "database": str(db_path),
+        "theory": meta["theory_slug"],
+        "query": {"value": matched_value, "matched_as": matched_as},
+        "canonical_status": canonical_status,
+        "canonical_items": items,
+        "cards": cards,
+        "links": links,
+    }
+
+
 def command_show(args: argparse.Namespace) -> dict[str, Any]:
     db_path = Path(args.db).resolve()
     slug = require_text(args.slug, "slug")
@@ -942,7 +1863,7 @@ def command_show(args: argparse.Namespace) -> dict[str, Any]:
     try:
         connection.execute("BEGIN")
         meta = require_current_schema(connection)
-        row = connection.execute("SELECT * FROM card WHERE slug = ?", (slug,)).fetchone()
+        row = select_card(connection, slug)
         if row is None:
             raise ResearchMemoryError(f"card does not exist: {slug}")
         origins = [
@@ -979,6 +1900,21 @@ def command_show(args: argparse.Namespace) -> dict[str, Any]:
                 (slug,),
             )
         ]
+        canonical_links = [
+            dict(link)
+            for link in connection.execute(
+                """
+                SELECT link.*, item.title AS canonical_title,
+                       item.anchor AS canonical_anchor
+                FROM card_canonical_link AS link
+                JOIN canonical_item AS item
+                  ON item.canonical_key = link.canonical_key
+                WHERE link.card_slug = ?
+                ORDER BY link.canonical_key, link.relation
+                """,
+                (slug,),
+            )
+        ]
         card = dict(row)
     finally:
         connection.rollback()
@@ -992,6 +1928,7 @@ def command_show(args: argparse.Namespace) -> dict[str, Any]:
         "origins": origins,
         "outgoing_edges": outgoing,
         "incoming_edges": incoming,
+        "canonical_links": canonical_links,
     }
 
 
@@ -1008,6 +1945,158 @@ def check_card_row(row: Mapping[str, Any]) -> list[str]:
     except ResearchMemoryError as error:
         errors.append(str(error))
     return errors
+
+
+def check_canonical_item_row(row: Mapping[str, Any]) -> list[str]:
+    errors: list[str] = []
+    try:
+        require_semantic_key(row["canonical_key"])
+        require_text(row["kind"], f"canonical item {row['canonical_key']!r} kind")
+        require_text(row["title"], f"canonical item {row['canonical_key']!r} title")
+        require_text(row["anchor"], f"canonical item {row['canonical_key']!r} anchor")
+        require_digest(
+            row["indexed_section_sha256"],
+            f"canonical item {row['canonical_key']!r} section fingerprint",
+        )
+        require_revision(
+            row["fingerprint_version"],
+            f"canonical item {row['canonical_key']!r} fingerprint version",
+            1,
+        )
+        require_revision(
+            row["revision"], f"canonical item {row['canonical_key']!r} revision", 1
+        )
+        require_text(
+            row["created_at"], f"canonical item {row['canonical_key']!r} created_at"
+        )
+        require_text(
+            row["updated_at"], f"canonical item {row['canonical_key']!r} updated_at"
+        )
+        if row["content_sha256"] != canonical_item_digest(row):
+            errors.append(
+                f"canonical item {row['canonical_key']!r} has a stale content digest"
+            )
+    except ResearchMemoryError as error:
+        errors.append(str(error))
+    return errors
+
+
+def check_crosswalk_rows(connection: sqlite3.Connection) -> list[str]:
+    errors: list[str] = []
+    for row in connection.execute("SELECT * FROM canonical_item ORDER BY canonical_key"):
+        errors.extend(check_canonical_item_row(row))
+    for row in connection.execute(
+        "SELECT alias, canonical_key, source_locator FROM canonical_alias ORDER BY alias"
+    ):
+        try:
+            require_text(row["alias"], "canonical alias")
+            require_semantic_key(row["canonical_key"])
+            optional_text(row["source_locator"], "canonical alias source_locator")
+            if connection.execute(
+                "SELECT 1 FROM canonical_item WHERE canonical_key = ?", (row["alias"],)
+            ).fetchone():
+                errors.append(
+                    f"canonical alias {row['alias']!r} collides with a primary key"
+                )
+        except ResearchMemoryError as error:
+            errors.append(str(error))
+    for row in connection.execute(
+        "SELECT * FROM card_canonical_link ORDER BY card_slug, canonical_key, relation"
+    ):
+        try:
+            require_text(row["card_slug"], "card canonical link card_slug")
+            require_semantic_key(row["canonical_key"])
+            if row["relation"] not in CANONICAL_RELATIONS:
+                errors.append(
+                    f"invalid card canonical link relation: {row['relation']!r}"
+                )
+            if (
+                row["relation"] == "same-subject"
+                and row["card_slug"] != row["canonical_key"]
+            ):
+                errors.append(
+                    "same-subject card canonical link has unequal card slug and key: "
+                    f"{row['card_slug']!r}, {row['canonical_key']!r}"
+                )
+            optional_text(row["note_md"], "card canonical link note_md")
+            require_digest(
+                row["reviewed_canonical_sha256"],
+                "card canonical link reviewed_canonical_sha256",
+            )
+            require_digest(
+                row["reviewed_section_sha256"],
+                "card canonical link reviewed_section_sha256",
+            )
+            require_revision(
+                row["reviewed_card_revision"],
+                "card canonical link reviewed_card_revision",
+                1,
+            )
+            require_revision(row["revision"], "card canonical link revision", 1)
+            require_text(row["created_at"], "card canonical link created_at")
+            require_text(row["updated_at"], "card canonical link updated_at")
+        except ResearchMemoryError as error:
+            errors.append(str(error))
+    try:
+        require_integrated_links(connection)
+    except ResearchMemoryError as error:
+        errors.append(str(error))
+    return errors
+
+
+def crosswalk_freshness(
+    connection: sqlite3.Connection,
+    document: Any,
+    current_digest: str,
+    stored_digest: str,
+) -> dict[str, Any]:
+    stale_items: list[dict[str, Any]] = []
+    item_count = 0
+    for row in connection.execute(
+        """
+        SELECT canonical_key, indexed_section_sha256, fingerprint_version
+        FROM canonical_item ORDER BY canonical_key
+        """
+    ):
+        item_count += 1
+        section = document.by_key.get(row["canonical_key"])
+        key_present = section is not None
+        section_match = (
+            key_present
+            and row["indexed_section_sha256"] == section.section_sha256
+            and row["fingerprint_version"] == section.fingerprint_version
+        )
+        if not section_match:
+            stale_items.append(
+                {
+                    "canonical_key": row["canonical_key"],
+                    "canonical_key_present": key_present,
+                    "canonical_item_section_match": section_match,
+                }
+            )
+
+    stale_links: list[dict[str, Any]] = []
+    link_count = 0
+    for row in connection.execute(
+        """
+        SELECT link.*, item.indexed_section_sha256, item.fingerprint_version,
+               card.revision AS current_card_revision
+        FROM card_canonical_link AS link
+        JOIN canonical_item AS item ON item.canonical_key = link.canonical_key
+        JOIN card ON card.slug = link.card_slug
+        ORDER BY link.card_slug, link.canonical_key, link.relation
+        """
+    ):
+        link_count += 1
+        payload = link_with_status(row, document, current_digest, stored_digest)
+        if not all(payload["status"].values()):
+            stale_links.append(payload)
+    return {
+        "canonical_item_count": item_count,
+        "card_canonical_link_count": link_count,
+        "stale_items": stale_items,
+        "stale_links": stale_links,
+    }
 
 
 def validate_open_database(
@@ -1050,7 +2139,13 @@ def validate_open_database(
     except ResearchMemoryError as error:
         errors.append(str(error))
 
-    for row in connection.execute("SELECT * FROM card ORDER BY slug"):
+    for row in connection.execute(
+        """
+        SELECT card.*, card_body.detail_md
+        FROM card LEFT JOIN card_body ON card_body.card_slug = card.slug
+        ORDER BY card.slug
+        """
+    ):
         errors.extend(check_card_row(row))
     for row in connection.execute(
         """
@@ -1078,21 +2173,29 @@ def validate_open_database(
             optional_text(row["note_md"], "edge note_md")
         except ResearchMemoryError as error:
             errors.append(str(error))
+    errors.extend(check_crosswalk_rows(connection))
 
     canonical = canonical_from_meta(db_path, meta)
     canonical_status = "unchecked"
+    canonical_document = None
     if require_canonical:
         if not canonical.is_file():
             errors.append(f"canonical document does not exist: {canonical}")
             canonical_status = "missing"
-        elif sha256_file(canonical) == meta["canonical_sha256"]:
-            canonical_status = "current"
         else:
-            canonical_status = "requires_review"
-            warnings.append(
-                "canonical document changed since the database was consolidated; "
-                "cards require review"
-            )
+            try:
+                canonical_document = scan_canonical_document(canonical)
+                if canonical_document.canonical_sha256 == meta["canonical_sha256"]:
+                    canonical_status = "current"
+                else:
+                    canonical_status = "requires_review"
+                    warnings.append(
+                        "canonical document changed since the database was consolidated; "
+                        "crosswalk links require review"
+                    )
+            except ResearchMemoryError as error:
+                errors.append(str(error))
+                canonical_status = "invalid"
 
     sidecars = sqlite_sidecars(db_path)
     if sidecars:
@@ -1106,6 +2209,7 @@ def validate_open_database(
         "meta": meta,
         "canonical": canonical,
         "canonical_status": canonical_status,
+        "canonical_document": canonical_document,
         "warnings": warnings,
     }
 
@@ -1115,10 +2219,12 @@ def command_check(args: argparse.Namespace) -> dict[str, Any]:
     errors: list[str] = []
     warnings: list[str] = []
     canonical_status = "unknown"
+    freshness: Optional[dict[str, Any]] = None
     meta = None
     user_version = None
     connection = connect_read_only(db_path)
     try:
+        connection.execute("BEGIN")
         user_version = connection.execute("PRAGMA user_version").fetchone()[0]
         if user_version != SCHEMA_VERSION:
             errors.append(
@@ -1164,6 +2270,7 @@ def command_check(args: argparse.Namespace) -> dict[str, Any]:
         expected_primary_keys = {
             "meta": [(1, "singleton")],
             "card": [(1, "slug")],
+            "card_body": [(1, "card_slug")],
             "card_origin": [
                 (1, "card_slug"),
                 (2, "source_locator"),
@@ -1171,6 +2278,13 @@ def command_check(args: argparse.Namespace) -> dict[str, Any]:
                 (4, "source_digest"),
             ],
             "edge": [(1, "source_slug"), (2, "relation"), (3, "target_slug")],
+            "canonical_item": [(1, "canonical_key")],
+            "canonical_alias": [(1, "alias")],
+            "card_canonical_link": [
+                (1, "card_slug"),
+                (2, "canonical_key"),
+                (3, "relation"),
+            ],
         }
         for table, expected_primary_key in expected_primary_keys.items():
             if table not in tables:
@@ -1242,16 +2356,38 @@ def command_check(args: argparse.Namespace) -> dict[str, Any]:
             canonical_status = "missing"
             errors.append(f"canonical document does not exist: {canonical}")
         else:
-            current_digest = sha256_file(canonical)
-            if current_digest == meta["canonical_sha256"]:
-                canonical_status = "current"
-            else:
-                canonical_status = "requires_review"
-                warnings.append(
-                    "canonical document changed since the database was consolidated; cards require review"
+            try:
+                document = scan_canonical_document(canonical)
+                current_digest = document.canonical_sha256
+                if current_digest == meta["canonical_sha256"]:
+                    canonical_status = "current"
+                else:
+                    canonical_status = "requires_review"
+                    warnings.append(
+                        "canonical document changed since the database was consolidated; "
+                        "crosswalk links require review"
+                    )
+                freshness = crosswalk_freshness(
+                    connection,
+                    document,
+                    current_digest,
+                    meta["canonical_sha256"],
                 )
+                if freshness["stale_items"]:
+                    warnings.append("canonical items require refresh")
+                if freshness["stale_links"]:
+                    warnings.append("card canonical links require review")
+            except ResearchMemoryError as error:
+                canonical_status = "invalid"
+                errors.append(str(error))
 
-        for row in connection.execute("SELECT * FROM card ORDER BY slug"):
+        for row in connection.execute(
+            """
+            SELECT card.*, card_body.detail_md
+            FROM card LEFT JOIN card_body ON card_body.card_slug = card.slug
+            ORDER BY card.slug
+            """
+        ):
             errors.extend(check_card_row(row))
         for row in connection.execute(
             """
@@ -1279,9 +2415,11 @@ def command_check(args: argparse.Namespace) -> dict[str, Any]:
                 optional_text(row["note_md"], "edge note_md")
             except ResearchMemoryError as error:
                 errors.append(str(error))
+        errors.extend(check_crosswalk_rows(connection))
     except (sqlite3.DatabaseError, ResearchMemoryError, KeyError, IndexError) as error:
         errors.append(f"database validation failed: {error}")
     finally:
+        connection.rollback()
         connection.close()
 
     sidecars = sqlite_sidecars(db_path)
@@ -1299,6 +2437,7 @@ def command_check(args: argparse.Namespace) -> dict[str, Any]:
         "theory": None if meta is None else meta["theory_slug"],
         "database_revision": None if meta is None else meta["database_revision"],
         "canonical_status": canonical_status,
+        "crosswalk_status": freshness,
         "errors": errors,
         "warnings": warnings,
     }
@@ -1389,6 +2528,7 @@ def command_relink(args: argparse.Namespace) -> dict[str, Any]:
     db_path = requested_db.resolve()
     require_no_sidecars(db_path)
     canonical = require_markdown_file(args.canonical, "new canonical document")
+    canonical_document = scan_canonical_document(canonical)
     expected_canonical = Path(args.expected_canonical).resolve()
     if expected_canonical.suffix.lower() not in (".md", ".markdown"):
         raise ResearchMemoryError("expected canonical path must name a Markdown file")
@@ -1413,7 +2553,7 @@ def command_relink(args: argparse.Namespace) -> dict[str, Any]:
             meta["canonical_sha256"], "metadata canonical_sha256"
         )
         theory = require_text(meta["theory_slug"], "metadata theory_slug")
-        current_canonical_digest = sha256_file(canonical)
+        current_canonical_digest = canonical_document.canonical_sha256
 
         if current_canonical == canonical:
             if current_revision == expected_revision:
@@ -1460,6 +2600,8 @@ def command_relink(args: argparse.Namespace) -> dict[str, Any]:
             new_revision = expected_revision + 1
             idempotent_retry = False
             changed = True
+        if sha256_file(canonical) != current_canonical_digest:
+            raise ResearchMemoryError("canonical document changed during relink")
         if changed:
             connection.commit()
         else:
@@ -1477,7 +2619,7 @@ def command_relink(args: argparse.Namespace) -> dict[str, Any]:
     if canonical_status == "requires_review":
         warnings.append(
             "new canonical content differs from the last consolidated digest; "
-            "cards require review"
+            "card-canonical link review snapshots may require review"
         )
     return {
         "ok": True,
@@ -1508,6 +2650,12 @@ def command_export(args: argparse.Namespace) -> dict[str, Any]:
             dict(row)
             for row in connection.execute("SELECT * FROM card ORDER BY slug")
         ]
+        card_bodies = [
+            dict(row)
+            for row in connection.execute(
+                "SELECT card_slug, detail_md FROM card_body ORDER BY card_slug"
+            )
+        ]
         origins = [
             dict(row)
             for row in connection.execute(
@@ -1528,14 +2676,42 @@ def command_export(args: argparse.Namespace) -> dict[str, Any]:
                 """
             )
         ]
+        canonical_items = [
+            dict(row)
+            for row in connection.execute(
+                "SELECT * FROM canonical_item ORDER BY canonical_key"
+            )
+        ]
+        canonical_aliases = [
+            dict(row)
+            for row in connection.execute(
+                """
+                SELECT alias, canonical_key, source_locator
+                FROM canonical_alias ORDER BY alias
+                """
+            )
+        ]
+        card_canonical_links = [
+            dict(row)
+            for row in connection.execute(
+                """
+                SELECT * FROM card_canonical_link
+                ORDER BY card_slug, canonical_key, relation
+                """
+            )
+        ]
     finally:
         connection.rollback()
         connection.close()
     semantic_export = {
         "meta": meta,
         "cards": cards,
+        "card_bodies": card_bodies,
         "origins": origins,
         "edges": edges,
+        "canonical_items": canonical_items,
+        "canonical_aliases": canonical_aliases,
+        "card_canonical_links": card_canonical_links,
     }
     return {
         "ok": True,
@@ -1550,7 +2726,7 @@ def command_export(args: argparse.Namespace) -> dict[str, Any]:
 
 
 def command_contract(_args: argparse.Namespace) -> dict[str, Any]:
-    """Return the machine-readable schema-2 authoring contract without a database."""
+    """Return the machine-readable schema-3 authoring contract without a database."""
     return {
         "ok": True,
         "command": "contract",
@@ -1579,6 +2755,19 @@ def command_contract(_args: argparse.Namespace) -> dict[str, Any]:
                 for state, fields in CARD_STATE_REQUIREMENTS.items()
             },
             "kind": "nonempty extensible string",
+            "storage": {
+                "summary_table": "card",
+                "detail_table": "card_body",
+                "search_reads_detail": False,
+                "show_reads_one_detail": True,
+            },
+            "integrated_requirement": "at least one integrated-at canonical link",
+        },
+        "canonical_crosswalk": {
+            "primary_key_format": "lowercase semantic kebab-case, optionally theory-qualified",
+            "relations": list(CANONICAL_RELATIONS),
+            "aliases_resolve_exactly": True,
+            "lookup_returns_card_detail": False,
         },
         "apply_batch": {
             "fields": list(APPLY_BATCH_FIELDS),
@@ -1647,6 +2836,85 @@ def command_contract(_args: argparse.Namespace) -> dict[str, Any]:
                     },
                     "relation": "nonempty extensible string",
                 },
+                "canonical_item": {
+                    "add": {
+                        "op_value": "add",
+                        "required_fields": ["op", "canonical_key", "kind", "title"],
+                    },
+                    "update": {
+                        "op_value": "update",
+                        "required_fields": [
+                            "op",
+                            "canonical_key",
+                            "expected_revision",
+                            "changes",
+                        ],
+                        "allowed_change_fields": list(CANONICAL_ITEM_MUTABLE_FIELDS),
+                    },
+                    "refresh": {
+                        "op_value": "refresh",
+                        "required_fields": [
+                            "op",
+                            "canonical_key",
+                            "expected_revision",
+                        ],
+                    },
+                    "delete": {
+                        "op_value": "delete",
+                        "required_fields": [
+                            "op",
+                            "canonical_key",
+                            "expected_revision",
+                        ],
+                    },
+                    "section_metadata_is_parser_derived": True,
+                },
+                "canonical_alias": {
+                    "add": {
+                        "op_value": "add",
+                        "required_fields": ["op", "alias", "canonical_key"],
+                        "optional_fields": ["source_locator"],
+                    },
+                    "delete": {
+                        "op_value": "delete",
+                        "required_fields": ["op", "alias", "canonical_key"],
+                    },
+                },
+                "card_canonical_link": {
+                    "add": {
+                        "op_value": "add",
+                        "required_fields": [
+                            "op",
+                            "card_slug",
+                            "canonical_key",
+                            "relation",
+                        ],
+                        "optional_fields": ["note_md"],
+                    },
+                    "review": {
+                        "op_value": "review",
+                        "required_fields": [
+                            "op",
+                            "card_slug",
+                            "canonical_key",
+                            "relation",
+                            "expected_revision",
+                        ],
+                        "optional_fields": ["note_md"],
+                    },
+                    "delete": {
+                        "op_value": "delete",
+                        "required_fields": [
+                            "op",
+                            "card_slug",
+                            "canonical_key",
+                            "relation",
+                            "expected_revision",
+                        ],
+                    },
+                    "relations": list(CANONICAL_RELATIONS),
+                    "review_snapshots_are_tool_derived": True,
+                },
             },
         },
     }
@@ -1695,6 +2963,15 @@ def build_parser() -> argparse.ArgumentParser:
     search_parser.add_argument("--limit", type=int, default=50)
     search_parser.set_defaults(handler=command_search)
 
+    lookup_parser = subparsers.add_parser(
+        "lookup", help="resolve one canonical key, alias, or card without card bodies"
+    )
+    lookup_parser.add_argument("--db", required=True)
+    lookup_group = lookup_parser.add_mutually_exclusive_group(required=True)
+    lookup_group.add_argument("--canonical")
+    lookup_group.add_argument("--card")
+    lookup_parser.set_defaults(handler=command_lookup)
+
     show_parser = subparsers.add_parser("show", help="show one card and adjacent edges")
     show_parser.add_argument("--db", required=True)
     show_parser.add_argument("--slug", required=True)
@@ -1707,7 +2984,7 @@ def build_parser() -> argparse.ArgumentParser:
     export_parser.set_defaults(handler=command_export)
 
     contract_parser = subparsers.add_parser(
-        "contract", help="print the schema-2 authoring contract"
+        "contract", help="print the schema-3 authoring contract"
     )
     contract_parser.set_defaults(handler=command_contract)
 

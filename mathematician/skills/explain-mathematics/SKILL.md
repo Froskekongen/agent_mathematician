@@ -17,8 +17,10 @@ without consulting or creating research memory. When the user
 explicitly asks about research history, rejected routes, or how the theory was
 developed, the existing companion databases may be queried read-only under the
 [research-memory protocol](../research-mathematics/references/research-memory.md).
-Label noncanonical material as research history, and never initialize or write
-a companion from this skill.
+Resolve an available canonical research key or alias with exact `lookup`
+before broader summary `search`, then use `show` only for selected cards. Label
+noncanonical material as research history, and never initialize or write a
+companion from this skill.
 
 ## 1. Set the audience contract
 

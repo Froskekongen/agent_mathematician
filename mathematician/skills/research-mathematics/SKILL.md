@@ -14,6 +14,15 @@ Read [rigor-standards.md](references/rigor-standards.md) completely. Read [evide
 
 For an authorized file-backed round, read and follow the writable-home coordinator path—including its `ensure` preflight—in the [research-memory protocol](references/research-memory.md) before retrieving memory or creating round state. This agent alone owns the canonical Markdown, its writable companion, and one OS-temporary workpad; other theory databases are read-only. Chat-only work and read-only review create no artifacts.
 
+Address durable canonical subjects with human-semantic research keys. Use the
+protocol's canonical-section tool to add or change their generated Markdown
+markers; never edit those markers by hand. Retrieve memory by exact canonical
+key or alias before broad summary search, and expand only selected sections or
+cards. A card about exactly the same subject uses the canonical key as its
+slug. At closure, explicitly refresh changed canonical items and review every
+affected card link at the current snapshots. These operations record curation
+state, not logical or mathematical freshness.
+
 ## 1. Formalize
 
 Rewrite the problem as a precise claim.
@@ -23,7 +32,8 @@ Rewrite the problem as a precise claim.
 - Specify topology, norm, measure, filtration, and mode of equality or convergence when relevant.
 - Surface conditions needed merely for expressions to exist.
 - Choose an interpretation of ambiguity and record material alternatives.
-- Create an atomic assumption map with stable identifiers.
+- Create an atomic assumption map with human-semantic durable identifiers;
+  use `A1` or `Ai` only as transient local notation.
 - Freeze a content-bound target contract: literal claim, interpretation, definitions, fixed and search variables, permitted assumptions or axioms, and representative non-vacuous instances. Diff and re-audit later changes.
 
 Complete this phase when every symbol and qualifier has a declared meaning and the claim is well-posed.

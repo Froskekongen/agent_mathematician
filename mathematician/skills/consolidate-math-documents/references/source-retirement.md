@@ -56,21 +56,23 @@ before closure.
 
 ## Retire after target closure
 
-After target `check`, changed-card `show`, and final `export` succeed, run the
-helper's `check` again and require the target to be ready. Then run:
+After the target's database and canonical-section checks, exact crosswalk
+lookups, changed-card `show`, and final `export` succeed, run the helper's
+`check` again and require the target to be ready. Then run:
 
 ```text
 python3 retire_sources.py apply --manifest MANIFEST
 ```
 
 `apply` repeats every preflight, requires the target candidate digest, invokes
-the research-memory validator with `canonical_status: current`, and immediately
-rechecks each source's Git state, identity, and digest before removing it. A
-listed companion must be schema 2 and belong to its paired document; an omitted
-adjacent default companion blocks retirement. A reviewed source companion may
-be stale, because staleness is not corruption. Each located database is removed
-before its Markdown document. Git deletions remain unstaged and recoverable from
-`HEAD`.
+the research-memory validator and requires its whole-document and indexed
+canonical-section matches, then immediately rechecks each source's Git state,
+identity, and digest before removing it. A listed companion must be schema 3
+and belong to its paired document; an omitted adjacent default companion blocks
+retirement. A reviewed source companion may have document or section snapshot
+mismatches, because a mismatch is not database corruption. Each located
+database is removed before its Markdown document. Git deletions remain unstaged
+and recoverable from `HEAD`.
 
 Filesystem deletion is not transactional. A partial failure keeps the valid
 target, preserves the workpad, and reports exact deleted and remaining paths.

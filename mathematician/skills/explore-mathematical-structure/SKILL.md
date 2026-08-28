@@ -10,6 +10,13 @@ Run a **contrastive laboratory**: formalize only enough for candidate structures
 
 Chat-only and read-only runs create no artifacts. For an authorized file-backed round, read and follow the writable-home coordinator path, including `ensure`, in the shared [research-memory protocol](../research-mathematics/references/research-memory.md) before creating or querying theory memory; use its [CLI](../research-mathematics/scripts/research_memory.py). This skill is the round's sole writer.
 
+Use human-semantic research keys for retained canonical subjects and the
+shared deterministic section tool for their generated anchors and visible
+labels. Look up those exact keys or aliases before broad memory search, and
+expand only selected sections or cards. Refresh changed canonical items and
+review affected card links explicitly during shared-protocol closure; neither
+operation certifies the mathematics.
+
 ## Run one tracer round
 
 Unless the user requests a one-shot artifact or larger autonomous budget, stop after the first decision-relevant round.

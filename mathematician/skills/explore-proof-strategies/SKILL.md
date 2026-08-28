@@ -10,11 +10,11 @@ Scout broadly, test cheaply, and stop with a useful proof architecture. Preserve
 
 ## Execution role
 
-- **Nested specialist:** work against the coordinator's exact candidate. Return a content-bound report and create no theory artifact. Query existing memory only through read-only CLI `search` or `show`, never `ensure` or `apply`.
-- **Standalone report-only:** answer in the conversation without filesystem changes. Existing memory, if useful, is likewise limited to read-only `search` or `show`.
+- **Nested specialist:** work against the coordinator's exact candidate. Return a content-bound report and create no theory artifact. Resolve a supplied canonical research key or alias with read-only `lookup` before broader `search`, and use `show` only for selected cards; never run `ensure` or `apply`.
+- **Standalone report-only:** answer in the conversation without filesystem changes. Existing memory, if useful, is likewise limited to read-only exact `lookup`, summary `search`, and selective `show`.
 - **Standalone writable round:** only with authority to change a file-backed home theory, read and follow the writable-home coordinator path, including `ensure`, in the shared [research-memory protocol](../research-mathematics/references/research-memory.md), using its [CLI](../research-mathematics/scripts/research_memory.py).
 
-Default to report-only without both writable authority and a home theory. Before route generation, query active, open, and parked summaries when memory is available; query rejected cards only for similar routes under consideration.
+Default to report-only without both writable authority and a home theory. Before route generation, look up known canonical keys first, then query active, open, and parked summaries only as needed; query rejected cards only for similar routes under consideration.
 
 ## 1. Frame the target
 
@@ -89,6 +89,11 @@ In a writable round:
 - **Workpad only:** complete brainstorming portfolio, cheap screens, candidate variants, bridge sketches, scout reports, routine probes, and superseded drafts.
 
 Close once under the shared protocol. A nested specialist recommends destinations; only the coordinator writes them.
+
+In a writable round, give retained canonical subjects human-semantic research
+keys through the protocol's deterministic section tool, reuse those exact keys
+in card links, and explicitly refresh changed items and review affected links.
+Legacy opaque identifiers remain aliases rather than primary keys.
 
 ## Report
 

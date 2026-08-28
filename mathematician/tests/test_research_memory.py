@@ -24,6 +24,7 @@ SCRIPT = (
     / "scripts"
     / "research_memory.py"
 )
+SECTIONS_SCRIPT = SCRIPT.with_name("canonical_sections.py")
 
 
 def digest(value: str) -> str:
@@ -88,18 +89,44 @@ class ResearchMemoryCLITest(unittest.TestCase):
             "reason": None,
             "next_test": "Run the next discriminating calculation.",
             "revival_condition": None,
-            "canonical_anchor": None,
         }
         value.update(changes)
         return value
+
+    def set_keys(self, *keys: str, heading_line: int = 1) -> dict:
+        expected = hashlib.sha256(self.canonical.read_bytes()).hexdigest()
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(SECTIONS_SCRIPT),
+                "key-set",
+                "--canonical",
+                str(self.canonical),
+                "--heading-line",
+                str(heading_line),
+                "--expected-canonical-sha256",
+                expected,
+                *[part for key in keys for part in ("--key", key)],
+            ],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        return json.loads(completed.stdout)
 
     def apply(
         self,
         card_operations: list[dict] | None = None,
         edge_operations: list[dict] | None = None,
         origin_operations: list[dict] | None = None,
+        canonical_item_operations: list[dict] | None = None,
+        canonical_alias_operations: list[dict] | None = None,
+        card_canonical_link_operations: list[dict] | None = None,
         *,
         expected_revision: int | None = None,
+        expected_canonical_digest: str | None = None,
         round_id: str | None = None,
         batch_digest: str | None = None,
         canonical_digest: str | None = None,
@@ -107,14 +134,23 @@ class ResearchMemoryCLITest(unittest.TestCase):
     ) -> tuple[dict, dict]:
         self.batch_number += 1
         expected = self.batch_number - 1 if expected_revision is None else expected_revision
+        if expected_canonical_digest is None:
+            with closing(sqlite3.connect(self.db)) as connection:
+                expected_canonical_digest = connection.execute(
+                    "SELECT canonical_sha256 FROM meta WHERE singleton = 1"
+                ).fetchone()[0]
         batch = {
             "round_id": round_id or f"round-{self.batch_number}",
             "expected_database_revision": expected,
+            "expected_canonical_digest": expected_canonical_digest,
             "canonical_digest": canonical_digest
             or hashlib.sha256(self.canonical.read_bytes()).hexdigest(),
             "card_operations": card_operations or [],
             "origin_operations": origin_operations or [],
             "edge_operations": edge_operations or [],
+            "canonical_item_operations": canonical_item_operations or [],
+            "canonical_alias_operations": canonical_alias_operations or [],
+            "card_canonical_link_operations": card_canonical_link_operations or [],
         }
         batch["batch_digest"] = batch_digest or batch_content_digest(batch)
         batch_path = self.root / f"batch-{self.batch_number}.json"
@@ -127,9 +163,9 @@ class ResearchMemoryCLITest(unittest.TestCase):
     def test_init_default_metadata_and_overwrite_refusal(self) -> None:
         with closing(sqlite3.connect(self.db)) as connection:
             meta = connection.execute("SELECT * FROM meta").fetchone()
-            self.assertEqual(connection.execute("PRAGMA user_version").fetchone()[0], 2)
+            self.assertEqual(connection.execute("PRAGMA user_version").fetchone()[0], 3)
             self.assertEqual(connection.execute("PRAGMA journal_mode").fetchone()[0], "delete")
-            self.assertEqual(meta[1], 2)
+            self.assertEqual(meta[1], 3)
             self.assertEqual(meta[2], "sample-theory")
             self.assertEqual(meta[3], "theory.md")
             self.assertEqual(meta[5], 0)
@@ -184,12 +220,12 @@ class ResearchMemoryCLITest(unittest.TestCase):
         self.assertEqual(set(self.root.iterdir()), before)
 
         contract = json.loads(runs[0].stdout)
-        self.assertEqual(contract["schema_version"], 2)
+        self.assertEqual(contract["schema_version"], 3)
         self.assertEqual(
             contract["locator"]["default_value"],
             {
                 "path": "./<stem>.research.sqlite",
-                "schema": 2,
+                "schema": 3,
                 "optional_for_understanding": True,
             },
         )
@@ -214,10 +250,14 @@ class ResearchMemoryCLITest(unittest.TestCase):
                 "round_id",
                 "batch_digest",
                 "expected_database_revision",
+                "expected_canonical_digest",
                 "canonical_digest",
                 "card_operations",
                 "origin_operations",
                 "edge_operations",
+                "canonical_item_operations",
+                "canonical_alias_operations",
+                "card_canonical_link_operations",
             ],
         )
         self.assertEqual(
@@ -264,7 +304,7 @@ class ResearchMemoryCLITest(unittest.TestCase):
         self.assertTrue(created["created"])
         self.assertEqual(Path(created["database"]), database.resolve())
         self.assertEqual(created["theory"], "topic.v2")
-        self.assertEqual(created["schema_version"], 2)
+        self.assertEqual(created["schema_version"], 3)
 
         before = database.read_bytes()
         reused = self.run_cli("ensure", "--canonical", str(canonical))
@@ -488,6 +528,233 @@ class ResearchMemoryCLITest(unittest.TestCase):
         self.assertEqual(shown["outgoing_edges"][0]["target_slug"], "known-obstruction")
         self.assertNotEqual(shown["card"]["content_sha256"], digest(""))
 
+    def test_semantic_crosswalk_exact_lookup_refresh_review_and_body_isolation(self) -> None:
+        self.set_keys("implicit-young-evaluation", "endpoint-obstruction")
+        first, _ = self.apply(
+            [
+                {
+                    "op": "add",
+                    "card": self.card(
+                        "implicit-young-evaluation",
+                        detail_md="only-in-private-detail: full symbolic derivation",
+                    ),
+                },
+                {"op": "add", "card": self.card("endpoint-counterexample")},
+            ],
+            canonical_item_operations=[
+                {
+                    "op": "add",
+                    "canonical_key": "implicit-young-evaluation",
+                    "kind": "mechanism",
+                    "title": "Implicit Young evaluation",
+                },
+                {
+                    "op": "add",
+                    "canonical_key": "endpoint-obstruction",
+                    "kind": "obstruction",
+                    "title": "Endpoint obstruction",
+                },
+            ],
+            canonical_alias_operations=[
+                {
+                    "op": "add",
+                    "alias": "IR-COMP-1",
+                    "canonical_key": "implicit-young-evaluation",
+                    "source_locator": "legacy-round-1",
+                }
+            ],
+            card_canonical_link_operations=[
+                {
+                    "op": "add",
+                    "card_slug": "implicit-young-evaluation",
+                    "canonical_key": "implicit-young-evaluation",
+                    "relation": "same-subject",
+                },
+                {
+                    "op": "add",
+                    "card_slug": "implicit-young-evaluation",
+                    "canonical_key": "endpoint-obstruction",
+                    "relation": "tests",
+                },
+                {
+                    "op": "add",
+                    "card_slug": "endpoint-counterexample",
+                    "canonical_key": "implicit-young-evaluation",
+                    "relation": "constrains",
+                },
+            ],
+        )
+        self.assertEqual(first["database_revision"], 1)
+
+        lookup = self.run_cli(
+            "lookup", "--db", str(self.db), "--canonical", "IR-COMP-1"
+        )
+        self.assertEqual(lookup["query"]["matched_as"], "alias")
+        self.assertEqual(
+            {card["slug"] for card in lookup["cards"]},
+            {"implicit-young-evaluation", "endpoint-counterexample"},
+        )
+        self.assertTrue(all(all(link["status"].values()) for link in lookup["links"]))
+        self.assertNotIn("detail_md", json.dumps(lookup))
+        self.assertNotIn("only-in-private-detail", json.dumps(lookup))
+        with closing(sqlite3.connect(self.db)) as connection:
+            connection.execute(
+                """
+                UPDATE canonical_item SET fingerprint_version = 99
+                WHERE canonical_key = 'implicit-young-evaluation'
+                """
+            )
+            connection.commit()
+        wrong_version = self.run_cli(
+            "lookup",
+            "--db",
+            str(self.db),
+            "--canonical",
+            "implicit-young-evaluation",
+        )
+        self.assertFalse(wrong_version["canonical_items"][0]["section_match"])
+        self.assertTrue(
+            all(
+                not link["status"]["canonical_item_section_match"]
+                for link in wrong_version["links"]
+            )
+        )
+        with closing(sqlite3.connect(self.db)) as connection:
+            connection.execute(
+                """
+                UPDATE canonical_item SET fingerprint_version = 1
+                WHERE canonical_key = 'implicit-young-evaluation'
+                """
+            )
+            connection.commit()
+        with closing(sqlite3.connect(self.db)) as connection:
+            connection.execute("PRAGMA ignore_check_constraints=ON")
+            connection.execute(
+                """
+                INSERT INTO card_canonical_link
+                SELECT card_slug, canonical_key, 'same-subject', note_md,
+                       reviewed_canonical_sha256, reviewed_section_sha256,
+                       reviewed_card_revision, revision, created_at, updated_at
+                FROM card_canonical_link
+                WHERE card_slug = 'endpoint-counterexample'
+                  AND canonical_key = 'implicit-young-evaluation'
+                  AND relation = 'constrains'
+                """
+            )
+            connection.commit()
+        invalid_same_subject = self.run_cli(
+            "check", "--db", str(self.db), success=False
+        )
+        self.assertTrue(
+            any(
+                "same-subject card canonical link has unequal" in error
+                for error in invalid_same_subject["errors"]
+            )
+        )
+        with closing(sqlite3.connect(self.db)) as connection:
+            connection.execute(
+                """
+                DELETE FROM card_canonical_link
+                WHERE card_slug = 'endpoint-counterexample'
+                  AND canonical_key = 'implicit-young-evaluation'
+                  AND relation = 'same-subject'
+                """
+            )
+            connection.commit()
+        private_search = self.run_cli(
+            "search", "--db", str(self.db), "--text", "only-in-private-detail"
+        )
+        self.assertEqual(private_search["count"], 0)
+        shown = self.run_cli(
+            "show", "--db", str(self.db), "--slug", "implicit-young-evaluation"
+        )
+        self.assertIn("only-in-private-detail", shown["card"]["detail_md"])
+        with closing(sqlite3.connect(self.db)) as connection:
+            fingerprints = connection.execute(
+                "SELECT DISTINCT indexed_section_sha256 FROM canonical_item"
+            ).fetchall()
+        self.assertEqual(len(fingerprints), 1)
+
+        self.apply(
+            [
+                {
+                    "op": "update",
+                    "slug": "implicit-young-evaluation",
+                    "expected_revision": 1,
+                    "changes": {"title": "Refined Young evaluation route"},
+                }
+            ]
+        )
+        card_lookup = self.run_cli(
+            "lookup", "--db", str(self.db), "--card", "implicit-young-evaluation"
+        )
+        self.assertTrue(
+            all(
+                not link["status"]["reviewed_card_revision_match"]
+                for link in card_lookup["links"]
+            )
+        )
+
+        self.canonical.write_text(
+            self.canonical.read_text(encoding="utf-8")
+            + "\nA strengthened endpoint calculation.\n",
+            encoding="utf-8",
+        )
+        stale = self.run_cli(
+            "lookup", "--db", str(self.db), "--canonical", "implicit-young-evaluation"
+        )
+        self.assertEqual(stale["canonical_status"], "requires_review")
+        self.assertTrue(stale["cards"])
+        self.assertTrue(
+            all(not link["status"]["reviewed_document_match"] for link in stale["links"])
+        )
+        self.assertTrue(
+            all(not link["status"]["reviewed_section_match"] for link in stale["links"])
+        )
+
+        self.apply(
+            canonical_item_operations=[
+                {
+                    "op": "refresh",
+                    "canonical_key": key,
+                    "expected_revision": 1,
+                }
+                for key in ("implicit-young-evaluation", "endpoint-obstruction")
+            ],
+            card_canonical_link_operations=[
+                {
+                    "op": "review",
+                    "card_slug": card_slug,
+                    "canonical_key": canonical_key,
+                    "relation": relation,
+                    "expected_revision": 1,
+                }
+                for card_slug, canonical_key, relation in (
+                    (
+                        "implicit-young-evaluation",
+                        "implicit-young-evaluation",
+                        "same-subject",
+                    ),
+                    ("implicit-young-evaluation", "endpoint-obstruction", "tests"),
+                    (
+                        "endpoint-counterexample",
+                        "implicit-young-evaluation",
+                        "constrains",
+                    ),
+                )
+            ],
+        )
+        reviewed = self.run_cli(
+            "lookup", "--db", str(self.db), "--card", "implicit-young-evaluation"
+        )
+        self.assertEqual(reviewed["canonical_status"], "current")
+        self.assertTrue(
+            all(all(link["status"].values()) for link in reviewed["links"])
+        )
+        checked = self.run_cli("check", "--db", str(self.db))
+        self.assertEqual(checked["crosswalk_status"]["stale_items"], [])
+        self.assertEqual(checked["crosswalk_status"]["stale_links"], [])
+
     def test_state_constraints_and_status_axes_are_independent(self) -> None:
         invalid_cards = [
             self.card("open-no-test", next_test=None),
@@ -535,6 +802,27 @@ class ResearchMemoryCLITest(unittest.TestCase):
             round_id="valid-independent-axes",
         )
         self.assertEqual(result["database_revision"], 1)
+
+    def test_canonical_key_allows_at_most_one_theory_qualification(self) -> None:
+        rejected, _ = self.apply(
+            canonical_item_operations=[
+                {
+                    "op": "add",
+                    "canonical_key": "theory/subtheory/result",
+                    "kind": "result",
+                    "title": "Over-qualified result",
+                }
+            ],
+            success=False,
+        )
+        self.assertIn("lowercase semantic kebab-case key", rejected["error"])
+
+    def test_local_card_slugs_are_semantic_identifiers(self) -> None:
+        rejected, _ = self.apply(
+            [{"op": "add", "card": self.card("IR-COMP-1")}],
+            success=False,
+        )
+        self.assertIn("card.slug must be a lowercase semantic", rejected["error"])
 
     def test_database_constraints_reject_invalid_origin_and_retry_metadata(self) -> None:
         self.apply([{"op": "add", "card": self.card("origin-target")}])
@@ -632,6 +920,13 @@ class ResearchMemoryCLITest(unittest.TestCase):
         )
         self.assertIn("database revision conflict", database_conflict["error"])
 
+        baseline_conflict, _ = self.apply(
+            expected_revision=1,
+            expected_canonical_digest=digest("not-the-stored-baseline"),
+            success=False,
+        )
+        self.assertIn("canonical baseline conflict", baseline_conflict["error"])
+
         self.canonical.write_text("# Changed\n", encoding="utf-8")
         canonical_conflict, _ = self.apply(
             expected_revision=1,
@@ -649,6 +944,17 @@ class ResearchMemoryCLITest(unittest.TestCase):
         )
         self.assertTrue(retry["idempotent_retry"])
         self.assertEqual(retry["database_revision"], first["database_revision"])
+
+        self.canonical.write_text("# Drift after committed batch\n", encoding="utf-8")
+        drift_retry = self.run_cli(
+            "apply", "--db", str(self.db), "--input", str(batch_path)
+        )
+        self.assertTrue(drift_retry["idempotent_retry"])
+        self.canonical.unlink()
+        missing_retry = self.run_cli(
+            "apply", "--db", str(self.db), "--input", str(batch_path)
+        )
+        self.assertTrue(missing_retry["idempotent_retry"])
 
         changed_with_reused_digest = dict(batch)
         changed_with_reused_digest["card_operations"] = []
@@ -743,10 +1049,16 @@ class ResearchMemoryCLITest(unittest.TestCase):
         foreign_batch = {
             "round_id": "foreign-round",
             "expected_database_revision": 0,
+            "expected_canonical_digest": hashlib.sha256(
+                foreign_canonical.read_bytes()
+            ).hexdigest(),
             "canonical_digest": hashlib.sha256(foreign_canonical.read_bytes()).hexdigest(),
             "card_operations": [{"op": "add", "card": self.card("foreign-card")}],
             "origin_operations": [],
             "edge_operations": [],
+            "canonical_item_operations": [],
+            "canonical_alias_operations": [],
+            "card_canonical_link_operations": [],
         }
         foreign_batch["batch_digest"] = batch_content_digest(foreign_batch)
         foreign_batch_path = foreign_dir / "batch.json"
@@ -902,6 +1214,13 @@ class ResearchMemoryCLITest(unittest.TestCase):
 
     def test_export_is_complete_deterministic_and_read_only(self) -> None:
         source_digest = digest("export-source")
+        self.canonical.write_text(
+            '<a id="research-key--omega-result"></a>\n\n'
+            '# Théorie\n'
+            '**Research key:** `omega-result`\n\n'
+            'Canonical α.\n',
+            encoding="utf-8",
+        )
         self.apply(
             [
                 {"op": "add", "card": self.card("zeta")},
@@ -933,7 +1252,6 @@ class ResearchMemoryCLITest(unittest.TestCase):
                         "omega",
                         disposition="integrated",
                         next_test=None,
-                        canonical_anchor="#omega",
                     ),
                 },
             ],
@@ -956,6 +1274,22 @@ class ResearchMemoryCLITest(unittest.TestCase):
                     "applicability_md": "First line.\n\nSecond line with ∀ε.",
                 }
             ],
+            canonical_item_operations=[
+                {
+                    "op": "add",
+                    "canonical_key": "omega-result",
+                    "kind": "result",
+                    "title": "Omega result",
+                }
+            ],
+            card_canonical_link_operations=[
+                {
+                    "op": "add",
+                    "card_slug": "omega",
+                    "canonical_key": "omega-result",
+                    "relation": "integrated-at",
+                }
+            ],
         )
         before = self.db.read_bytes()
         first = self.run_cli("export", "--db", str(self.db))
@@ -973,7 +1307,17 @@ class ResearchMemoryCLITest(unittest.TestCase):
         self.assertEqual(first["origins"][0]["source_digest"], source_digest)
         self.assertEqual(first["edges"][0]["note_md"], "Unicode edge λ.")
         semantic_export = {
-            key: first[key] for key in ("meta", "cards", "origins", "edges")
+            key: first[key]
+            for key in (
+                "meta",
+                "cards",
+                "card_bodies",
+                "origins",
+                "edges",
+                "canonical_items",
+                "canonical_aliases",
+                "card_canonical_links",
+            )
         }
         self.assertEqual(first["export_digest"], batch_content_digest(semantic_export))
 
@@ -1020,14 +1364,14 @@ class ResearchMemoryCLITest(unittest.TestCase):
             connection.execute("CREATE TABLE hidden_ledger (entry TEXT)")
             connection.commit()
         result = self.run_cli("check", "--db", str(self.db), success=False)
-        self.assertTrue(any("unexpected schema-v2 table" in error for error in result["errors"]))
+        self.assertTrue(any("unexpected schema-v3 table" in error for error in result["errors"]))
         with closing(sqlite3.connect(self.db)) as connection:
             connection.execute("DROP TABLE hidden_ledger")
             connection.execute("ALTER TABLE card ADD COLUMN legacy_marker TEXT")
             connection.commit()
         result = self.run_cli("check", "--db", str(self.db), success=False)
         self.assertTrue(
-            any("unexpected schema-v2 column" in error for error in result["errors"])
+            any("unexpected schema-v3 column" in error for error in result["errors"])
         )
         with closing(sqlite3.connect(self.db)) as connection:
             connection.execute("DROP TABLE edge")
@@ -1124,17 +1468,17 @@ class ResearchMemoryCLITest(unittest.TestCase):
         self.assertEqual(after_meta, before_meta)
 
     def test_unsupported_schema_version_is_rejected(self) -> None:
-        for unsupported in (0, 1, 3, 99):
+        for unsupported in (0, 1, 2, 99):
             with closing(sqlite3.connect(self.db)) as connection:
                 connection.execute(f"PRAGMA user_version={unsupported}")
                 connection.commit()
             result = self.run_cli("check", "--db", str(self.db), success=False)
             self.assertTrue(
-                any("expected 2" in error for error in result["errors"]),
+                any("expected 3" in error for error in result["errors"]),
                 unsupported,
             )
         with closing(sqlite3.connect(self.db)) as connection:
-            connection.execute("PRAGMA user_version=2")
+            connection.execute("PRAGMA user_version=3")
             connection.commit()
 
     def test_check_emits_json_for_missing_card_column_with_rows(self) -> None:
@@ -1143,10 +1487,9 @@ class ResearchMemoryCLITest(unittest.TestCase):
             connection.execute(
                 """
                 CREATE TABLE card_without_title AS
-                SELECT slug, kind, summary_md, detail_md, disposition,
+                SELECT slug, kind, summary_md, disposition,
                        claim_status, reason, next_test, revival_condition,
-                       canonical_anchor, revision,
-                       content_sha256, created_at, updated_at
+                       revision, content_sha256, created_at, updated_at
                 FROM card
                 """
             )
@@ -1243,8 +1586,11 @@ class SuiteStructureTest(unittest.TestCase):
             / "references"
             / "research-memory.md"
         ).read_text(encoding="utf-8")
-        self.assertIn("Schema 2 is the only supported", protocol)
+        self.assertIn("Schema 3 is the only supported", protocol)
         self.assertIn("`contract`", protocol)
+        self.assertIn("canonical_sections.py", protocol)
+        self.assertIn("semantic research key", protocol)
+        self.assertIn("exact `lookup`", protocol)
         self.assertIn("card_origin", protocol)
         self.assertNotIn("origin_uri", protocol)
         self.assertNotIn("origin_digest", protocol)
@@ -1265,13 +1611,13 @@ class SuiteStructureTest(unittest.TestCase):
             self.assertIn(required, retirement)
 
         # Guard the two shared hot paths against instruction sediment.
-        self.assertLessEqual(len(protocol.split()), 1100)
-        self.assertLessEqual(len(consolidate.split()), 1100)
+        self.assertLessEqual(len(protocol.split()), 2100)
+        self.assertLessEqual(len(consolidate.split()), 1200)
         database_aware_words = len(protocol.split()) + sum(
             len((skills_root / name / "SKILL.md").read_text(encoding="utf-8").split())
             for name in participating
         )
-        self.assertLessEqual(database_aware_words, 8000)
+        self.assertLessEqual(database_aware_words, 9000)
 
     def test_relative_markdown_links_exist(self) -> None:
         link_pattern = re.compile(r"(?<!!)\[[^]]*\]\(([^)]+)\)")

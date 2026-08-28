@@ -77,10 +77,14 @@ class ConsolidationWorkflowTest(unittest.TestCase):
         batch = {
             "round_id": round_id,
             "expected_database_revision": 0,
+            "expected_canonical_digest": sha256(canonical),
             "canonical_digest": sha256(canonical),
             "card_operations": [{"op": "add", "card": card} for card in cards],
             "origin_operations": origins or [],
             "edge_operations": [],
+            "canonical_item_operations": [],
+            "canonical_alias_operations": [],
+            "card_canonical_link_operations": [],
         }
         batch["batch_digest"] = batch_digest(batch)
         batch_path = workpad / f"{round_id}.json"
@@ -104,7 +108,7 @@ class ConsolidationWorkflowTest(unittest.TestCase):
                 """---
 research_memory:
   path: ./finite-case.research.sqlite
-  schema: 2
+  schema: 3
   optional_for_understanding: true
 ---
 # Finite case
@@ -117,7 +121,7 @@ For a finite set `X`, define `w(X)=|X|`. Then `w(X union Y) <= w(X)+w(Y)`.
                 """---
 research_memory:
   path: ./boundary-case.research.sqlite
-  schema: 2
+  schema: 3
   optional_for_understanding: true
 ---
 # Boundary case
@@ -181,7 +185,7 @@ The same weight has equality for disjoint finite sets. Infinite sets are outside
             target_text = """---
 research_memory:
   path: ./weight-theory.research.sqlite
-  schema: 2
+  schema: 3
   optional_for_understanding: true
 ---
 # Finite weight theory

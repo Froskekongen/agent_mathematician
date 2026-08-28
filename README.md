@@ -7,7 +7,7 @@ Agent skills for mathematical exploration and rigorous research. The suite helps
 ## Skills
 
 - `research-mathematics`: research, formulate, prove, verify, or repair substantial mathematical claims.
-- `consolidate-math-documents`: merge selected mathematical documents into one self-contained canonical target while preserving the sources.
+- `consolidate-math-documents`: merge selected mathematical documents into one self-contained canonical target and safely retire the old source pairs.
 - `explore-mathematical-structure`: iteratively explore a selected formalism through examples, viewpoints, structural patterns, and conjectures so the user can choose a direction.
 - `explore-proof-strategies`: bounded exploration of diverse proof routes and cross-field bridges.
 - `formalize-concepts`: lightweight development of an informal idea into a selected mathematical formalism.
@@ -19,8 +19,8 @@ The typical discovery path is `formalize-concepts` -> `explore-mathematical-stru
 
 Use `consolidate-math-documents` explicitly when several drafts, canonical
 accounts, or theory branches need one target. It writes only the selected
-target pair, keeps every source read-only, and reconciles useful source memory
-semantically rather than merging database files.
+target pair, keeps every source immutable while reconciling useful memory, and
+retires the exact source Markdown/companion pairs after the target validates.
 
 ## Research memory
 
@@ -28,9 +28,10 @@ Authorized file-backed research uses three information layers:
 
 1. a self-contained canonical Markdown document;
 2. a Git-tracked `<stem>.research.sqlite` companion containing curated open,
-   active, parked, rejected, and integrated research-memory cards; and
+   active, parked, rejected, and integrated research-memory cards plus their
+   semantic crosswalk to canonical sections; and
 3. one generated OS-temporary workpad for raw round state, deleted after
-   successful consolidation.
+   successful closure.
 
 The canonical document remains authoritative. The database preserves useful
 noncanonical directions, obstructions, counterexamples, assumption
@@ -38,13 +39,13 @@ relaxations, and source-applicability notes; it never holds mathematics needed
 to understand or trust the canonical result. Raw workpads and specialist
 reports are not stored in the database.
 
-Schema 2 is the only supported companion schema; earlier schemas are rejected
+Schema 3 is the only supported companion schema; earlier schemas are rejected
 without migration or compatibility behavior.
 
 | Skill | Research-memory role |
 |---|---|
 | `research-mathematics` | Full-round coordinator and sole writer |
-| `consolidate-math-documents` | One-target consolidation coordinator and sole writer |
+| `consolidate-math-documents` | One-target consolidation and source-retirement coordinator |
 | `explore-mathematical-structure` | Standalone exploration coordinator |
 | `explore-proof-strategies` | Read-only when nested; standalone coordinator only with writable authority |
 | `destroy-theory` | Read-only when nested; standalone coordinator only with writable authority |
@@ -60,7 +61,7 @@ existing pair; the coordinator then adds this locator:
 ```yaml
 research_memory:
   path: ./theory.research.sqlite
-  schema: 2
+  schema: 3
   optional_for_understanding: true
 ```
 
@@ -75,19 +76,38 @@ reconciled semantically rather than binary-merged.
 Skills report an untracked companion at closure and do not stage or commit it
 without separate authorization.
 
-The schema-2 companion stores cohesive cards, local edges, and separate
-provenance records for cards derived from one or more source or foreign
-memories. The suite ships one standard-library CLI at
-`research-mathematics/scripts/research_memory.py`. Its primary commands are
-`init`, `ensure`, `relink`, `apply`, `search`, `show`, `export`, and `check`. Its
-complete lifecycle, schema, and batch contract live in
-`research-mathematics/references/research-memory.md`. All database-aware skills
-reuse these shared resources; the consolidation skill does not introduce a
-second tool or a mechanical database-merge operation.
+The schema-3 companion stores cohesive cards, separate card bodies, local
+edges, source provenance, and a normalized many-to-many crosswalk between cards
+and human-semantic canonical research keys. Opaque inherited identifiers such
+as `IR-COMP-1` remain aliases. A card about exactly the same subject uses
+exactly the canonical key as its slug; related but different subjects use
+distinct semantic identifiers and a typed link.
+
+The standard-library `canonical_sections.py` tool deterministically scans,
+checks, and selectively reads keyed sections, and owns their generated HTML
+anchors plus visible `Research keys` lines. Several primary keys may address
+one section. Its metadata-only `scan` does not return section bodies, and
+`show` returns one exact section. The companion CLI's exact `lookup` returns
+linked card summaries without card bodies; broad `search` follows only when
+exact lookup is insufficient, and `show` expands one selected card.
+
+The suite ships both tools under
+`research-mathematics/scripts/`. The database CLI commands are `contract`,
+`init`, `ensure`, `relink`, `apply`, `lookup`, `search`, `show`, `export`, and
+`check`. The compact lifecycle lives in
+`research-mathematics/references/research-memory.md`; `contract` emits the
+current schema and batch shapes on demand. All database-aware skills reuse
+these resources, and none performs a mechanical database merge.
 
 ```sh
+python3 mathematician/skills/research-mathematics/scripts/canonical_sections.py scan --canonical theory.md
+python3 mathematician/skills/research-mathematics/scripts/canonical_sections.py check --canonical theory.md
+python3 mathematician/skills/research-mathematics/scripts/canonical_sections.py show --canonical theory.md --key implicit-young-evaluation
+python3 mathematician/skills/research-mathematics/scripts/canonical_sections.py key-set --canonical theory.md --heading-line 42 --key implicit-young-evaluation --expected-canonical-sha256 "$CANONICAL_SHA256"
+python3 mathematician/skills/research-mathematics/scripts/research_memory.py contract
 python3 mathematician/skills/research-mathematics/scripts/research_memory.py init --canonical theory.md --theory theory
 python3 mathematician/skills/research-mathematics/scripts/research_memory.py ensure --canonical theory.md
+python3 mathematician/skills/research-mathematics/scripts/research_memory.py lookup --db theory.research.sqlite --canonical implicit-young-evaluation
 python3 mathematician/skills/research-mathematics/scripts/research_memory.py search --db theory.research.sqlite
 python3 mathematician/skills/research-mathematics/scripts/research_memory.py show --db theory.research.sqlite --slug a-semantic-slug
 python3 mathematician/skills/research-mathematics/scripts/research_memory.py export --db theory.research.sqlite
@@ -95,6 +115,19 @@ python3 mathematician/skills/research-mathematics/scripts/research_memory.py app
 python3 mathematician/skills/research-mathematics/scripts/research_memory.py relink --db theory.research.sqlite --canonical renamed-theory.md --expected-canonical theory.md --expected-database-revision 3
 python3 mathematician/skills/research-mathematics/scripts/research_memory.py check --db theory.research.sqlite
 ```
+
+Canonical-item refresh and card-link review record which document, section,
+and card revisions a curator considered. They do not establish logical or
+mathematical freshness.
+
+A writable consolidation freezes an exact retirement manifest before changing
+the target. After target validation, the consolidation-specific
+`scripts/retire_sources.py` removes only source Markdown files and explicitly
+located companions that are Git-tracked and clean against `HEAD`; it leaves the
+deletions unstaged. Dirty, staged, untracked, ignored, or non-Git sources stop
+for explicit direction, as do paths hidden behind `assume-unchanged` or
+`skip-worktree`. Native artifacts, directories, and adjacent files are outside
+retirement authority.
 
 All skills are opt-in and carry manual-only metadata for all supported hosts. Invoke them explicitly with `$skill-name` in Codex or `/skill-name` in Cursor and Claude Code.
 

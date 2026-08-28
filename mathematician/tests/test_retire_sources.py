@@ -463,7 +463,7 @@ class RetireSourcesCLITest(unittest.TestCase):
             self.git("update-index", "--no-skip-worktree", "old.md")
             self.git("restore", "--", "old.md")
 
-    def test_source_database_must_be_schema2_and_owned_by_paired_canonical(self) -> None:
+    def test_source_database_must_be_schema3_and_owned_by_paired_canonical(self) -> None:
         other = self.root / "other-source.md"
         other.write_text("# Other source\n", encoding="utf-8")
         other_db = self.root / "other-source.research.sqlite"

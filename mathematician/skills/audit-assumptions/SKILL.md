@@ -10,15 +10,21 @@ Determine what each assumption buys. Keep well-posedness, use by this proof, the
 
 ## Execution role
 
-- **Nested specialist:** audit the coordinator's exact frozen candidate and digest. Begin cold, then optionally query known relaxations or witnesses through read-only CLI `search` or `show`. Mark imports, create or change no theory artifact, run cheap local removal tests, and return uncovered searches as `requested_attacks` rather than launching another destroyer.
-- **Standalone report-only:** answer in conversation without filesystem changes. A constrained `$destroy-theory` pass may seek necessity witnesses; both skills remain report-only, and memory access is limited to read-only `search` or `show`.
+- **Nested specialist:** audit the coordinator's exact frozen candidate and digest. Begin cold, then optionally resolve supplied canonical research keys or aliases with read-only `lookup`; use broader `search` only when needed and `show` only for selected cards. Mark imports, create or change no theory artifact, run cheap local removal tests, and return uncovered searches as `requested_attacks` rather than launching another destroyer.
+- **Standalone report-only:** answer in conversation without filesystem changes. A constrained `$destroy-theory` pass may seek necessity witnesses; both skills remain report-only, and memory access is limited to exact `lookup`, summary `search`, and selective `show`.
 - **Standalone writable round:** only with authority to change a file-backed home theory, read and follow the writable-home coordinator path, including `ensure`, in the shared [research-memory protocol](../research-mathematics/references/research-memory.md), using its [CLI](../research-mathematics/scripts/research_memory.py). A constrained destroyer remains read-only and reports back.
 
 Default to report-only without both writable authority and a home theory.
 
 ## 1. Normalize assumptions
 
-Rewrite the theorem precisely and split compound hypotheses into atomic, stable identifiers. Include ambient conventions, well-posedness requirements, explicit hypotheses, premises imported by results, hidden proof assumptions, boundary/dimensional/stochastic/convergence qualifiers, interpretation and formalization choices, and cited-source premises.
+Rewrite the theorem precisely and split compound hypotheses into atomic,
+human-semantic identifiers such as `finite-energy` or `uniform-integrability`.
+Use `A1` or `Ai` only as transient local notation, never as a durable canonical
+research key or card slug. Include ambient conventions, well-posedness
+requirements, explicit hypotheses, premises imported by results, hidden proof
+assumptions, boundary/dimensional/stochastic/convergence qualifiers,
+interpretation and formalization choices, and cited-source premises.
 
 Record implication, equivalence, incompatibility, and joint sufficiency in a transient assumption map. Freeze the original theorem. For each relaxation, diff hypotheses, conclusion, definitions, domains, quantifiers, convergence modes, and intended interpretation.
 
@@ -39,7 +45,7 @@ Mark unused assumptions. Proof use establishes dependence of this proof, not the
 
 ## 3. Remove and mutate
 
-For each assumption `Ai`:
+For each semantically identified assumption:
 
 - delete it while retaining the rest;
 - check whether another assumption implies it;
@@ -94,7 +100,7 @@ Close once under the shared protocol. A nested specialist recommends destination
 
 Start with:
 
-| ID | Assumption | Origin | Exact uses | Well-posedness? | Current proof? | Theorem necessary? | Evidence | Candidate weakening |
+| Semantic key | Assumption | Origin | Exact uses | Well-posedness? | Current proof? | Theorem necessary? | Evidence | Candidate weakening |
 |---|---|---|---|---|---|---|---|---|
 
 Then report hidden assumptions, implication and redundancy, witnesses and search scope, interacting or alternative sets, relaxation portfolio, revised statements, fidelity diffs, prioritized obligations, nested `requested_attacks`, and—when nested or writable—canonical/card recommendations.

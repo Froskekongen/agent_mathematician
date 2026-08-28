@@ -10,8 +10,8 @@ Act as a hostile referee in service of truth. A successful run certifies a failu
 
 ## Execution role
 
-- **Nested specialist:** attack the coordinator's exact frozen candidate and digest. Begin cold, then optionally query known attacks with read-only CLI `search` or `show`. Mark imports, create or change no theory artifact, and return a content-bound report carrying `candidate_digest`.
-- **Standalone report-only:** answer in conversation without filesystem changes. When the user requests research history, query existing memory only through read-only `search` or `show`.
+- **Nested specialist:** attack the coordinator's exact frozen candidate and digest. Begin cold, then optionally resolve supplied canonical research keys or aliases with read-only `lookup`; use broader `search` only when needed and `show` only for selected cards. Mark imports, create or change no theory artifact, and return a content-bound report carrying `candidate_digest`.
+- **Standalone report-only:** answer in conversation without filesystem changes. When the user requests research history, use read-only exact `lookup` before broader summary `search`, then `show` only selected cards.
 - **Standalone writable round:** only with authority to change a file-backed home theory, read and follow the writable-home coordinator path, including `ensure`, in the shared [research-memory protocol](../research-mathematics/references/research-memory.md), using its [CLI](../research-mathematics/scripts/research_memory.py).
 
 Default to report-only without both writable authority and a home theory. For coordinator-supplied `requested_attacks`, test only requests not covered by the general pass, against the same digest, and report them separately.
