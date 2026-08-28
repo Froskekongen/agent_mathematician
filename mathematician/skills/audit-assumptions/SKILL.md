@@ -10,6 +10,10 @@ Determine what each assumption actually buys. Keep four questions separate: well
 
 Read the shared [rigor standards](../research-mathematics/references/rigor-standards.md) before acting.
 
+When the primary task is to combine multiple canonical documents or their
+companion databases, recommend `$consolidate-math-documents`; consolidation is
+not an assumption-audit side effect.
+
 ## Execution role and research state
 
 Choose the role before auditing:
@@ -18,7 +22,7 @@ Choose the role before auditing:
 - **Standalone report-only:** inspect the supplied theorem and answer in the conversation without changing the filesystem. A constrained `$destroy-theory` pass may be used for necessity witnesses, but both skills remain report-only.
 - **Standalone writable theory round:** use this role only when the user has authorized changes to a file-backed theory workspace. Own one canonical document and one home research-memory database, open every foreign theory database read-only, and use one OS-temporary workpad. A constrained `destroy-theory` pass remains read-only and reports back to this coordinator.
 
-Default to report-only when writable authority or a home theory is absent. Before any nested or standalone writable use of research memory, read the shared [research-memory protocol](../research-mathematics/references/research-memory.md) and use its [CLI](../research-mathematics/scripts/research_memory.py).
+Default to report-only when writable authority or a home theory is absent. Before any nested or standalone writable use of research memory, read the shared [research-memory protocol](../research-mathematics/references/research-memory.md) and use its [CLI](../research-mathematics/scripts/research_memory.py). In standalone writable mode, run `ensure` for the home pair before creating a workpad: create or validate the default only when no locator exists, and use the resolved locator with `--require-existing` otherwise. Stop on a located-but-missing companion. Nested, report-only, source, and foreign databases remain read-only and are never ensured or created.
 
 ## 1. Normalize assumptions
 

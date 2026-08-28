@@ -12,6 +12,10 @@ Read [rigor-standards.md](references/rigor-standards.md) completely before worki
 
 When no research target is ready and the user wants to explore a selected formalism before choosing what deserves rigorous investigation, recommend `$explore-mathematical-structure` rather than manufacturing a frozen claim.
 
+When the primary task is to combine multiple canonical mathematical documents
+and their companion databases, recommend `$consolidate-math-documents` rather
+than treating the sources as parallel lanes of one research round.
+
 ## Own one research round
 
 For an authorized file-backed round, read and follow the
@@ -20,12 +24,18 @@ research agent owns one canonical Markdown document, one writable companion
 database, and one generated OS-temporary workpad. It may query other theory
 databases read-only. Chat-only work and read-only review create no files.
 
-Read the canonical document before its memory. Retrieve active, open, and
-parked summaries first; query rejected routes only when they bear on a route
-under consideration. On the first file-backed round, initialize the empty
-`<stem>.research.sqlite` companion and add its locator to the canonical
-frontmatter. A named but missing companion is reported rather than silently
-recreated.
+Read the canonical document before its memory. Before creating the workpad or
+retrieving home cards, run the protocol's `ensure` preflight for the writable
+home pair. When no locator exists, `ensure` creates or validates the default
+`<stem>.research.sqlite` companion; add the schema-2
+locator only after it succeeds. When a locator exists, pass its resolved path
+with `--require-existing`. Stop and report a located-but-missing companion
+instead of recreating it or beginning the round. Source and foreign companions
+are read-only and are never passed to `ensure`.
+
+After successful preflight, retrieve active, open, and parked home summaries
+first; query rejected routes only when they bear on a route under
+consideration.
 
 Use the three retention tiers throughout the round:
 
@@ -259,7 +269,8 @@ Then close the round exactly once:
 1. Curate reusable noncanonical open obligations, parked improvements,
    rejected routes with demonstrated obstructions, non-load-bearing reusable
    counterexamples, assumption-relaxation results, source-applicability
-   snapshots, residual attacks, and verification lessons into one card batch.
+   snapshots with explicit `card_origin` provenance, residual attacks, and
+   verification lessons into one card batch.
 2. Apply that batch to the home database with the shared CLI; no specialist
    writes directly.
 3. Run `check`, require `canonical_status: current`, and `show` each added or

@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping, Optional, Sequence
 
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 DISPOSITIONS = ("open", "active", "parked", "rejected", "integrated")
 CLAIM_STATUSES = ("conjectural", "supported", "refuted", "proved", "unresolved")
 CARD_FIELDS = (
@@ -30,8 +30,6 @@ CARD_FIELDS = (
     "next_test",
     "revival_condition",
     "canonical_anchor",
-    "origin_uri",
-    "origin_digest",
 )
 MUTABLE_CARD_FIELDS = tuple(name for name in CARD_FIELDS if name != "slug")
 OPTIONAL_CARD_FIELDS = frozenset(
@@ -42,9 +40,14 @@ OPTIONAL_CARD_FIELDS = frozenset(
         "next_test",
         "revival_condition",
         "canonical_anchor",
-        "origin_uri",
-        "origin_digest",
     }
+)
+ORIGIN_FIELDS = (
+    "card_slug",
+    "source_locator",
+    "source_slug",
+    "source_digest",
+    "applicability_md",
 )
 SHA256_RE = re.compile(r"[0-9a-f]{64}\Z")
 REQUIRED_COLUMNS = {
@@ -62,6 +65,7 @@ REQUIRED_COLUMNS = {
     },
     "card": set(CARD_FIELDS)
     | {"revision", "content_sha256", "created_at", "updated_at"},
+    "card_origin": set(ORIGIN_FIELDS),
     "edge": {"source_slug", "relation", "target_slug", "note_md"},
 }
 
@@ -80,7 +84,7 @@ class JSONArgumentParser(argparse.ArgumentParser):
 SCHEMA_SQL = """
 CREATE TABLE meta (
     singleton INTEGER PRIMARY KEY CHECK (singleton = 1),
-    schema_version INTEGER NOT NULL CHECK (schema_version = 1),
+    schema_version INTEGER NOT NULL CHECK (schema_version = 2),
     theory_slug TEXT NOT NULL CHECK (length(trim(theory_slug)) > 0),
     canonical_path TEXT NOT NULL CHECK (length(trim(canonical_path)) > 0),
     canonical_sha256 TEXT NOT NULL
@@ -99,7 +103,7 @@ CREATE TABLE meta (
 );
 
 CREATE TABLE card (
-    slug TEXT PRIMARY KEY CHECK (length(trim(slug)) > 0),
+    slug TEXT PRIMARY KEY NOT NULL CHECK (length(trim(slug)) > 0),
     kind TEXT NOT NULL CHECK (length(trim(kind)) > 0),
     title TEXT NOT NULL CHECK (length(trim(title)) > 0),
     summary_md TEXT NOT NULL CHECK (length(trim(summary_md)) > 0),
@@ -113,8 +117,6 @@ CREATE TABLE card (
     next_test TEXT,
     revival_condition TEXT,
     canonical_anchor TEXT,
-    origin_uri TEXT,
-    origin_digest TEXT,
     revision INTEGER NOT NULL CHECK (revision >= 1),
     content_sha256 TEXT NOT NULL
         CHECK (length(content_sha256) = 64
@@ -128,12 +130,18 @@ CREATE TABLE card (
     CHECK (disposition <> 'rejected'
            OR length(trim(coalesce(reason, ''))) > 0),
     CHECK (disposition <> 'integrated'
-           OR length(trim(coalesce(canonical_anchor, ''))) > 0),
-    CHECK ((origin_uri IS NULL AND origin_digest IS NULL)
-           OR (origin_uri IS NOT NULL AND origin_digest IS NOT NULL
-               AND length(trim(origin_uri)) > 0
-               AND length(origin_digest) = 64
-               AND origin_digest NOT GLOB '*[^0-9a-f]*'))
+           OR length(trim(coalesce(canonical_anchor, ''))) > 0)
+);
+
+CREATE TABLE card_origin (
+    card_slug TEXT NOT NULL REFERENCES card(slug) ON DELETE CASCADE,
+    source_locator TEXT NOT NULL CHECK (length(trim(source_locator)) > 0),
+    source_slug TEXT NOT NULL CHECK (length(trim(source_slug)) > 0),
+    source_digest TEXT NOT NULL
+        CHECK (length(source_digest) = 64
+               AND source_digest NOT GLOB '*[^0-9a-f]*'),
+    applicability_md TEXT NOT NULL CHECK (length(trim(applicability_md)) > 0),
+    PRIMARY KEY (card_slug, source_locator, source_slug, source_digest)
 );
 
 CREATE TABLE edge (
@@ -146,6 +154,7 @@ CREATE TABLE edge (
 
 CREATE INDEX card_disposition_updated_idx ON card(disposition, updated_at DESC);
 CREATE INDEX card_kind_idx ON card(kind);
+CREATE INDEX card_origin_source_idx ON card_origin(source_locator, source_slug);
 CREATE INDEX edge_target_idx ON edge(target_slug);
 """
 
@@ -167,6 +176,78 @@ def json_digest(value: Any) -> str:
         value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
     ).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
+
+
+def normalize_schema_sql(value: str) -> str:
+    """Normalize harmless formatting while retaining schema semantics."""
+    return " ".join(value.rstrip(";").split())
+
+
+def expected_schema_objects() -> dict[tuple[str, str], str]:
+    """Return the exact schema-2 tables and indexes defined by this tool."""
+    connection = sqlite3.connect(":memory:")
+    try:
+        connection.executescript(SCHEMA_SQL)
+        return {
+            (row[0], row[1]): normalize_schema_sql(row[2])
+            for row in connection.execute(
+                "SELECT type, name, sql FROM sqlite_master "
+                "WHERE name NOT LIKE 'sqlite_%' AND sql IS NOT NULL"
+            )
+        }
+    finally:
+        connection.close()
+
+
+def schema_object_errors(connection: sqlite3.Connection) -> list[str]:
+    """Compare a database with the one supported schema, including checks."""
+    expected = expected_schema_objects()
+    actual = {
+        (row[0], row[1]): normalize_schema_sql(row[2])
+        for row in connection.execute(
+            "SELECT type, name, sql FROM sqlite_master "
+            "WHERE name NOT LIKE 'sqlite_%' AND sql IS NOT NULL"
+        )
+    }
+    errors: list[str] = []
+    missing = sorted(set(expected) - set(actual))
+    unexpected = sorted(set(actual) - set(expected))
+    changed = sorted(
+        key for key in set(expected) & set(actual) if expected[key] != actual[key]
+    )
+    if missing:
+        errors.append(
+            "missing schema-v2 object(s): "
+            + ", ".join(f"{kind} {name}" for kind, name in missing)
+        )
+    if unexpected:
+        errors.append(
+            "unexpected schema-v2 object(s): "
+            + ", ".join(f"{kind} {name}" for kind, name in unexpected)
+        )
+    if changed:
+        errors.append(
+            "schema-v2 definition mismatch: "
+            + ", ".join(f"{kind} {name}" for kind, name in changed)
+        )
+    return errors
+
+
+def sqlite_sidecars(path: Path) -> list[Path]:
+    return [
+        Path(str(path) + suffix)
+        for suffix in ("-journal", "-wal", "-shm")
+        if Path(str(path) + suffix).exists()
+    ]
+
+
+def require_no_sidecars(path: Path) -> None:
+    sidecars = sqlite_sidecars(path)
+    if sidecars:
+        raise ResearchMemoryError(
+            "unsettled SQLite sidecar(s) present: "
+            + ", ".join(str(sidecar) for sidecar in sidecars)
+        )
 
 
 def batch_content_digest(batch: Mapping[str, Any]) -> str:
@@ -242,12 +323,6 @@ def normalize_card(raw: Mapping[str, Any]) -> dict[str, Any]:
         raise ResearchMemoryError(
             "card.claim_status must be null or one of: " + ", ".join(CLAIM_STATUSES)
         )
-    if card["origin_digest"] is not None:
-        card["origin_digest"] = require_digest(card["origin_digest"], "card.origin_digest")
-    if (card["origin_uri"] is None) != (card["origin_digest"] is None):
-        raise ResearchMemoryError(
-            "card.origin_uri and card.origin_digest must be supplied together"
-        )
     if card["disposition"] in ("open", "active") and card["next_test"] is None:
         raise ResearchMemoryError("open and active cards require card.next_test")
     if card["disposition"] == "parked" and card["revival_condition"] is None:
@@ -301,8 +376,28 @@ def connect_read_write(path: Path) -> sqlite3.Connection:
 def read_meta(connection: sqlite3.Connection) -> sqlite3.Row:
     row = connection.execute("SELECT * FROM meta WHERE singleton = 1").fetchone()
     if row is None:
-        raise ResearchMemoryError("database has no schema-v1 metadata row")
+        raise ResearchMemoryError(
+            f"database has no schema-v{SCHEMA_VERSION} metadata row"
+        )
     return row
+
+
+def require_current_schema(connection: sqlite3.Connection) -> sqlite3.Row:
+    user_version = connection.execute("PRAGMA user_version").fetchone()[0]
+    if user_version != SCHEMA_VERSION:
+        raise ResearchMemoryError(
+            f"user_version is {user_version}, expected {SCHEMA_VERSION}"
+        )
+    meta = read_meta(connection)
+    if meta["schema_version"] != SCHEMA_VERSION:
+        raise ResearchMemoryError(
+            "metadata schema version is "
+            f"{meta['schema_version']}, expected {SCHEMA_VERSION}"
+        )
+    definition_errors = schema_object_errors(connection)
+    if definition_errors:
+        raise ResearchMemoryError("; ".join(definition_errors))
+    return meta
 
 
 def canonical_from_meta(db_path: Path, meta: Mapping[str, Any]) -> Path:
@@ -312,26 +407,30 @@ def canonical_from_meta(db_path: Path, meta: Mapping[str, Any]) -> Path:
     return (db_path.resolve().parent / stored).resolve()
 
 
-def command_init(args: argparse.Namespace) -> dict[str, Any]:
-    canonical = Path(args.canonical).resolve()
-    if not canonical.is_file():
-        raise ResearchMemoryError(f"canonical document does not exist: {canonical}")
-    if canonical.suffix.lower() not in (".md", ".markdown"):
-        raise ResearchMemoryError("canonical document must be a Markdown file")
-    theory = require_text(args.theory, "theory")
-    if args.db:
-        requested_db = Path(args.db)
-        if requested_db.is_symlink() or requested_db.exists():
-            raise ResearchMemoryError(
-                f"refusing to overwrite existing path: {requested_db.absolute()}"
-            )
-        db_path = requested_db.resolve()
-    else:
-        db_path = canonical.with_suffix(".research.sqlite")
+def require_markdown_file(raw_path: str, label: str = "canonical document") -> Path:
+    requested = Path(raw_path)
+    if requested.is_symlink():
+        raise ResearchMemoryError(
+            f"{label} must not be a symbolic link: {requested.absolute()}"
+        )
+    path = requested.resolve()
+    if not path.is_file():
+        raise ResearchMemoryError(f"{label} does not exist: {path}")
+    if path.suffix.lower() not in (".md", ".markdown"):
+        raise ResearchMemoryError(f"{label} must be a Markdown file")
+    return path
+
+
+def default_database_path(canonical: Path) -> Path:
+    return canonical.with_suffix(".research.sqlite")
+
+
+def create_database(canonical: Path, theory: str, db_path: Path) -> dict[str, Any]:
     if not db_path.parent.is_dir():
         raise ResearchMemoryError(
             f"database parent directory does not exist: {db_path.parent}"
         )
+    require_no_sidecars(db_path)
 
     try:
         descriptor = os.open(str(db_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
@@ -384,6 +483,21 @@ def command_init(args: argparse.Namespace) -> dict[str, Any]:
     }
 
 
+def command_init(args: argparse.Namespace) -> dict[str, Any]:
+    canonical = require_markdown_file(args.canonical)
+    theory = require_text(args.theory, "theory")
+    if args.db:
+        requested_db = Path(args.db)
+        if requested_db.is_symlink() or requested_db.exists():
+            raise ResearchMemoryError(
+                f"refusing to overwrite existing path: {requested_db.absolute()}"
+            )
+        db_path = requested_db.resolve()
+    else:
+        db_path = default_database_path(canonical)
+    return create_database(canonical, theory, db_path)
+
+
 def load_batch(path: Path) -> Mapping[str, Any]:
     if not path.is_file():
         raise ResearchMemoryError(f"batch file does not exist: {path}")
@@ -402,6 +516,7 @@ def validate_batch(raw: Mapping[str, Any]) -> dict[str, Any]:
         "expected_database_revision",
         "canonical_digest",
         "card_operations",
+        "origin_operations",
         "edge_operations",
     }
     require_keys(raw, fields, "batch")
@@ -409,11 +524,14 @@ def validate_batch(raw: Mapping[str, Any]) -> dict[str, Any]:
     if missing:
         raise ResearchMemoryError(f"batch is missing field(s): {', '.join(missing)}")
     card_operations = raw["card_operations"]
+    origin_operations = raw["origin_operations"]
     edge_operations = raw["edge_operations"]
     if not isinstance(card_operations, list):
         raise ResearchMemoryError("batch.card_operations must be a JSON array")
     if not isinstance(edge_operations, list):
         raise ResearchMemoryError("batch.edge_operations must be a JSON array")
+    if not isinstance(origin_operations, list):
+        raise ResearchMemoryError("batch.origin_operations must be a JSON array")
     declared_digest = require_digest(raw["batch_digest"], "batch.batch_digest")
     actual_digest = batch_content_digest(raw)
     if declared_digest != actual_digest:
@@ -430,6 +548,7 @@ def validate_batch(raw: Mapping[str, Any]) -> dict[str, Any]:
             raw["canonical_digest"], "batch.canonical_digest"
         ),
         "card_operations": card_operations,
+        "origin_operations": origin_operations,
         "edge_operations": edge_operations,
     }
 
@@ -532,6 +651,71 @@ def apply_card_operation(
     raise ResearchMemoryError("card operation.op must be add, update, or delete")
 
 
+def normalize_origin(raw: Mapping[str, Any], include_applicability: bool) -> dict[str, Any]:
+    allowed = ("op", "card_slug", "source_locator", "source_slug", "source_digest")
+    if include_applicability:
+        allowed += ("applicability_md",)
+    require_keys(raw, allowed, "origin operation")
+    return {
+        "card_slug": require_text(raw.get("card_slug"), "origin operation.card_slug"),
+        "source_locator": require_text(
+            raw.get("source_locator"), "origin operation.source_locator"
+        ),
+        "source_slug": require_text(
+            raw.get("source_slug"), "origin operation.source_slug"
+        ),
+        "source_digest": require_digest(
+            raw.get("source_digest"), "origin operation.source_digest"
+        ),
+        "applicability_md": (
+            require_text(
+                raw.get("applicability_md"), "origin operation.applicability_md"
+            )
+            if include_applicability
+            else None
+        ),
+    }
+
+
+def apply_origin_operation(connection: sqlite3.Connection, raw: Any) -> dict[str, str]:
+    operation = require_mapping(raw, "origin operation")
+    op = require_text(operation.get("op"), "origin operation.op")
+    if op not in ("add", "delete"):
+        raise ResearchMemoryError("origin operation.op must be add or delete")
+    origin = normalize_origin(operation, include_applicability=(op == "add"))
+    key = tuple(origin[name] for name in ORIGIN_FIELDS[:4])
+    if op == "add":
+        try:
+            connection.execute(
+                """
+                INSERT INTO card_origin (
+                    card_slug, source_locator, source_slug, source_digest,
+                    applicability_md
+                ) VALUES (?, ?, ?, ?, ?)
+                """,
+                (*key, origin["applicability_md"]),
+            )
+        except sqlite3.IntegrityError as error:
+            raise ResearchMemoryError(f"cannot add card origin {key!r}: {error}")
+    else:
+        cursor = connection.execute(
+            """
+            DELETE FROM card_origin
+            WHERE card_slug = ? AND source_locator = ? AND source_slug = ?
+                  AND source_digest = ?
+            """,
+            key,
+        )
+        if cursor.rowcount != 1:
+            raise ResearchMemoryError(f"card origin does not exist: {key!r}")
+    return {
+        "card_slug": origin["card_slug"],
+        "source_locator": origin["source_locator"],
+        "source_slug": origin["source_slug"],
+        "source_digest": origin["source_digest"],
+    }
+
+
 def normalize_edge(raw: Mapping[str, Any], include_note: bool) -> dict[str, Any]:
     allowed = ("op", "source_slug", "relation", "target_slug")
     if include_note:
@@ -585,7 +769,7 @@ def command_apply(args: argparse.Namespace) -> dict[str, Any]:
     connection = connect_read_write(db_path)
     try:
         connection.execute("BEGIN IMMEDIATE")
-        meta = read_meta(connection)
+        meta = require_current_schema(connection)
         canonical = canonical_from_meta(db_path, meta)
         if not canonical.is_file():
             raise ResearchMemoryError(f"canonical document does not exist: {canonical}")
@@ -609,6 +793,7 @@ def command_apply(args: argparse.Namespace) -> dict[str, Any]:
                 "database_revision": meta["database_revision"],
                 "idempotent_retry": True,
                 "changed_cards": [],
+                "changed_origins": [],
                 "changed_edges": [],
             }
 
@@ -623,6 +808,10 @@ def command_apply(args: argparse.Namespace) -> dict[str, Any]:
         changed_cards = [
             apply_card_operation(connection, operation, timestamp)
             for operation in batch["card_operations"]
+        ]
+        changed_origins = [
+            apply_origin_operation(connection, operation)
+            for operation in batch["origin_operations"]
         ]
         changed_edges = [
             apply_edge_operation(connection, operation)
@@ -660,6 +849,7 @@ def command_apply(args: argparse.Namespace) -> dict[str, Any]:
         "database_revision": new_revision,
         "idempotent_retry": False,
         "changed_cards": changed_cards,
+        "changed_origins": changed_origins,
         "changed_edges": changed_edges,
     }
 
@@ -684,7 +874,7 @@ def command_search(args: argparse.Namespace) -> dict[str, Any]:
         db_path = Path(raw_path).resolve()
         connection = connect_read_only(db_path)
         try:
-            meta = read_meta(connection)
+            meta = require_current_schema(connection)
             where = ["disposition IN (" + ",".join("?" for _ in states) + ")"]
             parameters: list[Any] = list(states)
             if kinds:
@@ -748,10 +938,23 @@ def command_show(args: argparse.Namespace) -> dict[str, Any]:
     slug = require_text(args.slug, "slug")
     connection = connect_read_only(db_path)
     try:
-        meta = read_meta(connection)
+        connection.execute("BEGIN")
+        meta = require_current_schema(connection)
         row = connection.execute("SELECT * FROM card WHERE slug = ?", (slug,)).fetchone()
         if row is None:
             raise ResearchMemoryError(f"card does not exist: {slug}")
+        origins = [
+            dict(origin)
+            for origin in connection.execute(
+                """
+                SELECT card_slug, source_locator, source_slug, source_digest,
+                       applicability_md
+                FROM card_origin WHERE card_slug = ?
+                ORDER BY source_locator, source_slug, source_digest
+                """,
+                (slug,),
+            )
+        ]
         outgoing = [
             dict(edge)
             for edge in connection.execute(
@@ -776,6 +979,7 @@ def command_show(args: argparse.Namespace) -> dict[str, Any]:
         ]
         card = dict(row)
     finally:
+        connection.rollback()
         connection.close()
     return {
         "ok": True,
@@ -783,6 +987,7 @@ def command_show(args: argparse.Namespace) -> dict[str, Any]:
         "database": str(db_path),
         "theory": meta["theory_slug"],
         "card": card,
+        "origins": origins,
         "outgoing_edges": outgoing,
         "incoming_edges": incoming,
     }
@@ -801,6 +1006,106 @@ def check_card_row(row: Mapping[str, Any]) -> list[str]:
     except ResearchMemoryError as error:
         errors.append(str(error))
     return errors
+
+
+def validate_open_database(
+    connection: sqlite3.Connection,
+    db_path: Path,
+    *,
+    require_canonical: bool,
+) -> dict[str, Any]:
+    """Validate one transaction snapshot for commands that require a sound DB."""
+    errors: list[str] = []
+    warnings: list[str] = []
+    meta = require_current_schema(connection)
+
+    journal_mode = str(connection.execute("PRAGMA journal_mode").fetchone()[0]).lower()
+    if journal_mode != "delete":
+        errors.append(f"journal mode is {journal_mode!r}, expected 'delete'")
+    quick_check = [row[0] for row in connection.execute("PRAGMA quick_check")]
+    if quick_check != ["ok"]:
+        errors.extend(f"quick_check: {message}" for message in quick_check)
+    foreign_keys = [tuple(row) for row in connection.execute("PRAGMA foreign_key_check")]
+    if foreign_keys:
+        errors.extend(f"foreign_key_check: {row!r}" for row in foreign_keys)
+
+    if connection.execute("SELECT count(*) FROM meta").fetchone()[0] != 1:
+        errors.append("metadata table must contain exactly one row")
+    try:
+        require_text(meta["theory_slug"], "metadata theory_slug")
+        require_text(meta["canonical_path"], "metadata canonical_path")
+        require_digest(meta["canonical_sha256"], "metadata canonical_sha256")
+        require_revision(meta["database_revision"], "metadata database_revision")
+        require_text(meta["created_at"], "metadata created_at")
+        require_text(meta["updated_at"], "metadata updated_at")
+        if (meta["last_round_id"] is None) != (meta["last_batch_digest"] is None):
+            errors.append(
+                "metadata last_round_id and last_batch_digest must be supplied together"
+            )
+        elif meta["last_round_id"] is not None:
+            require_text(meta["last_round_id"], "metadata last_round_id")
+            require_digest(meta["last_batch_digest"], "metadata last_batch_digest")
+    except ResearchMemoryError as error:
+        errors.append(str(error))
+
+    for row in connection.execute("SELECT * FROM card ORDER BY slug"):
+        errors.extend(check_card_row(row))
+    for row in connection.execute(
+        """
+        SELECT card_slug, source_locator, source_slug, source_digest,
+               applicability_md
+        FROM card_origin
+        ORDER BY card_slug, source_locator, source_slug, source_digest
+        """
+    ):
+        try:
+            require_text(row["card_slug"], "origin card_slug")
+            require_text(row["source_locator"], "origin source_locator")
+            require_text(row["source_slug"], "origin source_slug")
+            require_digest(row["source_digest"], "origin source_digest")
+            require_text(row["applicability_md"], "origin applicability_md")
+        except ResearchMemoryError as error:
+            errors.append(str(error))
+    for row in connection.execute(
+        "SELECT source_slug, relation, target_slug, note_md FROM edge"
+    ):
+        try:
+            require_text(row["source_slug"], "edge source_slug")
+            require_text(row["relation"], "edge relation")
+            require_text(row["target_slug"], "edge target_slug")
+            optional_text(row["note_md"], "edge note_md")
+        except ResearchMemoryError as error:
+            errors.append(str(error))
+
+    canonical = canonical_from_meta(db_path, meta)
+    canonical_status = "unchecked"
+    if require_canonical:
+        if not canonical.is_file():
+            errors.append(f"canonical document does not exist: {canonical}")
+            canonical_status = "missing"
+        elif sha256_file(canonical) == meta["canonical_sha256"]:
+            canonical_status = "current"
+        else:
+            canonical_status = "requires_review"
+            warnings.append(
+                "canonical document changed since the database was consolidated; "
+                "cards require review"
+            )
+
+    sidecars = sqlite_sidecars(db_path)
+    if sidecars:
+        errors.append(
+            "unsettled SQLite sidecar(s) present: "
+            + ", ".join(str(sidecar) for sidecar in sidecars)
+        )
+    if errors:
+        raise ResearchMemoryError("database validation failed: " + "; ".join(errors))
+    return {
+        "meta": meta,
+        "canonical": canonical,
+        "canonical_status": canonical_status,
+        "warnings": warnings,
+    }
 
 
 def command_check(args: argparse.Namespace) -> dict[str, Any]:
@@ -833,8 +1138,10 @@ def command_check(args: argparse.Namespace) -> dict[str, Any]:
         unexpected_tables = sorted(tables - set(REQUIRED_COLUMNS))
         if unexpected_tables:
             errors.append(
-                "unexpected schema-v1 table(s): " + ", ".join(unexpected_tables)
+                f"unexpected schema-v{SCHEMA_VERSION} table(s): "
+                + ", ".join(unexpected_tables)
             )
+        errors.extend(schema_object_errors(connection))
         for table, required in REQUIRED_COLUMNS.items():
             if table not in tables:
                 continue
@@ -849,12 +1156,18 @@ def command_check(args: argparse.Namespace) -> dict[str, Any]:
             unexpected_columns = sorted(actual - required)
             if unexpected_columns:
                 errors.append(
-                    f"table {table!r} has unexpected schema-v1 column(s): "
+                    f"table {table!r} has unexpected schema-v{SCHEMA_VERSION} column(s): "
                     + ", ".join(unexpected_columns)
                 )
         expected_primary_keys = {
             "meta": [(1, "singleton")],
             "card": [(1, "slug")],
+            "card_origin": [
+                (1, "card_slug"),
+                (2, "source_locator"),
+                (3, "source_slug"),
+                (4, "source_digest"),
+            ],
             "edge": [(1, "source_slug"), (2, "relation"), (3, "target_slug")],
         }
         for table, expected_primary_key in expected_primary_keys.items():
@@ -881,6 +1194,18 @@ def command_check(args: argparse.Namespace) -> dict[str, Any]:
                 errors.append(
                     "edge table is missing required cascading foreign key(s): "
                     + ", ".join(sorted(key[0] for key in missing_foreign_keys))
+                )
+        if "card_origin" in tables:
+            origin_foreign_keys = {
+                (row[3], row[2], row[4], str(row[6]).upper())
+                for row in connection.execute("PRAGMA foreign_key_list(card_origin)")
+            }
+            expected_origin_foreign_key = {
+                ("card_slug", "card", "slug", "CASCADE")
+            }
+            if not expected_origin_foreign_key.issubset(origin_foreign_keys):
+                errors.append(
+                    "card_origin table is missing its required cascading foreign key"
                 )
         quick_check = [row[0] for row in connection.execute("PRAGMA quick_check")]
         if quick_check != ["ok"]:
@@ -927,6 +1252,22 @@ def command_check(args: argparse.Namespace) -> dict[str, Any]:
         for row in connection.execute("SELECT * FROM card ORDER BY slug"):
             errors.extend(check_card_row(row))
         for row in connection.execute(
+            """
+            SELECT card_slug, source_locator, source_slug, source_digest,
+                   applicability_md
+            FROM card_origin
+            ORDER BY card_slug, source_locator, source_slug, source_digest
+            """
+        ):
+            try:
+                require_text(row["card_slug"], "origin card_slug")
+                require_text(row["source_locator"], "origin source_locator")
+                require_text(row["source_slug"], "origin source_slug")
+                require_digest(row["source_digest"], "origin source_digest")
+                require_text(row["applicability_md"], "origin applicability_md")
+            except ResearchMemoryError as error:
+                errors.append(str(error))
+        for row in connection.execute(
             "SELECT source_slug, relation, target_slug, note_md FROM edge"
         ):
             try:
@@ -941,13 +1282,12 @@ def command_check(args: argparse.Namespace) -> dict[str, Any]:
     finally:
         connection.close()
 
-    sidecars = [
-        str(Path(str(db_path) + suffix))
-        for suffix in ("-journal", "-wal", "-shm")
-        if Path(str(db_path) + suffix).exists()
-    ]
+    sidecars = sqlite_sidecars(db_path)
     if sidecars:
-        errors.append("unsettled SQLite sidecar(s) present: " + ", ".join(sidecars))
+        errors.append(
+            "unsettled SQLite sidecar(s) present: "
+            + ", ".join(str(sidecar) for sidecar in sidecars)
+        )
 
     return {
         "ok": not errors,
@@ -962,6 +1302,251 @@ def command_check(args: argparse.Namespace) -> dict[str, Any]:
     }
 
 
+def command_ensure(args: argparse.Namespace) -> dict[str, Any]:
+    canonical = require_markdown_file(args.canonical)
+    requested_db = Path(args.db) if args.db else default_database_path(canonical)
+    if requested_db.is_symlink():
+        raise ResearchMemoryError(
+            f"database path must not be a symbolic link: {requested_db.absolute()}"
+        )
+    db_path = requested_db.resolve()
+    explicit_theory = (
+        None if args.theory is None else require_text(args.theory, "theory")
+    )
+
+    if not requested_db.exists():
+        if args.require_existing:
+            raise ResearchMemoryError(f"database does not exist: {db_path}")
+        theory = explicit_theory or canonical.stem
+        result = create_database(canonical, theory, db_path)
+        result.update(
+            {
+                "command": "ensure",
+                "created": True,
+                "canonical_status": "current",
+                "warnings": [],
+            }
+        )
+        return result
+
+    if not requested_db.is_file():
+        raise ResearchMemoryError(f"database path is not a regular file: {db_path}")
+
+    require_no_sidecars(db_path)
+    connection = connect_read_only(db_path)
+    try:
+        connection.execute("BEGIN")
+        validation = validate_open_database(
+            connection, db_path, require_canonical=True
+        )
+        meta = validation["meta"]
+        stored_canonical = validation["canonical"]
+        stored_theory = require_text(meta["theory_slug"], "metadata theory_slug")
+        database_revision = require_revision(
+            meta["database_revision"], "metadata database_revision"
+        )
+        canonical_digest = require_digest(
+            meta["canonical_sha256"], "metadata canonical_sha256"
+        )
+    finally:
+        connection.rollback()
+        connection.close()
+
+    if stored_canonical != canonical:
+        raise ResearchMemoryError(
+            "database canonical identity conflict: requested "
+            f"{canonical}, database names {stored_canonical}"
+        )
+    if explicit_theory is not None and stored_theory != explicit_theory:
+        raise ResearchMemoryError(
+            "database theory identity conflict: requested "
+            f"{explicit_theory!r}, found {stored_theory!r}"
+        )
+
+    return {
+        "ok": True,
+        "command": "ensure",
+        "created": False,
+        "database": str(db_path),
+        "canonical": str(canonical),
+        "theory": stored_theory,
+        "schema_version": SCHEMA_VERSION,
+        "database_revision": database_revision,
+        "canonical_digest": canonical_digest,
+        "canonical_status": validation["canonical_status"],
+        "warnings": validation["warnings"],
+    }
+
+
+def command_relink(args: argparse.Namespace) -> dict[str, Any]:
+    requested_db = Path(args.db)
+    if requested_db.is_symlink():
+        raise ResearchMemoryError(
+            f"database path must not be a symbolic link: {requested_db.absolute()}"
+        )
+    db_path = requested_db.resolve()
+    require_no_sidecars(db_path)
+    canonical = require_markdown_file(args.canonical, "new canonical document")
+    expected_canonical = Path(args.expected_canonical).resolve()
+    if expected_canonical.suffix.lower() not in (".md", ".markdown"):
+        raise ResearchMemoryError("expected canonical path must name a Markdown file")
+    if expected_canonical == canonical:
+        raise ResearchMemoryError("old and new canonical paths must be different")
+    expected_revision = require_revision(
+        args.expected_database_revision, "expected database revision"
+    )
+
+    connection = connect_read_write(db_path)
+    try:
+        connection.execute("BEGIN IMMEDIATE")
+        validation = validate_open_database(
+            connection, db_path, require_canonical=False
+        )
+        meta = validation["meta"]
+        current_canonical = validation["canonical"]
+        current_revision = require_revision(
+            meta["database_revision"], "metadata database_revision"
+        )
+        stored_digest = require_digest(
+            meta["canonical_sha256"], "metadata canonical_sha256"
+        )
+        theory = require_text(meta["theory_slug"], "metadata theory_slug")
+        current_canonical_digest = sha256_file(canonical)
+
+        if current_canonical == canonical:
+            if current_revision == expected_revision:
+                # Moving a pair together can leave the relative locator already
+                # correct. There is nothing to repair and therefore no revision
+                # to consume.
+                new_revision = current_revision
+                idempotent_retry = True
+                changed = False
+            elif current_revision == expected_revision + 1:
+                new_revision = current_revision
+                idempotent_retry = True
+                changed = False
+            else:
+                raise ResearchMemoryError(
+                    "database revision conflict: expected "
+                    f"{expected_revision} (or {expected_revision + 1} for an "
+                    f"immediate retry), found {current_revision}"
+                )
+        else:
+            if current_canonical != expected_canonical:
+                raise ResearchMemoryError(
+                    "database canonical identity conflict: expected "
+                    f"{expected_canonical}, found {current_canonical}"
+                )
+            if current_revision != expected_revision:
+                raise ResearchMemoryError(
+                    "database revision conflict: expected "
+                    f"{expected_revision}, found {current_revision}"
+                )
+            relative = Path(os.path.relpath(canonical, db_path.parent)).as_posix()
+            timestamp = utc_now()
+            cursor = connection.execute(
+                """
+                UPDATE meta
+                SET canonical_path = ?, database_revision = database_revision + 1,
+                    updated_at = ?
+                WHERE singleton = 1 AND database_revision = ?
+                """,
+                (relative, timestamp, expected_revision),
+            )
+            if cursor.rowcount != 1:
+                raise ResearchMemoryError("database changed during relink")
+            new_revision = expected_revision + 1
+            idempotent_retry = False
+            changed = True
+        if changed:
+            connection.commit()
+        else:
+            connection.rollback()
+    except Exception:
+        connection.rollback()
+        raise
+    finally:
+        connection.close()
+
+    canonical_status = (
+        "current" if current_canonical_digest == stored_digest else "requires_review"
+    )
+    warnings = []
+    if canonical_status == "requires_review":
+        warnings.append(
+            "new canonical content differs from the last consolidated digest; "
+            "cards require review"
+        )
+    return {
+        "ok": True,
+        "command": "relink",
+        "database": str(db_path),
+        "canonical": str(canonical),
+        "theory": theory,
+        "schema_version": SCHEMA_VERSION,
+        "database_revision": new_revision,
+        "canonical_status": canonical_status,
+        "changed": changed,
+        "idempotent_retry": idempotent_retry,
+        "warnings": warnings,
+    }
+
+
+def command_export(args: argparse.Namespace) -> dict[str, Any]:
+    db_path = Path(args.db).resolve()
+    require_no_sidecars(db_path)
+    connection = connect_read_only(db_path)
+    try:
+        connection.execute("BEGIN")
+        validation = validate_open_database(
+            connection, db_path, require_canonical=True
+        )
+        meta = dict(validation["meta"])
+        cards = [
+            dict(row)
+            for row in connection.execute("SELECT * FROM card ORDER BY slug")
+        ]
+        origins = [
+            dict(row)
+            for row in connection.execute(
+                """
+                SELECT card_slug, source_locator, source_slug, source_digest,
+                       applicability_md
+                FROM card_origin
+                ORDER BY card_slug, source_locator, source_slug, source_digest
+                """
+            )
+        ]
+        edges = [
+            dict(row)
+            for row in connection.execute(
+                """
+                SELECT source_slug, relation, target_slug, note_md
+                FROM edge ORDER BY source_slug, relation, target_slug
+                """
+            )
+        ]
+    finally:
+        connection.rollback()
+        connection.close()
+    semantic_export = {
+        "meta": meta,
+        "cards": cards,
+        "origins": origins,
+        "edges": edges,
+    }
+    return {
+        "ok": True,
+        "command": "export",
+        "database": str(db_path),
+        "schema_version": SCHEMA_VERSION,
+        "canonical_status": validation["canonical_status"],
+        "warnings": validation["warnings"],
+        "export_digest": json_digest(semantic_export),
+        **semantic_export,
+    }
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = JSONArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -971,6 +1556,26 @@ def build_parser() -> argparse.ArgumentParser:
     init_parser.add_argument("--theory", required=True)
     init_parser.add_argument("--db")
     init_parser.set_defaults(handler=command_init)
+
+    ensure_parser = subparsers.add_parser(
+        "ensure", help="create or validate a canonical companion database"
+    )
+    ensure_parser.add_argument("--canonical", required=True)
+    ensure_parser.add_argument("--theory")
+    ensure_parser.add_argument("--db")
+    ensure_parser.add_argument("--require-existing", action="store_true")
+    ensure_parser.set_defaults(handler=command_ensure)
+
+    relink_parser = subparsers.add_parser(
+        "relink", help="repair canonical ownership metadata after a deliberate move"
+    )
+    relink_parser.add_argument("--db", required=True)
+    relink_parser.add_argument("--canonical", required=True)
+    relink_parser.add_argument("--expected-canonical", required=True)
+    relink_parser.add_argument(
+        "--expected-database-revision", required=True, type=int
+    )
+    relink_parser.set_defaults(handler=command_relink)
 
     apply_parser = subparsers.add_parser("apply", help="apply one revision-checked batch")
     apply_parser.add_argument("--db", required=True)
@@ -989,6 +1594,12 @@ def build_parser() -> argparse.ArgumentParser:
     show_parser.add_argument("--db", required=True)
     show_parser.add_argument("--slug", required=True)
     show_parser.set_defaults(handler=command_show)
+
+    export_parser = subparsers.add_parser(
+        "export", help="export complete research memory read-only"
+    )
+    export_parser.add_argument("--db", required=True)
+    export_parser.set_defaults(handler=command_export)
 
     check_parser = subparsers.add_parser("check", help="validate one companion database")
     check_parser.add_argument("--db", required=True)

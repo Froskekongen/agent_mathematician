@@ -10,6 +10,10 @@ Scout broadly, test cheaply, and stop with a useful proof architecture. Preserve
 
 When no claim is ready and the user instead wants to discover which structures or questions deserve investigation, recommend `$explore-mathematical-structure` rather than manufacturing a proof target.
 
+When the primary task is to combine multiple canonical documents or their
+companion databases, recommend `$consolidate-math-documents` rather than
+folding consolidation into route generation.
+
 ## Execution role and research state
 
 Choose the role before doing any work:
@@ -18,7 +22,7 @@ Choose the role before doing any work:
 - **Standalone report-only:** answer in the conversation without changing the filesystem. Do not initialize a companion database or create a persistent report.
 - **Standalone writable theory round:** use this role only when the user has authorized changes to a file-backed theory workspace. Own one canonical document and its one home research-memory database; open every foreign theory database read-only. Use one OS-temporary workpad for the round and close it according to the shared protocol.
 
-Default to report-only when writable authority or a home theory is absent. For a nested or standalone writable round, read the canonical document first. Before using research memory, read the shared [research-memory protocol](../research-mathematics/references/research-memory.md) and use its [CLI](../research-mathematics/scripts/research_memory.py). Query `active`, `open`, and `parked` summaries before generating routes. Query `rejected` cards only when a similar route is under consideration.
+Default to report-only when writable authority or a home theory is absent. For a nested or standalone writable round, read the canonical document first. Before using research memory, read the shared [research-memory protocol](../research-mathematics/references/research-memory.md) and use its [CLI](../research-mathematics/scripts/research_memory.py). In standalone writable mode, run `ensure` for the home pair before creating a workpad: create or validate the default only when no locator exists, and use the resolved locator with `--require-existing` otherwise. Stop on a located-but-missing companion. Nested, report-only, source, and foreign databases remain read-only and are never ensured or created. Query `active`, `open`, and `parked` summaries before generating routes. Query `rejected` cards only when a similar route is under consideration.
 
 The temporary portfolio, cheap screens, candidate variants, bridge sketches, and scout reports are workpad material. They are not durable theory artifacts.
 

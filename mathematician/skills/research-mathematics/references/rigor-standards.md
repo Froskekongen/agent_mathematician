@@ -18,6 +18,11 @@ mechanics and superseded state. Every instruction to retain information must
 select one of these destinations. Raw transcripts and generic failures expire
 with a successfully consolidated workpad.
 
+Complete the protocol's `ensure` preflight only for the writable home pair.
+A located-but-missing companion stops the round; source and foreign companions
+remain read-only and are never created. Use `$consolidate-math-documents` when
+the work primarily combines multiple canonical pairs.
+
 ## Formalization standard
 
 Before proof search, declare all material features:

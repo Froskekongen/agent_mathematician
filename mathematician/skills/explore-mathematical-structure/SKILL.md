@@ -26,6 +26,10 @@ before creating, reading, or updating a companion database. Use the shared
 database access.
 Chat-only and read-only runs create no files and never initialize a database.
 
+When the primary task is to combine multiple canonical documents or theory
+companions, recommend `$consolidate-math-documents` instead of treating their
+contents as candidates in one exploration round.
+
 ## Run one tracer round
 
 Unless the user requests a one-shot artifact or gives a larger autonomous
@@ -34,15 +38,17 @@ budget, stop after the first decision-relevant round.
 ### 1. Establish the round
 
 Read the canonical document before its companion. In a file-backed round,
-create one temporary workpad directory and record its exact path. Keep working
-contracts, candidate versions, comparisons, predictions, raw probes, source
-search notes, scout reports, and superseded drafts there—not beside the
-canonical document and not in SQLite.
+run the protocol's `ensure` preflight for the writable home pair before
+creating a workpad. With no locator, let `ensure` create or validate the
+default companion and add the schema-2 locator only after success. With a
+locator, resolve it relative to the canonical document and require the exact
+database with `--require-existing`. Stop and report a located-but-missing
+companion; do not replace it or begin the round.
 
-At the first authorized file-backed round, initialize the companion and add
-the protocol's locator to the canonical document. If a locator names a missing
-database, report the missing companion and continue canon-only; never silently
-replace it.
+After successful preflight, create one temporary workpad directory and record
+its exact path. Keep working contracts, candidate versions, comparisons,
+predictions, raw probes, source search notes, scout reports, and superseded
+drafts there—not beside the canonical document and not in SQLite.
 
 Frame a working contract containing the mathematical job, typed objects and
 maps, one observable or question, one anchor example or family, fixed choices,
@@ -129,9 +135,9 @@ mathematics never depends on a card and canonical prose never requires an
 opaque card identifier to be understood.
 
 This skill is the sole writer for its standalone round. It may query other
-theories read-only. If a foreign card materially affects the result, follow the
-shared protocol's local-snapshot rule rather than creating a live
-cross-database dependency.
+theories read-only and never ensures or creates their companions. If a foreign
+card materially affects the result, follow the shared protocol's local-snapshot
+and `card_origin` rules rather than creating a live cross-database dependency.
 
 Close in this order:
 
