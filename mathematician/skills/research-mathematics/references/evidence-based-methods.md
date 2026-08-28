@@ -1,8 +1,12 @@
-# Evidence-Based Methods for AI-Assisted Mathematics
+# Maintainer Evidence Rationale
 
 Audited on **2026-08-16**. Claims about current capability below use work first public in 2026; older work appears only as methodological foundations.
 
-Use this reference to choose tactics and calibrate claims. Rare successes, benchmark scores, kernel acceptance, and institutional novelty claims do not establish general reliability.
+This file preserves the literature behind the suite's design and evaluation.
+It is maintainer rationale, not a runtime reference routed from public skills.
+Runtime decisions belong in `rigor.md` and `computational-checking.md`. Rare
+successes, benchmark scores, kernel acceptance, and institutional novelty
+claims do not establish general reliability.
 
 ## Operational conclusions
 

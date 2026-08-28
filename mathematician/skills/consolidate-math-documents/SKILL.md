@@ -6,167 +6,81 @@ disable-model-invocation: true
 
 # Consolidate Mathematical Documents
 
-Produce one coherent mathematical account without silently changing
-definitions, assumptions, validity boundaries, claim status, or provenance.
-This skill reconciles existing work; genuinely new mathematics remains
-uncertified.
+Produce one self-contained mathematical account without changing definitions,
+assumptions, validity boundaries, claim status, or provenance silently. Read
+the shared [rigor chain](../research-mathematics/references/rigor.md),
+[research-memory protocol](../research-mathematics/references/research-memory.md),
+and, before writable mutation, [source-retirement protocol](references/source-retirement.md).
+Consolidation reconciles existing work; new mathematics remains uncertified.
 
-## Choose the run
+## 1. Freeze the run
 
-- **Preview:** return a consolidation, conflict, and prospective-retirement map
-  in conversation; create, edit, move, and delete nothing.
-- **New target:** require an explicit absent Markdown target path.
-- **Existing target:** require an explicit canonical target and use it as the
-  writable baseline.
+Require an explicit deduplicated source list and at least two mathematical
+documents in total. In preview mode, report without filesystem changes. In a
+writable run, require an explicit absent Markdown target or explicit existing
+canonical target; exactly that target pair is writable, while all sources and
+their companions remain read-only until close.
 
-Require an explicit, de-duplicated source list and at least two mathematical
-documents in total. Discover repository-wide inputs only when requested. The
-target is never a source. Classify the relationship as **same-theory
-unification** or **cross-theory synthesis**; ask when the choice is ambiguous.
-Drafts and conjectures keep their status.
+Classify the job as same-theory unification or cross-theory synthesis. Freeze
+source bytes, portable paths, roles, canonical and companion digests, target
+baseline, native artifacts, and inbound links in one OS-temporary workpad.
+Create no repository manifest.
 
-For a writable run, follow the shared [research-memory
-protocol](../research-mathematics/references/research-memory.md) and use its
-[CLI](../research-mathematics/scripts/research_memory.py). Exactly one target
-Markdown/database pair is writable. Sources remain immutable and their
-companions read-only until the target closes; successful consolidation then
-retires every exact source pair. Read the [source-retirement
-protocol](references/source-retirement.md) before the first writable mutation
-and use its helper.
+Complete this step when every input is immutable for the run and the exact
+retirement set passes non-mutating preflight.
 
-## Preflight and freeze
-
-Resolve every path without following a source symlink. For an existing target,
-perform the shared writable-home preflight. For a new target, draft in the
-workpad and create the pair only after the candidate stabilizes. A located but
-missing target companion stops for recovery or explicit reinitialization.
-
-For each source:
-
-- read the Markdown before its companion;
-- validate and `export` a located companion read-only;
-- stop for confirmation when a locator names a missing database;
-- treat a locator-less document as canonical-only; if its canonical-stem
-  database exists, require explicit routing instead of guessing ownership;
-- identify native artifacts and inbound links that must survive retirement.
-
-Create one OS-temporary workpad. Freeze exact source bytes, resolved portable
-paths, roles, canonical SHA-256 values, companion revisions and byte digests,
-semantic exports, and the target baseline. Build an exact retirement manifest
-for the explicitly selected Markdown-and-located-companion pairs and run the
-retirement helper's non-mutating preflight. Any unsafe or changed source stops
-the writable run before publication; preview reports the same blockers without
-creating a manifest file.
-
-## Reconcile every unit
+## 2. Reconcile every unit
 
 Inventory every definition, notation choice, ambient structure, assumption,
-claim and epistemic status, proof dependency, validity boundary,
-counterexample, obligation, citation, relative link, native artifact,
-semantic research key and alias, card, canonical link, origin, and card edge.
-Give each exactly one disposition:
+claim and truth status, dependency, boundary, counterexample, obligation,
+citation, link, native artifact, research key, card, origin, and relation. Give
+each one disposition: integrate, merge-equivalent, retain-as-alternative,
+target-only, target-card, retain-native-artifact, discard-with-source, or
+unresolved-conflict. Record one target location or exclusion reason.
 
-- `integrate`;
-- `merge-equivalent`;
-- `retain-as-alternative`;
-- `target-only`;
-- `target-card`;
-- `retain-native-artifact`;
-- `discard-with-source`; or
-- `unresolved-conflict`.
+Equal names do not imply equal objects. Merge only after comparing domains,
+quantifiers, hypotheses, and status. Same-theory work may merge proved
+equivalents; cross-theory work preserves modules and explicit translation and
+applicability maps. Neither recency nor target location resolves a conflict,
+and consolidation never upgrades status.
 
-Every disposition needs an exact target location or exclusion reason.
-`discard-with-source` is an explicit decision that the unit may disappear with
-the retired source; it cannot contain mathematics needed to understand or
-trust the target.
+Complete this step when every source unit has exactly one justified
+disposition.
 
-Establish one target vocabulary. Equal names do not establish equal objects.
-Check quantifiers, domains, assumptions, and status before merging statements.
-Same-theory work may unify verified equivalents; cross-theory work keeps
-distinct modules and states translations and applicability maps. Preserve
-coherent alternatives and unresolved conflicts explicitly. Neither modification
-time nor an existing target wins a conflict, and consolidation never upgrades
-a claim to `PROVED`.
+## 3. Build the target
 
-Establish human-semantic target research keys for durable mathematical
-subjects. Use one primary key only for the same subject; express other
-relationships as typed card links. Preserve an equivalent legacy opaque ID as
-an alias, not as a target primary key. Several primary keys may address one
-section when splitting the exposition would be artificial.
+Draft a complete canonical account in the workpad. Preserve all accepted
+definitions, assumptions, support, boundaries, load-bearing negative results,
+unresolved conflicts, citations, and deliberate native artifacts. Resolve
+relative links and label collisions. Assign one semantic research key per
+durable mathematical subject using the visible marker defined by the memory
+protocol.
 
-## Build the target pair
+Curate source memory semantically rather than merging databases. Keep only
+reusable obligations, revivable directions, demonstrated obstructions,
+counterexamples, and material applicability findings. A source-derived target
+card is self-contained and records its source digest and local mapping.
 
-Draft the complete self-contained target in the workpad. Include every
-accepted definition, assumption, proof or stated support, validity boundary,
-load-bearing negative result, and unresolved conflict needed after source
-retirement. Rewrite relative links, preserve citations, resolve anchor and
-theorem-label collisions, and keep deliberate native artifacts linked in
-place unless their promotion was explicitly requested.
+Complete this step when the target remains understandable and auditable after
+every source disappears.
 
-After the target structure stabilizes, use the shared deterministic
-canonical-section tool to assign its generated anchors and visible key labels;
-never copy or hand-edit those markers. Scan and check the target before making
-database links. Use exact key or alias lookup before broad source-memory
-search, and expand only selected source cards.
+## 4. Publish and retire
 
-Add concise consolidation provenance naming each retired source path, canonical
-and companion digests, Git recovery revision when available, source role,
-integrated and discarded scope, and unresolved conflicts. The reconciliation
-matrix remains transient.
+Revalidate source digests, database revisions, target baseline, and retirement
+plan. Then publish the target Markdown; run `ensure` and add its returned
+scalar locator when absent; freeze the resulting document digest; apply one
+revision-and-digest-checked changeset; run `check`; and exactly read every
+changed key, card, and artifact. Revalidate and retire only the authorized
+source files and explicitly located companions, then confirm their absence and
+recheck the target.
 
-Curate source databases semantically rather than merging them. Accepted
-mathematics belongs in Markdown. Retain only reusable obligations, revivable
-directions, demonstrated obstructions, negative results, or material
-source-applicability knowledge. Every materially influential source card adds
-a `card_origin` with its last-known locator, semantic slug, content digest, and
-target-specific applicability mapping. The target card stays self-contained;
-an origin may point to a retired source.
+Tracked deletions remain unstaged. On target drift, stop before publication.
+On retirement failure, retain the valid target and workpad and report deleted
+and remaining paths; never restore over a recreated or edited path.
 
-For slugs:
+## Completion
 
-1. add an absent semantic slug;
-2. map equivalent content to an existing card and add its origin;
-3. synthesize a revision-checked card or choose a genuinely distinguishing
-   slug when meanings differ; and
-4. recreate an edge only when both endpoints survive and the relation remains
-   useful.
-
-Source `integrated` state, aliases, and canonical links are never copied
-mechanically. Resolve subject identity and use target-appropriate disposition,
-claim status, relation, and applicability. An integrated target card requires
-an explicit `integrated-at` link to a target research key.
-
-## Publish, retire, and finish
-
-Before publication, revalidate every frozen source digest and database
-revision, the target baseline, and the complete retirement manifest. Then:
-
-1. write or update the target canonical document;
-2. check its research-key structure, ensure its schema-3 companion, and add or
-   preserve the locator;
-3. apply one revision-checked batch of canonical items, aliases, cards, typed
-   canonical links, origins, and card edges;
-4. explicitly refresh changed canonical items, review every affected card
-   link at the current snapshots, run `check`, use exact lookups to verify the
-   crosswalk, `show` changed cards, and `export` the final target;
-5. revalidate the retirement manifest and retire its exact source pairs;
-6. confirm the sources are absent and the target still validates; and
-7. delete the workpad.
-
-Tracked deletions remain unstaged; staging and commits require separate
-authorization. A writable run is complete only when the target pair validates,
-every source unit has a disposition, every authorized source pair is absent,
-and no completed workpad or merge report remains.
-
-If the target changes a theorem, proof, or assumption boundary rather than
-reconciling existing material, mark it unresolved or uncertified and recommend
-`$research-mathematics`.
-
-On source or target drift, stop before publication. Canonical, database, or
-validation failure retains the workpad and reports every changed artifact. A
-retirement failure leaves the validated target in place but makes the run
-incomplete: retain the workpad and report exact deleted and remaining paths.
-Never restore over a recreated or concurrently edited path. A cleanup-only
-failure reports the residual workpad without invalidating the closed target.
-Section and link snapshot matches report curation state only; consolidation
-never calls them logical or mathematical freshness.
+A writable run is complete only when the target pair validates, every source
+unit has a disposition, every authorized source pair is absent and recoverable
+from Git, and the temporary workpad is deleted. Preview returns the same
+reconciliation, conflict, and prospective-retirement map without mutations.

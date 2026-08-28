@@ -1,84 +1,86 @@
 # Source Retirement
 
-Use this protocol only for a writable consolidation. Sources stay immutable
-until the target pair closes; retirement then removes the exact old source
-pairs from the working tree while Git retains their last committed bytes.
+Use this protocol only for an authorized writable consolidation. Sources stay
+immutable until the target closes. Retirement then removes the exact old
+Markdown files and explicitly located companions while Git retains their last
+committed bytes.
 
 Use the standard-library helper
-[`retire_sources.py`](../scripts/retire_sources.py). It performs no Git mutation
-and emits JSON.
+[`retire_sources.py`](../scripts/retire_sources.py). It emits JSON and performs
+no Git mutation.
 
-## Freeze and preflight
+## Freeze a temporary retirement plan
 
-Write this exact manifest in the OS-temporary workpad after the target draft is
-stable. The target canonical digest is the post-edit candidate digest.
+After the target draft stabilizes, write the helper's input only inside the
+OS-temporary workpad. It is transaction input, not a retained repository
+manifest. Its exact shape is:
 
 ```json
 {
   "repository_root": "/absolute/git/root",
   "target": {
-    "canonical": {"path": "theory.md", "sha256": "<candidate-sha256>"},
-    "database": {"path": "theory.research.sqlite"}
+    "canonical": {"path": "combined.md", "sha256": "<64 lowercase hex>"},
+    "database": {"path": "combined.research.sqlite"}
   },
   "sources": [
     {
-      "canonical": {"path": "old.md", "sha256": "<sha256>"},
-      "database": {"path": "old.research.sqlite", "sha256": "<sha256>"}
+      "canonical": {"path": "old.md", "sha256": "<64 lowercase hex>"},
+      "database": {
+        "path": "old.research.sqlite",
+        "sha256": "<64 lowercase hex>"
+      }
     }
   ]
 }
 ```
 
-Omit a source `database` only when that Markdown document has no explicitly
-located companion. Paths may be absolute or repository-relative but must stay
-inside the named Git top level. Canonical files end in `.md` or `.markdown`;
-companions end in `.sqlite`.
+Paths may be repository-relative. The target database has no frozen digest
+because target construction may create or update it between the first
+preflight and final application. Validate and later apply the same frozen file:
 
-Before publishing, run:
-
-```text
-python3 retire_sources.py check --manifest MANIFEST
+```sh
+python3 retire_sources.py check --manifest /tmp/.../retirement.json
+python3 retire_sources.py apply --manifest /tmp/.../retirement.json
 ```
 
-`check` accepts a pending new target or a not-yet-published existing-target
-candidate, but fully validates the retirement set. Every source must exist,
-match its digest, be Git-tracked and clean against `HEAD`, and have no staged,
-unstaged, unmerged, ignored, `assume-unchanged`, `skip-worktree`, symlinked,
-duplicated, target-overlapping, or live SQLite-sidecar state. Any failure stops
-publication. Resolve it by making the
-exact bytes recoverable or obtain separate direction; this helper has no force
-or permanent-loss override.
+Record:
 
-Retirement authority covers only listed Markdown files and located companions.
-It excludes directories, native artifacts, adjacent files, shared resources,
-and Git staging or commits. Resolve inbound links from surviving documents
-before closure.
+- repository root;
+- target canonical path and candidate SHA-256;
+- every source canonical path and frozen SHA-256; and
+- each explicitly located source companion path and SHA-256.
+
+Omit a source companion only when its Markdown has no locator. Paths must stay
+inside the named Git root. The target may not overlap any source.
+
+Run the helper's non-mutating preflight before publishing. Every source must
+exist, match its digest, be a regular nonsymlink Git-tracked file, and be clean
+against `HEAD`, with no staged, unmerged, ignored, `assume-unchanged`, or
+`skip-worktree` state. A companion must be closed, have no live SQLite sidecar,
+and belong to its source locator. An omitted adjacent database does not become
+authorized by proximity.
+
+Any failure stops publication. Resolve it by making the exact bytes
+recoverable or request separate direction; the helper has no force or
+permanent-loss override.
+
+Retirement authority covers only listed source Markdown files and explicitly
+located companions. It excludes directories, native artifacts, adjacent files,
+shared resources, Git staging, and commits. Resolve inbound links from
+surviving documents before target closure.
 
 ## Retire after target closure
 
-After the target's database and canonical-section checks, exact crosswalk
-lookups, changed-card `show`, and final `export` succeed, run the helper's
-`check` again and require the target to be ready. Then run:
+After the target succeeds under `research_memory.py check CANONICAL` and exact
+`read` calls confirm changed keys, cards, and artifacts, rerun the retirement
+preflight against the frozen source bytes and published target digest. Then
+apply the exact temporary plan.
 
-```text
-python3 retire_sources.py apply --manifest MANIFEST
-```
-
-`apply` repeats every preflight, requires the target candidate digest, invokes
-the research-memory validator and requires its whole-document and indexed
-canonical-section matches, then immediately rechecks each source's Git state,
-identity, and digest before removing it. A listed companion must be schema 3
-and belong to its paired document; an omitted adjacent default companion blocks
-retirement. A reviewed source companion may have document or section snapshot
-mismatches, because a mismatch is not database corruption. Each located
-database is removed before its Markdown document. Git deletions remain unstaged
+The helper repeats every preflight immediately before deletion. Each located
+companion is removed before its Markdown source. Git deletions remain unstaged
 and recoverable from `HEAD`.
 
 Filesystem deletion is not transactional. A partial failure keeps the valid
 target, preserves the workpad, and reports exact deleted and remaining paths.
 Do not restore over a recreated or edited path. Completion requires every
-manifest source to be absent and one final successful target check.
-
-Run retirement while source paths are quiescent. Filesystem validation and
-unlink cannot form one transaction; the just-in-time checks minimize that gap,
-and Git recovery remains the hard prerequisite.
+listed source to be absent and one final successful target check.

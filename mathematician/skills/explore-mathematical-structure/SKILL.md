@@ -6,83 +6,72 @@ disable-model-invocation: true
 
 # Explore Mathematical Structure
 
-Run a **contrastive laboratory**: formalize only enough for candidate structures to disagree, execute the cheapest useful discriminator, and turn the result into a research choice. The exploration brief is authoritative.
+Run a contrastive laboratory: formalize only enough for candidate structures
+to disagree, execute the cheapest useful discriminator, and turn the result
+into a research choice. Apply the shared
+[rigor chain](../research-mathematics/references/rigor.md) whenever assigning a
+claim status.
 
-Chat-only and read-only runs create no artifacts. For an authorized file-backed round, read and follow the writable-home coordinator path, including `ensure`, in the shared [research-memory protocol](../research-mathematics/references/research-memory.md) before creating or querying theory memory; use its [CLI](../research-mathematics/scripts/research_memory.py). This skill is the round's sole writer.
+Chat-only work creates no artifacts. For an authorized file-backed round, read
+the shared [research-memory protocol](../research-mathematics/references/research-memory.md)
+and act as its sole writer. Unless the user requests a one-shot artifact or a
+larger autonomous budget, run one decision-relevant tracer round.
 
-Use human-semantic research keys for retained canonical subjects and the
-shared deterministic section tool for their generated anchors and visible
-labels. Look up those exact keys or aliases before broad memory search, and
-expand only selected sections or cards. Refresh changed canonical items and
-review affected card links explicitly during shared-protocol closure; neither
-operation certifies the mathematics.
+## 1. Frame contrasting candidates
 
-## Run one tracer round
+Fix the mathematical job, typed objects and maps, one observable or question,
+an anchor example, fixed choices, reversible assumptions, and live semantic
+forks. Keep two to four candidates whose predictions differ. When meaning
+blocks comparison, ask one wedge question whose answers select different
+structures or examples.
 
-Unless the user requests a one-shot artifact or larger autonomous budget, stop after the first decision-relevant round.
+Complete this step when the candidates make distinct checkable predictions or
+the unresolved semantic fork is explicit.
 
-### 1. Frame candidates
+## 2. Predict and probe
 
-Define a working contract: mathematical job, typed objects and maps, one observable or question, one anchor example or family, fixed choices, reversible assumptions, and live semantic forks.
+Before a decisive observation, record each candidate's prediction and nearest
+alternative explanation. Choose the smallest example, deformation, boundary,
+counterexample, or exact finite family likely to separate them.
 
-Keep two to four candidates. Their roles may differ—objective, representation, theory, mechanism, regime, construction, or typed bundle—so compare what each contributes to the user's goal rather than forcing a common ontology. Candidate notes own their mathematics; selection criteria stay separate, and aggregate measurements use only user-approved weights.
+Keep cheap, hand-checkable probes local. For material computation, solver work,
+executable checking, or a promoted witness, read the shared
+[computational-checking role](../research-mathematics/references/computational-checking.md)
+and dispatch `discover`, `falsify`, or `certify` as appropriate. Preserve the
+encoded scope and evidence ceiling.
 
-Resolve a semantic fork locally when one shared example exposes its consequences. If intended meaning still blocks comparison, ask one **wedge question** whose answers select different structures, examples, or maps.
+Complete this step when one consequential contrast is better determined or
+its non-separation is diagnosed within an explicit scope.
 
-Complete framing when candidates make distinct, checkable predictions or the unresolved semantic choice is explicit.
+## 3. Update and allocate
 
-### 2. Predict and probe
+Keep original predictions visible beside any repair. Separate mathematical
+truth status, evidence coverage and fidelity, and workflow disposition.
+`REFUTED` requires a checked counterexample; `rejected` only ends current
+investment. Recommend one direction and at most two alternatives, then give
+the cheapest next discriminator and an outcome map for each possible result.
 
-Before inspecting a decisive result when practical, state each affected candidate's prediction, nearest competing explanation, and cheap break-test. Prefer the smallest example, counterexample, deformation, boundary case, or exact finite family that separates candidates. Record the probe's exact mathematical scope and artifact risks.
+Continue only while expected decision value justifies the budget.
 
-Use computation, formal checking, search, or scouts only for the current uncertainty. For material computation, solver work, formal checking, or parallel scouts, follow the [advanced probe protocol](references/probes-and-evidence.md).
+## Literature and privacy
 
-### 3. Update and allocate
+Before major investment in an apparently new direction, or whenever prior art,
+attribution, or sensitive unpublished material affects the decision, read and
+follow [literature-and-privacy.md](references/literature-and-privacy.md).
 
-Retain each original prediction beside any repair for the round. Distinguish:
+## Return and completion
 
-- the claim's quantified scope and mathematical status;
-- the evidence's coverage, method, and semantic fidelity; and
-- the direction's workflow disposition.
+Lead with an exploration brief containing the current conclusion or live
+uncertainty, decisive mechanism and smallest witness, live options and
+recommendation, and next discriminator with its outcome map. Include the
+semantic wedge only when one remains.
 
-`refuted` requires a checked counterexample to the literal claim. `rejected` only ends current investment. Finite or numerical checks cover the recorded family; a formal checker certifies its encoded statement and checked correspondence. A non-discriminating probe establishes only non-separation.
+For writable work, keep selected definitions, decisive evidence, boundaries,
+and the next obligation in canonical Markdown; retain only reusable directions,
+obstructions, expensive probes, and source-applicability findings in memory.
 
-Recommend one direction and at most two alternatives. Give the cheapest decisive next test and an outcome map: what each result would select, reject, split, park, or revive. Continue only within budget and when the expected decision value is clear.
-
-The tracer is complete when one consequential contrast is better determined—or its non-separation diagnosed—with scoped evidence, checked artifact risk, updated dispositions, and a next allocation.
-
-## Retain only useful state
-
-For a writable round:
-
-- **Canonical Markdown:** selected formalism, exact definitions and hypotheses, decisive evidence, load-bearing boundary witnesses, recommendation, interpretation-relevant obligations, and next discriminator.
-- **Native artifacts:** formal sources, certificates, programs, or datasets that must remain inspectable, linked from the canonical document.
-- **Research-memory cards:** reusable open, parked, or rejected directions; obstructions; expensive probes; source-applicability findings; and revival conditions.
-- **Workpad only:** working contracts, candidate versions, raw probes, comparisons, source notes, scout reports, routine failures, and superseded drafts.
-
-A card needs a concrete next test, demonstrated rejection reason, useful obstruction, realistic revival condition, or enough cost to prevent repeated work. Its summary must be self-contained. Accepted mathematics never depends on memory or opaque card identifiers. Foreign theories remain read-only; a relied-upon foreign finding follows the shared protocol's local-snapshot and `card_origin` rules.
-
-Close once under the shared protocol after integrating the canonical brief and curating cards.
-
-## Return the brief first
-
-Start every response with a standalone **Exploration brief** organized around the user's decision:
-
-1. current conclusion or live uncertainty and why it matters;
-2. decisive mechanism and smallest witness, with exact scope;
-3. live options and recommendation; and
-4. next discriminator, outcome map, and wedge question when meaning blocks progress.
-
-Use a small decision table only when it saves reading. Preserve every load-bearing hypothesis, quantifier, regime, and semantic distinction while keeping surrounding prose plain. Aim near 500 words mid-round and 800–1,200 words at conclusion unless the user requests otherwise.
-
-In chat-only mode, return the brief only. In file-backed mode, keep the canonical document self-contained and describe the companion as optional memory; omit database dumps, raw round records, and persistent specialist reports.
-
-## Boundaries and completion
-
-When sources, prior art, novelty, or privacy affect the decision—or before major investment in an apparently new direction—follow the [literature and privacy protocol](references/literature-and-privacy.md).
-
-This skill may derive micro-lemmas but does not certify an end-to-end proof. Label any incidental complete argument `CANDIDATE FULL PROOF — NOT CERTIFIED`; persistence never upgrades its status.
-
-When comparison stops being primary, hand off meaning to `$formalize-concepts`, routes to `$explore-proof-strategies`, rigorous resolution to `$research-mathematics`, falsification to `$destroy-theory`, or necessity to `$audit-assumptions`.
-
-Complete only when the brief supports a research decision, the canonical document (when written) is self-contained, every durable card passes the retention threshold, and shared-protocol closure succeeds or reports a recovery path.
+Complete only when the brief supports a research decision, evidence scope and
+artifact risk are explicit, and every retained memory item has a concrete
+reuse condition. Label any incidental end-to-end argument
+`CANDIDATE FULL PROOF — NOT CERTIFIED` and hand rigorous resolution to
+`$research-mathematics`.

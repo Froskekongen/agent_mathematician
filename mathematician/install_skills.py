@@ -21,6 +21,8 @@ SKILL_NAMES = (
 
 OBSOLETE_SKILL_PATHS = (
     Path("explore-mathematical-structure/references/exploration-ledger.md"),
+    Path("explore-mathematical-structure/references/probes-and-evidence.md"),
+    Path("research-mathematics/references/rigor-standards.md"),
 )
 
 

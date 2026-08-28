@@ -26,6 +26,11 @@ pre-source versions in the workpad. Use a warm pass for established
 terminology, equivalent constructions, exact theorems and hypotheses,
 counterexamples, classifications, or prior formulations.
 
+Build a small query set from verified public identifiers first, then an exact
+standard term with its subfield or field. Use notation only as an auxiliary
+term and never dump every card facet into one query. Apply the chosen privacy
+mode before any facet or local phrase leaves the workspace.
+
 Record the date, query or approved abstraction, source classes, stopping
 scope, exact citations, and imported statements with their hypotheses. A
 user-supplied source needs an applicability analysis but no invented search

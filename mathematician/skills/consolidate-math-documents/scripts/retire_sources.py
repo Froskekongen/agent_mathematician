@@ -109,8 +109,18 @@ def require_git_success(result: subprocess.CompletedProcess[str], action: str) -
 def load_json(path: Path) -> Mapping[str, Any]:
     if not path.is_file() or path.is_symlink():
         raise RetirementError(f"manifest is not a regular file: {path}")
+    def no_duplicates(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for key, value in pairs:
+            if key in result:
+                raise RetirementError(f"retirement plan has duplicate JSON key {key!r}")
+            result[key] = value
+        return result
+
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
+        value = json.loads(
+            path.read_text(encoding="utf-8"), object_pairs_hook=no_duplicates
+        )
     except (json.JSONDecodeError, UnicodeDecodeError) as error:
         raise RetirementError(f"invalid JSON manifest: {error}") from error
     if not isinstance(value, dict):
@@ -259,7 +269,7 @@ def validate_database_pair(
         / "research_memory.py"
     )
     completed = subprocess.run(
-        [sys.executable, str(helper), "check", "--db", str(database.path)],
+        [sys.executable, str(helper), "check", str(canonical.path)],
         capture_output=True,
         text=True,
         check=False,
@@ -269,42 +279,48 @@ def validate_database_pair(
         result = json.loads(output)
     except json.JSONDecodeError as error:
         raise RetirementError(f"{label} validator did not emit JSON") from error
-    if completed.returncode != 0 or not result.get("ok"):
+    reported_database = result.get("database_path")
+    if not isinstance(reported_database, str) or (
+        Path(reported_database).resolve() != database.path
+    ):
+        raise RetirementError(f"{label} does not belong to its paired canonical")
+    if result.get("integrity_ok") is not True:
         raise RetirementError(
-            f"{label} failed research-memory check: {result.get('error', 'unknown error')}"
+            f"{label} failed research-memory check: {memory_check_detail(result)}"
         )
-    if require_current and result.get("canonical_status") != "current":
+    if require_current and (
+        completed.returncode != 0 or result.get("current") is not True
+    ):
         raise RetirementError(
             f"{label} canonical status is not current; consolidate it before retirement"
         )
-
-    identity = subprocess.run(
-        [
-            sys.executable,
-            str(helper),
-            "ensure",
-            "--canonical",
-            str(canonical.path),
-            "--db",
-            str(database.path),
-            "--require-existing",
-        ],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    identity_output = identity.stdout.strip() or identity.stderr
-    try:
-        identity_result = json.loads(identity_output)
-    except json.JSONDecodeError as error:
-        raise RetirementError(f"{label} identity validator did not emit JSON") from error
-    if identity.returncode != 0 or not identity_result.get("ok"):
+    if not require_current and completed.returncode != 0 and not (
+        result.get("current") is False and result.get("status") == "stale"
+    ):
         raise RetirementError(
-            f"{label} does not belong to its paired canonical: "
-            + identity_result.get("error", "unknown error")
+            f"{label} failed research-memory check: {memory_check_detail(result)}"
         )
     revalidate_record(database)
     revalidate_record(canonical)
+
+
+def memory_check_detail(result: Mapping[str, Any]) -> str:
+    details: list[str] = []
+    errors = result.get("errors")
+    if isinstance(errors, list):
+        for item in errors:
+            if isinstance(item, str):
+                details.append(item)
+            elif isinstance(item, Mapping) and isinstance(
+                item.get("message"), str
+            ):
+                code = item.get("code")
+                prefix = f"[{code}] " if isinstance(code, str) else ""
+                details.append(prefix + item["message"])
+    if details:
+        return "; ".join(details)
+    fallback = result.get("error")
+    return fallback if isinstance(fallback, str) else "unknown error"
 
 
 def revalidate_record(record: FileRecord, *, require_expected: bool = False) -> None:
@@ -614,8 +630,32 @@ def build_parser() -> argparse.ArgumentParser:
     parser = JSONArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
     for name, handler in (("check", command_check), ("apply", command_apply)):
-        command = commands.add_parser(name)
-        command.add_argument("--manifest", required=True)
+        command = commands.add_parser(
+            name,
+            formatter_class=argparse.RawDescriptionHelpFormatter,
+            epilog="""temporary plan JSON:
+  {
+    "repository_root": "/absolute/git/root",
+    "target": {
+      "canonical": {"path": "combined.md", "sha256": "<64 hex>"},
+      "database": {"path": "combined.research.sqlite"}
+    },
+    "sources": [{
+      "canonical": {"path": "old.md", "sha256": "<64 hex>"},
+      "database": {"path": "old.research.sqlite", "sha256": "<64 hex>"}
+    }]
+  }
+
+Paths may be repository-relative. Omit a source's database member only when
+that canonical document has no located companion. Keep this file in the
+OS-temporary workpad; it is never a repository manifest.""",
+        )
+        command.add_argument(
+            "--manifest",
+            required=True,
+            metavar="TEMPORARY_PLAN",
+            help="JSON plan in the OS-temporary workpad",
+        )
         command.set_defaults(handler=handler)
     return parser
 
