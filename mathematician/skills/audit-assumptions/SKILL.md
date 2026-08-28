@@ -10,7 +10,17 @@ Determine what each assumption actually buys. Keep four questions separate: well
 
 Read the shared [rigor standards](../research-mathematics/references/rigor-standards.md) before acting.
 
-## 1. Normalize the ledger
+## Execution role and research state
+
+Choose the role before auditing:
+
+- **Nested research specialist:** audit the exact frozen candidate and digest supplied by the coordinator. Begin with a cold pass over that candidate alone. Afterwards, research-memory databases may be queried read-only for known relaxations or witnesses, and every imported finding must be marked. Perform cheap local removal tests, but do not invoke another `destroy-theory` worker. Return uncovered attacks as `requested_attacks` for the coordinator. Do not modify the candidate, canonical document, home database, foreign databases, or other theory artifacts.
+- **Standalone report-only:** inspect the supplied theorem and answer in the conversation without changing the filesystem. A constrained `$destroy-theory` pass may be used for necessity witnesses, but both skills remain report-only.
+- **Standalone writable theory round:** use this role only when the user has authorized changes to a file-backed theory workspace. Own one canonical document and one home research-memory database, open every foreign theory database read-only, and use one OS-temporary workpad. A constrained `destroy-theory` pass remains read-only and reports back to this coordinator.
+
+Default to report-only when writable authority or a home theory is absent. Before any nested or standalone writable use of research memory, read the shared [research-memory protocol](../research-mathematics/references/research-memory.md) and use its [CLI](../research-mathematics/scripts/research_memory.py).
+
+## 1. Normalize assumptions
 
 Rewrite the theorem precisely and split compound hypotheses into atomic assumptions with stable identifiers. Include:
 
@@ -23,9 +33,9 @@ Rewrite the theorem precisely and split compound hypotheses into atomic assumpti
 - interpretation and formalization choices, including fixed versus evolvable quantities;
 - conventions and premises imported from cited sources.
 
-Record implication, equivalence, incompatibility, and joint-sufficiency relationships. Complete this phase when every stated or discovered assumption has exactly one ledger entry.
+Record implication, equivalence, incompatibility, and joint-sufficiency relationships in a transient assumption map. Complete this phase when every stated or discovered assumption appears exactly once in that map.
 
-Freeze the original theorem before mutation. For every proposed relaxation, record a diff of hypotheses, conclusion, definitions, domains, quantifiers, convergence modes, and intended interpretation so that deleting one assumption cannot silently weaken or change something else.
+Freeze the original theorem in the returned report or temporary workpad before mutation. For every proposed relaxation, record a diff of hypotheses, conclusion, definitions, domains, quantifiers, convergence modes, and intended interpretation so that deleting one assumption cannot silently weaken or change something else.
 
 ## 2. Map exact uses
 
@@ -52,9 +62,13 @@ For each assumption `Ai`:
 - examine interacting groups and alternative sufficient sets, prioritizing assumptions that feed the same proof node;
 - mutate interpretation or formalization choices and test whether the theorem becomes vacuous, trivial, or a different question.
 
-Apply `$destroy-theory` in constrained mode to search for necessity witnesses. If skill-to-skill invocation is unavailable, read and execute [the sibling skill](../destroy-theory/SKILL.md) in constrained mode. State the exact finite, symbolic, numerical, random, or literature search scope. A failed search leaves necessity unresolved.
+In standalone mode, apply `$destroy-theory` in constrained mode to search for necessity witnesses. If skill-to-skill invocation is unavailable, read and execute [the sibling skill](../destroy-theory/SKILL.md) in constrained mode. In a full `research-mathematics` round, perform only cheap local removal tests and return uncovered searches to the coordinator as `requested_attacks`; the coordinator decides whether one targeted `destroy-theory` follow-up is needed. State the exact finite, symbolic, numerical, random, or literature search scope. A failed search leaves necessity unresolved.
 
-Minimize any counterexample and verify every remaining hypothesis before treating it as evidence of necessity. Retain certified witnesses in the example laboratory. When a formal certificate is practical, prove that the witness satisfies every retained assumption and violates the exact conclusion.
+Each `requested_attacks` item must identify the frozen candidate digest, removed or weakened assumptions, exact target and negation, proposed search scope, and why the general attack pass does not already cover it.
+
+In nested mode, include the frozen `candidate_digest` and a `requested_attacks` list in the report even when the list is empty. This lets the coordinator distinguish a completed audit from an omitted handoff.
+
+Minimize any counterexample and verify every remaining hypothesis before treating it as evidence of necessity. Put load-bearing certified witnesses in the canonical mathematics during consolidation; otherwise propose a reusable research-memory card. When a formal certificate is practical, prove that the witness satisfies every retained assumption and violates the exact conclusion.
 
 ## 4. Mine the proof for relaxations
 
@@ -99,9 +113,19 @@ Distinguish an immediate relaxation already supported by the proof from a resear
 
 Separately audit statement fidelity: confirm that the revised informal theorem, any formal encoding, and each claimed relaxation express the intended question rather than a conveniently easier one.
 
+## 7. Consolidate a writable round
+
+In a standalone writable theory round:
+
+- Put the exact final assumption set, accepted theorem changes, proved relaxations, and load-bearing necessity witnesses in the canonical document.
+- Retain research-memory cards for unresolved necessity questions with next tests, parked weakenings with revival conditions, rejected relaxations with certified witnesses or reasons, and alternative sufficient sets worth revisiting.
+- Keep the exhaustive assumption map, removal-test details, mutation variants, tool logs, and superseded theorem versions in the temporary workpad.
+
+Apply one curated card batch only after the canonical update is ready. Validate the home database, then delete the workpad. If canonical integration, database application, or validation fails, retain the workpad and report its exact path. In nested mode, recommend canonical changes and card candidates to the coordinator instead of applying them.
+
 ## Report
 
-Start with the ledger:
+Start with the transient assumption map:
 
 | ID | Assumption | Origin | Exact uses | Well-posedness? | Current proof? | Theorem necessary? | Evidence | Candidate weakening |
 |---|---|---|---|---|---|---|---|---|
@@ -116,5 +140,7 @@ Then report:
 6. **Revised theorem statements**
 7. **Statement-fidelity diffs**
 8. **Open proof obligations, prioritized by leverage**
+9. **Requested attacks not covered by the general pass**, in nested mode
+10. **Canonical and research-memory recommendations**, when nested in or closing a writable theory round
 
-Complete the audit only when every explicit and hidden assumption appears in the ledger, every proof use is linked or marked unused, every theorem-necessity claim has a certificate, and every relaxation has exact proof obligations.
+The map is returned in the conversation or kept in the temporary workpad rather than persisted as a separate artifact. Complete the audit only when every explicit and hidden assumption appears in the map, every proof use is linked or marked unused, every theorem-necessity claim has a certificate, and every relaxation has exact proof obligations.

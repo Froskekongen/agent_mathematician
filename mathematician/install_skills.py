@@ -18,6 +18,10 @@ SKILL_NAMES = (
     "audit-assumptions",
 )
 
+OBSOLETE_SKILL_PATHS = (
+    Path("explore-mathematical-structure/references/exploration-ledger.md"),
+)
+
 
 def target_roots(home: Path) -> dict[str, Path]:
     """Return current user-level skill roots for each supported host."""
@@ -41,6 +45,13 @@ def install(source_root: Path, destination_root: Path, *, dry_run: bool) -> None
         if not dry_run:
             destination_root.mkdir(parents=True, exist_ok=True)
             shutil.copytree(source, destination, dirs_exist_ok=True)
+
+    for relative in OBSOLETE_SKILL_PATHS:
+        obsolete = destination_root / relative
+        if obsolete.is_file() or obsolete.is_symlink():
+            print(f"{'would remove' if dry_run else 'removing'} obsolete suite file {obsolete}")
+            if not dry_run:
+                obsolete.unlink()
 
 
 def main() -> None:

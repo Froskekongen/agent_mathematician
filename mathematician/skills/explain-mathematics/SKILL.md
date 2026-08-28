@@ -10,6 +10,16 @@ Treat mathematical expertise as jagged: strength in one field supplies general m
 
 Read the shared [rigor standards](../research-mathematics/references/rigor-standards.md) before acting.
 
+## Use canonical mathematics by default
+
+Build an ordinary explanation from the self-contained canonical document,
+without consulting or creating research memory. When the user
+explicitly asks about research history, rejected routes, or how the theory was
+developed, the existing companion databases may be queried read-only under the
+[research-memory protocol](../research-mathematics/references/research-memory.md).
+Label noncanonical material as research history, and never initialize or write
+a companion from this skill.
+
 ## 1. Set the audience contract
 
 Default to a professional mathematician who understands proofs, abstraction, and standard undergraduate foundations but is new to the focal specialty. Infer likely background from the request and state the inference. Ask for calibration only when the choice would materially change the exposition.

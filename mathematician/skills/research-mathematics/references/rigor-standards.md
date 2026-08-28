@@ -8,6 +8,16 @@ Use mathematical truth as the objective. Treat agreement with the user, narrativ
 
 Scale the process to the claim. Routine calculations need local checking; substantial theorems, conjectures, derivations, and research questions need the complete research loop.
 
+## State-retention standard
+
+For an authorized file-backed round owned by a database-aware skill, follow the
+[research-memory protocol](research-memory.md). The canonical document owns
+accepted and load-bearing mathematics; its SQLite companion owns only curated
+reusable noncanonical knowledge; the generated temporary workpad owns round
+mechanics and superseded state. Every instruction to retain information must
+select one of these destinations. Raw transcripts and generic failures expire
+with a successfully consolidated workpad.
+
 ## Formalization standard
 
 Before proof search, declare all material features:
@@ -23,11 +33,19 @@ Before proof search, declare all material features:
 
 Choose and state a natural interpretation for ambiguity, then note alternatives that materially change the result.
 
-Freeze a versioned target contract before substantial search. Preserve the literal source statement, intended research question, definitions, fixed versus evolvable quantities, permitted assumptions or axioms, and representative non-vacuous instances. Treat any later change to hypotheses, conclusion, domain, definitions, or quantifiers as a new target that requires an explicit diff and renewed audit.
+Freeze a versioned target contract before substantial search. Keep the literal
+source statement, intended research question, definitions, fixed versus
+evolvable quantities, permitted assumptions or axioms, and representative
+non-vacuous instances in the workpad. Publish the accepted contract with the
+canonical theorem; discard superseded contracts after consolidation unless a
+reusable divergence passes the card-retention threshold. Treat any later
+change to hypotheses, conclusion, domain, definitions, or quantifiers as a new
+target that requires an explicit diff and renewed audit.
 
 ## Assumption standard
 
-Maintain an atomic assumption ledger. For each assumption, record:
+Maintain an atomic assumption map in the round workpad. For each assumption,
+record:
 
 - origin and exact statement;
 - every proof node that uses it;
@@ -36,19 +54,34 @@ Maintain an atomic assumption ledger. For each assumption, record:
 - a candidate weakening;
 - a removal witness or the scope of an unsuccessful search.
 
+Publish the exact assumptions and their load-bearing roles beside the
+canonical theorem. Card only unresolved necessity questions, reusable removal
+witnesses, and worthwhile rejected or parked relaxations.
+
 Inspect measurability, integrability, differentiability, boundedness, invertibility, completeness, separability, compactness, adaptedness, independence, uniqueness, existence of minimizers, convergence of series, continuity of operators, and interchange of operations when relevant.
 
 ## Mechanism and examples
 
 Identify the structure doing the work before allowing notation to obscure it. Use explicit examples to reveal invariance, conservation, monotonicity, convexity, compactness, coercivity, orthogonality, analyticity, closure, universality, or another mechanism.
 
-Include the smallest nontrivial case, low dimensions, linear or discrete models, boundary cases, and pathologies adapted to the problem. Keep an observed pattern, computational evidence, a conjecture, and a theorem as distinct artifacts.
+Include the smallest nontrivial case, low dimensions, linear or discrete
+models, boundary cases, and pathologies adapted to the problem. Keep an
+observed pattern, computational evidence, a conjecture, and a theorem as
+distinct workpad objects while researching; publish or card each only when its
+retention threshold is met.
 
 ## Proof-search standard
 
-For a nontrivial result, compare multiple genuinely different proof routes. Record why a route fails before abandoning it; the obstruction may identify the correct statement. Allow speculative and nonstandard ideas during the creative pass, then submit them to the same verification standard.
+For a nontrivial result, compare multiple genuinely different proof routes.
+Record failures in the workpad; retain a failed route as a card only when its
+obstruction or revival condition will prevent repeated work or redirect later
+research. Allow speculative and nonstandard ideas during the creative pass,
+then submit them to the same verification standard.
 
-Use a generate, cheap-refute, expensive-prove funnel when many candidates exist. Preserve structurally diverse survivors rather than only the current favorite.
+Use a generate, cheap-refute, expensive-prove funnel when many candidates
+exist. Keep structurally diverse survivors in the workpad while searching.
+Publish an accepted route, and card another survivor only when its different
+mechanism or concrete next test makes it reusable after the round.
 
 ## Proof-construction standard
 
@@ -69,7 +102,13 @@ For every lemma, verify:
 
 Replace compression words such as “clearly” or “standard” with the missing argument whenever that step carries mathematical content.
 
-Keep a proof DAG rather than only a persuasive transcript. Preserve verified nodes, failed branches, checker feedback, and unresolved obligations. Do not accept a helper lemma that merely restates or hides the central difficulty; the dependency closure, not the main-file appearance, determines whether a proof is complete.
+Keep the current proof DAG, verified nodes, failed branches, checker feedback,
+and unresolved obligations in the workpad rather than only a persuasive
+transcript. Publish the accepted dependency structure and exact open
+obligations; card only reusable failed branches or checker lessons. Do not
+accept a helper lemma that merely restates or hides the central difficulty;
+the dependency closure, not the main-file appearance, determines whether a
+proof is complete.
 
 ## External-result standard
 
@@ -88,7 +127,8 @@ Before broad computational search, define:
 - a score that distinguishes degrees of progress when possible;
 - fixed structure versus search variables;
 - reproducibility data: code, versions, precision, bounds, and random seeds;
-- an archive of diverse candidates and failures;
+- a workpad collection of diverse candidates and failures, with only reusable
+  survivors or obstructions retained after closure;
 - the total attempt denominator, selection rule, budget, and stopping condition.
 
 Prefer exact arithmetic for certificates. State numerical tolerance and conditioning. Treat computation as proof only when a verified exhaustive argument or faithful formal certificate closes the logical gap.
@@ -126,9 +166,20 @@ Use exact labels:
 - `FALSE`: a certified counterexample or contradiction exists;
 - `UNRESOLVED`: the truth value is undetermined.
 
-For a gap, state: the unresolved point, why current methods do not close it, and what follows if it is established. Preserve source claims, experimental evidence, informal proof, and formal verification as distinct evidence types.
+For a gap, state: the unresolved point, why current methods do not close it,
+and what follows if it is established. In the canonical result, report every
+material source claim, experiment, informal argument, and formal check as a
+distinct evidence type. Keep raw records in the workpad and card only a
+reusable noncanonical lesson or source-applicability finding.
 
-For research-level or AI-assisted work, preserve provenance: material prompts or instructions, model and tool versions, human interventions, retries, selection, failed routes, budget, checker revisions, and literature-search coverage. Report abstention and reversal rather than hiding them. Evaluate logical correctness, statement fidelity, novelty or significance, provenance or autonomy, and readable mathematical reconstruction as separate axes.
+For research-level or AI-assisted work, publish enough provenance to evaluate
+the result: material prompts or instructions, model and tool versions, human
+interventions, retries and selection, budget, checker revisions, and
+literature-search coverage. Keep raw logs and attempt details in the workpad;
+card a failed route only when it is reusable. Report abstention and reversal
+rather than hiding them. Evaluate logical correctness, statement fidelity,
+novelty or significance, provenance or autonomy, and readable mathematical
+reconstruction as separate axes.
 
 ## Theorem-improvement standard
 

@@ -16,6 +16,60 @@ Agent skills for mathematical exploration and rigorous research. The suite helps
 
 The typical discovery path is `formalize-concepts` -> `explore-mathematical-structure` -> `explore-proof-strategies` -> `research-mathematics`. Skip stages when the formalism, target, or proof direction is already settled.
 
+## Research memory
+
+Authorized file-backed research uses three information layers:
+
+1. a self-contained canonical Markdown document;
+2. a Git-tracked `<stem>.research.sqlite` companion containing curated open,
+   active, parked, rejected, and integrated research-memory cards; and
+3. one generated OS-temporary workpad for raw round state, deleted after
+   successful consolidation.
+
+The canonical document remains authoritative. The database preserves useful
+noncanonical directions, obstructions, counterexamples, assumption
+relaxations, and source-applicability notes; it never holds mathematics needed
+to understand or trust the canonical result. Raw workpads and specialist
+reports are not stored in the database.
+
+`research-mathematics` and `explore-mathematical-structure` coordinate this
+lifecycle directly. `explore-proof-strategies`, `destroy-theory`, and
+`audit-assumptions` do so only for an authorized standalone theory round. When
+nested under a coordinator, all three are read-only specialists and the
+coordinator is the sole writer. `formalize-concepts` and ordinary
+`explain-mathematics` do not participate in the database lifecycle.
+
+The first file-backed round creates an empty companion and adds this locator to
+the canonical frontmatter:
+
+```yaml
+research_memory:
+  path: ./theory.research.sqlite
+  schema: 1
+  optional_for_understanding: true
+```
+
+Companions are binary Git artifacts. Different theories can advance in
+parallel, but competing branch versions of the same database must be
+reconciled semantically rather than binary-merged.
+Skills report an untracked companion at closure and do not stage or commit it
+without separate authorization.
+
+The suite ships one standard-library CLI at
+`research-mathematics/scripts/research_memory.py` with `init`, `apply`,
+`search`, `show`, and `check` commands. Its complete lifecycle and card
+contract live in `research-mathematics/references/research-memory.md`. These
+are shared resources inside the existing skill; there is no additional
+user-facing skill.
+
+```sh
+python3 mathematician/skills/research-mathematics/scripts/research_memory.py init --canonical theory.md --theory theory
+python3 mathematician/skills/research-mathematics/scripts/research_memory.py search --db theory.research.sqlite
+python3 mathematician/skills/research-mathematics/scripts/research_memory.py show --db theory.research.sqlite --slug a-semantic-slug
+python3 mathematician/skills/research-mathematics/scripts/research_memory.py apply --db theory.research.sqlite --input round-batch.json
+python3 mathematician/skills/research-mathematics/scripts/research_memory.py check --db theory.research.sqlite
+```
+
 All skills are opt-in and carry manual-only metadata for all supported hosts. Invoke them explicitly with `$skill-name` in Codex or `/skill-name` in Cursor and Claude Code.
 
 Manual-only metadata prevents the host from selecting a skill merely because a prompt resembles its description. It does not prevent an invoked skill from explicitly applying another skill: for example, `$research-mathematics` delegates adversarial review to `$destroy-theory` and hypothesis review to `$audit-assumptions`.

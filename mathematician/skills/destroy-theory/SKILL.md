@@ -10,11 +10,25 @@ Act as a hostile referee in service of the truth. A successful run either certif
 
 Read the shared [rigor standards](../research-mathematics/references/rigor-standards.md) before acting.
 
+## Execution role and research state
+
+Choose the role before attacking the target:
+
+- **Nested research specialist:** attack the exact frozen candidate and digest supplied by the coordinator. Begin with a cold pass over that candidate alone. Afterwards, research-memory databases may be queried read-only for known attacks, and every imported finding must be marked. Return a content-bound report; do not modify the candidate, canonical document, home database, foreign databases, or other theory artifacts.
+- **Standalone report-only:** inspect the supplied target and answer in the conversation without changing the filesystem. Consult existing research memory only when the user asks to include research history; keep it read-only.
+- **Standalone writable theory round:** use this role only when the user has authorized changes to a file-backed theory workspace. Own one canonical document and one home research-memory database, open every foreign theory database read-only, and use one OS-temporary workpad. Follow the normal close protocol below.
+
+Default to report-only when writable authority or a home theory is absent. Before any nested or standalone writable use of research memory, read the shared [research-memory protocol](../research-mathematics/references/research-memory.md) and use its [CLI](../research-mathematics/scripts/research_memory.py).
+
+When a research coordinator supplies `requested_attacks` from an assumption audit, attack only requests not already covered by the general pass, against the same frozen candidate digest. Report each request's result separately; remain read-only.
+
+Every nested report includes the attacked `candidate_digest`, so the coordinator can reject a report produced against a superseded candidate.
+
 ## 1. Map the target
 
 Separate definitions, axioms, ambient assumptions, lemmas, main claims, and claimed consequences. Type-check the objects and write the exact logical negation of every principal claim.
 
-Preserve an immutable copy of the submitted target and distinguish its literal wording from the intended research question. Flag every added assumption, changed definition, restricted domain, altered quantifier, or easier interpretation as target drift, even when the revised claim is true. A request to prove a statement is not evidence that it is true.
+Freeze a content-bound copy of the submitted target in the returned report or temporary workpad, and distinguish its literal wording from the intended research question. Flag every added assumption, changed definition, restricted domain, altered quantifier, or easier interpretation as target drift, even when the revised claim is true. A request to prove a statement is not evidence that it is true.
 
 Build a dependency map and identify the narrowest load-bearing claims. Check whether the definitions are circular, whether models satisfying the axioms exist, whether the theory is vacuous, and whether the claimed generality exceeds the proposed mechanism.
 
@@ -24,12 +38,14 @@ Complete this phase when each attack target has a precise statement and negation
 
 Prioritize universal quantifiers, existence or uniqueness claims, boundary parameters, closure assertions, division or inversion, limit interchanges, asymptotic constants, representation independence, identifiability, noncommutativity, and finite-to-infinite-dimensional transitions.
 
-Choose attacks that fit the target. Record them in an attack ledger with columns:
+Choose attacks that fit the target. Record them in a transient attack matrix with columns:
 
 | ID | Target | Proposed attack | Search scope | Candidate | Result |
 |---|---|---|---|---|---|
 
 Use result labels that distinguish `target defeated`, `proof defeated`, `encoding defeated`, and `not falsified within scope`.
+
+The matrix belongs in the returned report or OS-temporary workpad. It is not a durable ledger or a separate theory artifact.
 
 ## 3. Run the cheap-refute funnel
 
@@ -53,7 +69,7 @@ Escalate to transformations and pathologies:
 
 For classifications or finite candidate families, generate several mutually incompatible candidates, refute cheaply, and reserve full proof effort for survivors. State the domain and limits of every finite, random, numerical, symbolic, SAT/SMT, or proof-assistant search.
 
-When formal tools are practical, vary or delete hypotheses and certify the complete instantiated negation. Feed each certified witness back into the example laboratory so later candidates must explain both positive and negative cases.
+When formal tools are practical, vary or delete hypotheses and certify the complete instantiated negation. Use each certified witness to constrain later candidates during the run so they must explain both positive and negative cases.
 
 ## 4. Attack the proof step by step
 
@@ -99,18 +115,29 @@ Reject a candidate that violates even one hypothesis. Treat numerical candidates
 
 Locate the minimal false core. Propose the nearest natural corrected statement by strengthening a hypothesis, weakening the conclusion, restricting the domain, changing the topology, or adding the missing exceptional case. Explain why each certified witness no longer applies and list the new proof obligations.
 
+## 7. Consolidate a writable round
+
+In a standalone writable theory round:
+
+- Put certified counterexamples, verified material proof defects, changed validity boundaries, and accepted repairs in the canonical document. These load-bearing results must not live only in research memory.
+- Retain research-memory cards for reusable obstruction patterns, costly unsuccessful attacks, residual attacks with concrete next tests, and rejected repairs with reasons. A routine `not falsified within scope` result does not merit a card unless its search was expensive or is likely to be repeated.
+- Keep the complete attack matrix, candidate witnesses, tool logs, superseded repairs, and reconciliation notes in the temporary workpad.
+
+Apply one curated card batch only after the canonical update is ready. Validate the home database, then delete the workpad. If canonical integration, database application, or validation fails, retain the workpad and report its exact path. In nested mode, recommend canonical changes and card candidates to the coordinator instead of applying them.
+
 ## Report
 
 Return:
 
 1. **Target and logical negation**
 2. **Theory and dependency map**
-3. **Attack ledger**
+3. **Transient attack matrix**
 4. **Certified counterexamples or proof defects**
 5. **Boundary of validity**
 6. **Candidate repairs**
 7. **Residual attack surface**
 8. **Verdict**
+9. **Canonical and research-memory recommendations**, when nested in or closing a writable theory round
 
 Use one verdict:
 

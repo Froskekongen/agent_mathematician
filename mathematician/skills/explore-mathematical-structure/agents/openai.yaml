@@ -1,7 +1,7 @@
 interface:
   display_name: "Explore Mathematical Structure"
   short_description: "Precise exploration with an actionable brief"
-  default_prompt: "Use $explore-mathematical-structure to compare these mathematical structures, keep a precise exploration ledger, and return an actionable brief."
+  default_prompt: "Use $explore-mathematical-structure to compare these mathematical structures, keep the canonical result self-contained, and retain only useful research memory."
 
 policy:
   allow_implicit_invocation: false

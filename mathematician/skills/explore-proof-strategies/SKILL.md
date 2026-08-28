@@ -10,6 +10,18 @@ Scout broadly, test cheaply, and stop with a useful proof architecture. Preserve
 
 When no claim is ready and the user instead wants to discover which structures or questions deserve investigation, recommend `$explore-mathematical-structure` rather than manufacturing a proof target.
 
+## Execution role and research state
+
+Choose the role before doing any work:
+
+- **Nested research specialist:** work against the exact target or candidate supplied by the coordinator. Treat the canonical document and every research-memory database as read-only. Return a content-bound report to the coordinator; do not create, edit, or delete theory artifacts.
+- **Standalone report-only:** answer in the conversation without changing the filesystem. Do not initialize a companion database or create a persistent report.
+- **Standalone writable theory round:** use this role only when the user has authorized changes to a file-backed theory workspace. Own one canonical document and its one home research-memory database; open every foreign theory database read-only. Use one OS-temporary workpad for the round and close it according to the shared protocol.
+
+Default to report-only when writable authority or a home theory is absent. For a nested or standalone writable round, read the canonical document first. Before using research memory, read the shared [research-memory protocol](../research-mathematics/references/research-memory.md) and use its [CLI](../research-mathematics/scripts/research_memory.py). Query `active`, `open`, and `parked` summaries before generating routes. Query `rejected` cards only when a similar route is under consideration.
+
+The temporary portfolio, cheap screens, candidate variants, bridge sketches, and scout reports are workpad material. They are not durable theory artifacts.
+
 ## 1. Frame the working target
 
 Record:
@@ -19,7 +31,7 @@ Record:
 - the objects, quantifiers, and assumptions needed to discuss proof routes;
 - user-supplied constraints on methods, time, or compute.
 
-Use a lightweight working target rather than a full assumption ledger. Ask for clarification only when different answers would materially change the truth or relevant strategies.
+Use a lightweight working target rather than a full assumption catalog. Ask for clarification only when different answers would materially change the truth or relevant strategies.
 
 Complete this phase when candidate routes can be judged relevant or irrelevant to the same stated target.
 
@@ -52,6 +64,8 @@ For each route, record:
 - current disposition: `advance`, `park`, or `reject`.
 
 Reject a route only on a demonstrated obstruction. Park shallow failures and unverified analogies rather than overstating them.
+
+Keep the complete route portfolio in the report or temporary workpad. Persistence is a later curation decision, not a consequence of having considered a route.
 
 ### Adapt effort
 
@@ -102,7 +116,19 @@ Include:
 - compressed, fragile, or doubtful steps;
 - verification phases not yet performed.
 
-Perform one local coherence pass for missing links and circularity. Preserve the draft without running a separate adversarial, assumption, or independent-verification campaign.
+Perform one local coherence pass for missing links and circularity. Keep the draft in the returned report or temporary workpad without running a separate adversarial, assumption, or independent-verification campaign.
+
+In a standalone writable round, place the strongest candidate proof in the canonical document with the uncertified label intact. In nested and report-only roles, return it to the caller. Database persistence never upgrades a route, lemma, or proof to `PROVED`.
+
+## Consolidate a writable round
+
+For a standalone writable theory round, keep these destinations distinct:
+
+- Put the exact target, selected proof architecture, strongest candidate proof, decisive evidence, and immediate proof obligation in the canonical document.
+- Propose research-memory cards only for reusable open obligations, parked routes with a concrete revival condition, or rejected routes with a demonstrated obstruction. A retained card must be self-contained and record the relevant bottleneck, bridge-applicability analysis, next test, reason, or revival condition.
+- Leave the full brainstorming portfolio, cheap failures, superseded drafts, and routine probes in the temporary workpad.
+
+Apply the curated card batch only after the canonical update is ready. Validate the home database, then delete the workpad. If canonical integration, database application, or validation fails, retain the workpad and report its exact path. A nested specialist only recommends these destinations; the coordinator performs consolidation.
 
 ## Report
 
@@ -117,5 +143,6 @@ Return:
 7. **Candidate full proof**, when one emerged
 8. **Explored scope and stopping reason**
 9. **Research handoff** containing the literal claim, working interpretation, examples, selected routes, open lemma chain, imported-result status, rejected routes, and first recommended proof obligation
+10. **Canonical and research-memory recommendations**, when nested in or closing a writable theory round
 
-A route or candidate proof from this skill has no `PROVED` status. Recommend an explicit `$research-mathematics` follow-up when the user wants rigorous resolution or certification.
+The report is returned in the conversation or to the coordinator rather than persisted as a separate artifact. A route or candidate proof from this skill has no `PROVED` status. Recommend an explicit `$research-mathematics` follow-up when the user wants rigorous resolution or certification.
