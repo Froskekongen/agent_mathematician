@@ -1,94 +1,37 @@
 # Mathematical Research Rigor Standards
 
-Apply these standards across the full skill suite.
+Apply these standards across the mathematical skill suite. Mathematical truth outranks agreement, elegance, speed, and apparent completeness. An exact counterexample, gap, or unresolved status is a valid result. Scale the process: routine calculations need local checking; substantial claims need the complete research loop.
 
-## Truth and scope
+## Formalization
 
-Use mathematical truth as the objective. Treat agreement with the user, narrative elegance, speed, and apparent completeness as secondary. A rigorous negative result, exact gap, or unresolved status is a valid outcome.
-
-Scale the process to the claim. Routine calculations need local checking; substantial theorems, conjectures, derivations, and research questions need the complete research loop.
-
-## State-retention standard
-
-For an authorized file-backed round owned by a database-aware skill, follow the
-[research-memory protocol](research-memory.md). The canonical document owns
-accepted and load-bearing mathematics; its SQLite companion owns only curated
-reusable noncanonical knowledge; the generated temporary workpad owns round
-mechanics and superseded state. Every instruction to retain information must
-select one of these destinations. Raw transcripts and generic failures expire
-with a successfully consolidated workpad.
-
-Complete the protocol's `ensure` preflight only for the writable home pair.
-A located-but-missing companion stops the round; source and foreign companions
-remain read-only and are never created. Use `$consolidate-math-documents` when
-the work primarily combines multiple canonical pairs.
-
-## Formalization standard
-
-Before proof search, declare all material features:
+Before proof search, declare:
 
 - objects, domains, codomains, and quantifiers;
-- regularity, dimension, ambient algebraic or geometric structure;
+- regularity, dimension, and ambient algebraic or geometric structure;
 - topology, norm, metric, measure, filtration, and probability space;
 - boundary and initial conditions;
 - deterministic or stochastic interpretation;
 - pointwise, almost-sure, in-probability, distributional, weak, strong, or `L^p` meanings;
-- finite- versus infinite-dimensional setting;
-- requirements for every expression to be well-defined.
+- finite- versus infinite-dimensional setting; and
+- conditions making every expression well-defined.
 
-Choose and state a natural interpretation for ambiguity, then note alternatives that materially change the result.
+Choose a natural interpretation for ambiguity and identify alternatives that materially change the result. Freeze the literal source, intended question, definitions, fixed versus evolvable quantities, permitted assumptions or axioms, and representative non-vacuous instances. Any later change to hypotheses, conclusion, domain, definitions, or quantifiers is a new target requiring an explicit diff and renewed audit.
 
-Freeze a versioned target contract before substantial search. Keep the literal
-source statement, intended research question, definitions, fixed versus
-evolvable quantities, permitted assumptions or axioms, and representative
-non-vacuous instances in the workpad. Publish the accepted contract with the
-canonical theorem; discard superseded contracts after consolidation unless a
-reusable divergence passes the card-retention threshold. Treat any later
-change to hypotheses, conclusion, domain, definitions, or quantifiers as a new
-target that requires an explicit diff and renewed audit.
+## Assumptions
 
-## Assumption standard
+Use an atomic assumption map. For each assumption, record its origin and exact statement; proof nodes that use it; whether it serves well-posedness, this proof, or the theorem; logical interactions; candidate weakenings; and any removal witness or bounded unsuccessful search.
 
-Maintain an atomic assumption map in the round workpad. For each assumption,
-record:
-
-- origin and exact statement;
-- every proof node that uses it;
-- whether it is needed for well-posedness, this proof, or the theorem itself;
-- implication or interaction with other assumptions;
-- a candidate weakening;
-- a removal witness or the scope of an unsuccessful search.
-
-Publish the exact assumptions and their load-bearing roles beside the
-canonical theorem. Card only unresolved necessity questions, reusable removal
-witnesses, and worthwhile rejected or parked relaxations.
-
-Inspect measurability, integrability, differentiability, boundedness, invertibility, completeness, separability, compactness, adaptedness, independence, uniqueness, existence of minimizers, convergence of series, continuity of operators, and interchange of operations when relevant.
+Inspect measurability, integrability, differentiability, boundedness, invertibility, completeness, separability, compactness, adaptedness, independence, uniqueness, minimizer existence, series convergence, operator continuity, and operation interchange when relevant.
 
 ## Mechanism and examples
 
-Identify the structure doing the work before allowing notation to obscure it. Use explicit examples to reveal invariance, conservation, monotonicity, convexity, compactness, coercivity, orthogonality, analyticity, closure, universality, or another mechanism.
+Identify the structure doing the work: invariance, conservation, monotonicity, convexity, compactness, coercivity, orthogonality, analyticity, closure, universality, or another mechanism.
 
-Include the smallest nontrivial case, low dimensions, linear or discrete
-models, boundary cases, and pathologies adapted to the problem. Keep an
-observed pattern, computational evidence, a conjecture, and a theorem as
-distinct workpad objects while researching; publish or card each only when its
-retention threshold is met.
+Test the smallest nontrivial case, low dimensions, linear or discrete models, boundary cases, and adapted pathologies. Keep observed patterns, computational evidence, conjectures, and theorems epistemically distinct.
 
-## Proof-search standard
+## Proof search and construction
 
-For a nontrivial result, compare multiple genuinely different proof routes.
-Record failures in the workpad; retain a failed route as a card only when its
-obstruction or revival condition will prevent repeated work or redirect later
-research. Allow speculative and nonstandard ideas during the creative pass,
-then submit them to the same verification standard.
-
-Use a generate, cheap-refute, expensive-prove funnel when many candidates
-exist. Keep structurally diverse survivors in the workpad while searching.
-Publish an accepted route, and card another survivor only when its different
-mechanism or concrete next test makes it reusable after the round.
-
-## Proof-construction standard
+For a nontrivial result, compare genuinely different routes. Use a generate, cheap-refute, expensive-prove funnel when candidates are numerous. Speculative ideas face the same verification standard as conventional ones.
 
 Build a dependency graph:
 
@@ -102,66 +45,45 @@ For every lemma, verify:
 4. its conclusion is strong enough;
 5. dependencies are acyclic;
 6. limiting operations use the claimed topology;
-7. sums, limits, integrals, derivatives, expectations, and operators are interchanged under valid conditions;
+7. sums, limits, integrals, derivatives, expectations, and operators are interchanged validly; and
 8. finite-dimensional facts are not silently exported to infinite dimension.
 
-Replace compression words such as “clearly” or “standard” with the missing argument whenever that step carries mathematical content.
+Replace “clearly” or “standard” with the missing argument when it carries mathematical content. A helper lemma that restates the central difficulty remains open; completeness is determined by the full dependency closure.
 
-Keep the current proof DAG, verified nodes, failed branches, checker feedback,
-and unresolved obligations in the workpad rather than only a persuasive
-transcript. Publish the accepted dependency structure and exact open
-obligations; card only reusable failed branches or checker lessons. Do not
-accept a helper lemma that merely restates or hides the central difficulty;
-the dependency closure, not the main-file appearance, determines whether a
-proof is complete.
+## External results
 
-## External-result standard
+Retrieve each imported theorem's exact statement from an authoritative source or formal identifier. Verify every hypothesis, convention, quantifier, and scope condition in the present setting. Inspect proof ideas or equivalent formulations when transfer, mechanism, or novelty matters. Resemblance to a named theorem does not establish applicability.
 
-Retrieve the exact statement of every imported theorem. Record an authoritative source or formal identifier and verify all hypotheses, conventions, quantifiers, and scope conditions in the current setting. Inspect the proof idea or equivalent formulations when novelty, transfer, or mechanism matters. Resemblance to a named theorem does not establish applicability.
+Verify attribution and priority against primary sources and report search coverage. Failure to locate a reference does not establish novelty.
 
-Verify attribution and priority claims against primary sources. Report the search scope. Absence of a located reference does not establish novelty.
+## Computation
 
-## Computation standard
+Use symbolic, numerical, and programmatic experiments for discovery, low-dimensional inspection, constant estimation, scaling tests, and counterexample search. Before broad search, define valid-candidate criteria, an evaluator or test suite, a useful score, fixed versus search variables, reproducibility data, total attempt denominator, selection rule, budget, and stopping condition.
 
-Use symbolic, numerical, and programmatic experiments to discover identities, inspect low-dimensional cases, estimate constants, test scaling, and find counterexamples.
+Prefer exact arithmetic for certificates. State numerical tolerances and conditioning. Computation is proof only when verified exhaustiveness or a faithful formal certificate closes the logical gap.
 
-Before broad computational search, define:
+## Adversarial testing
 
-- valid candidate criteria;
-- a deterministic evaluator or explicit test suite;
-- a score that distinguishes degrees of progress when possible;
-- fixed structure versus search variables;
-- reproducibility data: code, versions, precision, bounds, and random seeds;
-- a workpad collection of diverse candidates and failures, with only reusable
-  survivors or obstructions retained after closure;
-- the total attempt denominator, selection rule, budget, and stopping condition.
+Seek objects satisfying every hypothesis and violating the conclusion. Test zero, constant, low-dimensional, degenerate, minimally regular, boundary, rescaled, translated, sign-changed, time-reversed, noninjective, noncompact, non-uniformly-integrable, noncommutative, and infinite-dimensional cases as relevant.
 
-Prefer exact arithmetic for certificates. State numerical tolerance and conditioning. Treat computation as proof only when a verified exhaustive argument or faithful formal certificate closes the logical gap.
+Certify a counterexample by verifying every hypothesis and the failed conclusion. Survival establishes only `not falsified within scope`. Also attack the specification for vacuity, altered quantifiers, easier interpretations, hidden restrictions, unsafe target mutations, and assumptions disguised as definitions. Distinguish `target defeated`, `proof defeated`, `encoding defeated`, and `not falsified within scope`.
 
-## Adversarial standard
+## Independent verification
 
-Actively seek objects satisfying the hypotheses and violating the conclusion. Test zero, constant, low-dimensional, degenerate, minimally regular, boundary, rescaled, translated, sign-changed, time-reversed, noninjective, noncompact, non-uniformly-integrable, noncommutative, and infinite-dimensional cases as relevant.
+Check a completed argument through a second proof, fresh derivation of the crux, alternative characterization, proof assistant or trusted checker, or independent dependency reconstruction. Separate proposer and verifier contexts when possible. A same-model critic is a useful filter, not independent evidence; reset stateful critics after major revisions. Rereading the same derivation is correlated checking.
 
-Certify a counterexample by checking every hypothesis and the failed conclusion. A theorem that survives an attack remains unproved until a proof passes independently.
+Verify four distinct obligations:
 
-Attack the specification as well as the theorem: test for vacuity, altered quantifiers, easier interpretations, hidden domain restrictions, unsafe target mutations, and imported assumptions disguised as definitions. Distinguish `target defeated`, `proof defeated`, `encoding defeated`, and `not falsified within scope`.
-
-## Independent-verification standard
-
-Verify a completed argument through a second proof, a fresh derivation of the critical lemma, an alternative characterization, a proof assistant or trusted checker, or an independent dependency reconstruction. Separate proposer and verifier contexts when possible. A same-model critic is a useful filter, not independent evidence. Reset a stateful critic after major revisions and require a final fresh-context check for high-stakes results. Rereading the same derivation is a correlated check.
-
-Keep the verification obligations separate:
-
-1. the informal statement matches the intended research question;
-2. the formal specification faithfully encodes that statement;
-3. the proof establishes exactly the frozen specification;
+1. the informal statement matches the intended question;
+2. the formal specification faithfully encodes it;
+3. the proof establishes exactly the frozen specification; and
 4. the complete dependency closure contains no unresolved placeholder, unsafe axiom, hidden assumption, or changed target.
 
-For formal work, test new definitions with sanity lemmas and representative examples, pin the proof-assistant and library revisions, and audit the permitted axiom set. Kernel acceptance certifies the encoded proposition only; semantic fidelity and mathematical significance require separate review.
+For formal work, test definitions with sanity lemmas and representative examples, pin proof-assistant and library revisions, and audit permitted axioms. Kernel acceptance certifies the encoded proposition, not its semantic fidelity or significance.
 
-Make the proof easy to verify: explicit subgoals, local justifications, stable notation, and visible dependencies. Checkability is part of rigor.
+Make verification local: explicit subgoals, justified transitions, stable notation, and visible dependencies. Checkability is part of rigor.
 
-## Epistemic standard
+## Epistemic status and provenance
 
 Use exact labels:
 
@@ -171,47 +93,27 @@ Use exact labels:
 - `FALSE`: a certified counterexample or contradiction exists;
 - `UNRESOLVED`: the truth value is undetermined.
 
-For a gap, state: the unresolved point, why current methods do not close it,
-and what follows if it is established. In the canonical result, report every
-material source claim, experiment, informal argument, and formal check as a
-distinct evidence type. Keep raw records in the workpad and card only a
-reusable noncanonical lesson or source-applicability finding.
+For a gap, state the unresolved point, why current methods fail, and what follows if it closes. Report source claims, experiments, informal arguments, and formal checks as distinct evidence types.
 
-For research-level or AI-assisted work, publish enough provenance to evaluate
-the result: material prompts or instructions, model and tool versions, human
-interventions, retries and selection, budget, checker revisions, and
-literature-search coverage. Keep raw logs and attempt details in the workpad;
-card a failed route only when it is reusable. Report abstention and reversal
-rather than hiding them. Evaluate logical correctness, statement fidelity,
-novelty or significance, provenance or autonomy, and readable mathematical
-reconstruction as separate axes.
+For research-level or AI-assisted work, disclose enough to assess the result: material prompts, model and tool versions, human interventions, retries and selection, budget, checker revisions, literature coverage, failures, abstentions, and reversals. Evaluate logical correctness, statement fidelity, novelty or significance, provenance or autonomy, and readable reconstruction separately.
 
-## Theorem-improvement standard
+## Improve and explain
 
-After resolving the stated claim, test whether the mathematics supports a stronger conclusion, weaker hypotheses, a converse, quantitative bounds, stability, uniqueness, characterization, extension, approximation, computational consequence, or unexpected connection.
+After resolving the claim, test stronger conclusions, weaker hypotheses, converses, quantitative bounds, stability, uniqueness, characterizations, extensions, approximations, consequences, and connections. When false, use the counterexample to locate the nearest natural true theorem.
 
-When a claim is false, use the counterexample to locate the nearest natural true theorem.
-
-## Exposition standard
-
-Present motivation, definitions, intuition, lemmas, theorem, proof, and consequences in a logical progression. Introduce notation before use, explain why definitions are natural, and give the proof idea before technical detail. Use equations for mathematics and prose for logical transitions.
-
-Expose meaningful uncertainty. Rhetorical confidence never upgrades evidence.
+Present motivation, definitions, intuition, lemmas, theorem, proof, and consequences in logical order. Introduce notation before use, explain why definitions are natural, and state the proof idea before technical detail. Expose uncertainty; rhetorical confidence never upgrades evidence.
 
 ## Final theorem audit
 
 Before using `PROVED`, check:
 
-- **Statement:** all objects and quantifiers are defined and the conclusion matches the proof.
-- **Target fidelity:** the final statement and any formal encoding match the frozen intended question; every change is disclosed.
-- **Well-posedness:** every expression exists and types align.
-- **Assumptions:** every hypothesis has an exact role; hidden assumptions are promoted into the statement.
-- **Proof:** every implication, limit, topology, exceptional set, and uniformity claim is justified.
-- **Dependencies:** the graph is acyclic and all open nodes are closed.
+- **Statement and fidelity:** all objects and quantifiers are defined; the theorem, intended question, encoding, and proved conclusion agree; every change is disclosed.
+- **Well-posedness and assumptions:** expressions exist, types align, every hypothesis has an exact role, and hidden assumptions are stated.
+- **Proof and dependencies:** every implication, limit, topology, exceptional set, and uniformity claim is justified; the dependency graph is acyclic and closed.
 - **Counterexamples:** adapted simple, boundary, degenerate, and pathological cases were actively tested.
 - **External results:** exact hypotheses and citations were verified.
 - **Independent check:** a genuinely fresh verification agrees.
 - **Novelty:** established results, new deductions, and conjectures are separated.
-- **Formal closure:** tool and library versions are pinned; definitions have sanity tests; no forbidden escape hatch or unresolved helper lemma remains.
-- **Provenance:** attempts, selection, budgets, tools, human edits, failures, and abstentions are disclosed at a level appropriate to the claim.
-- **Exposition:** the proof's crux and dependency mechanism survive any formal-to-human rewrite.
+- **Formal closure:** versions are pinned, definitions have sanity tests, and no forbidden escape hatch or unresolved helper remains.
+- **Provenance:** attempts, selection, budgets, tools, human edits, failures, and abstentions are disclosed appropriately.
+- **Exposition:** the crux and dependency mechanism survive any formal-to-human rewrite.

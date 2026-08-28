@@ -6,191 +6,76 @@ disable-model-invocation: true
 
 # Explore Mathematical Structure
 
-Run a **contrastive laboratory**: formalize only enough to make candidate
-structures disagree, execute the cheapest useful discriminator, and turn the
-result into a research choice.
+Run a **contrastive laboratory**: formalize only enough for candidate structures to disagree, execute the cheapest useful discriminator, and turn the result into a research choice. The exploration brief is authoritative.
 
-The exploration brief is the authoritative result. In an authorized
-file-backed round, maintain three information layers:
-
-1. a self-contained canonical Markdown document;
-2. its `<stem>.research.sqlite` companion, optional for understanding and
-   containing curated noncanonical research memory; and
-3. one skill-created directory under the operating system's temporary
-   directory for raw round state.
-
-Read and follow the shared
-[research-memory protocol](../research-mathematics/references/research-memory.md)
-before creating, reading, or updating a companion database. Use the shared
-[research-memory CLI](../research-mathematics/scripts/research_memory.py) for
-database access.
-Chat-only and read-only runs create no files and never initialize a database.
-
-When the primary task is to combine multiple canonical documents or theory
-companions, recommend `$consolidate-math-documents` instead of treating their
-contents as candidates in one exploration round.
+Chat-only and read-only runs create no artifacts. For an authorized file-backed round, read and follow the writable-home coordinator path, including `ensure`, in the shared [research-memory protocol](../research-mathematics/references/research-memory.md) before creating or querying theory memory; use its [CLI](../research-mathematics/scripts/research_memory.py). This skill is the round's sole writer.
 
 ## Run one tracer round
 
-Unless the user requests a one-shot artifact or gives a larger autonomous
-budget, stop after the first decision-relevant round.
+Unless the user requests a one-shot artifact or larger autonomous budget, stop after the first decision-relevant round.
 
-### 1. Establish the round
+### 1. Frame candidates
 
-Read the canonical document before its companion. In a file-backed round,
-run the protocol's `ensure` preflight for the writable home pair before
-creating a workpad. With no locator, let `ensure` create or validate the
-default companion and add the schema-2 locator only after success. With a
-locator, resolve it relative to the canonical document and require the exact
-database with `--require-existing`. Stop and report a located-but-missing
-companion; do not replace it or begin the round.
+Define a working contract: mathematical job, typed objects and maps, one observable or question, one anchor example or family, fixed choices, reversible assumptions, and live semantic forks.
 
-After successful preflight, create one temporary workpad directory and record
-its exact path. Keep working contracts, candidate versions, comparisons,
-predictions, raw probes, source search notes, scout reports, and superseded
-drafts there—not beside the canonical document and not in SQLite.
+Keep two to four candidates. Their roles may differ—objective, representation, theory, mechanism, regime, construction, or typed bundle—so compare what each contributes to the user's goal rather than forcing a common ontology. Candidate notes own their mathematics; selection criteria stay separate, and aggregate measurements use only user-approved weights.
 
-Frame a working contract containing the mathematical job, typed objects and
-maps, one observable or question, one anchor example or family, fixed choices,
-reversible assumptions, and live semantic forks.
+Resolve a semantic fork locally when one shared example exposes its consequences. If intended meaning still blocks comparison, ask one **wedge question** whose answers select different structures, examples, or maps.
 
-Keep two to four active candidates. They may have different roles—such as an
-objective, representation, algebraic theory, mechanism, regime, construction,
-or typed bundle—so compare them by what they contribute to the user's goal,
-not through a false common ontology. Candidate notes own their mathematics;
-keep selection criteria separate, and aggregate measurements only with
-user-approved weights.
-
-Resolve a semantic fork locally when one shared example exposes its
-consequences. If intended meaning still blocks comparison, ask one **wedge
-question** whose alternatives lead to different structures, examples, or
-maps. Framing is complete when the candidates make distinct, checkable
-predictions or the unresolved semantic choice is explicit.
+Complete framing when candidates make distinct, checkable predictions or the unresolved semantic choice is explicit.
 
 ### 2. Predict and probe
 
-Before inspecting a decisive result when practical, state each affected
-candidate's prediction, nearest competing explanation, and cheap break-test.
-Prefer the smallest example, counterexample, deformation, boundary case, or
-exact finite family that separates candidates. Execute the
-highest-information probe first and record its exact mathematical scope and
-artifact risks in the workpad.
+Before inspecting a decisive result when practical, state each affected candidate's prediction, nearest competing explanation, and cheap break-test. Prefer the smallest example, counterexample, deformation, boundary case, or exact finite family that separates candidates. Record the probe's exact mathematical scope and artifact risks.
 
-Use computation, formal checking, search, or scouts only when they address the
-current uncertainty. For material computation, solver work, formal checking,
-or parallel scouts, read and follow the
-[advanced probe protocol](references/probes-and-evidence.md).
+Use computation, formal checking, search, or scouts only for the current uncertainty. For material computation, solver work, formal checking, or parallel scouts, follow the [advanced probe protocol](references/probes-and-evidence.md).
 
 ### 3. Update and allocate
 
-Update the affected candidate notes while retaining the original prediction
-beside a repair for the duration of the round. Distinguish independently:
+Retain each original prediction beside any repair for the round. Distinguish:
 
-- a claim's quantified scope and mathematical status;
-- the evidence's actual coverage, method, and semantic fidelity; and
+- the claim's quantified scope and mathematical status;
+- the evidence's coverage, method, and semantic fidelity; and
 - the direction's workflow disposition.
 
-Reserve `refuted` for a checked counterexample to the literal claim.
-`rejected` means that a research route is no longer worth current investment;
-it does not assert mathematical falsity. A finite or numerical check covers
-only the recorded family, and a formal checker certifies only its encoded
-statement and checked correspondence.
+`refuted` requires a checked counterexample to the literal claim. `rejected` only ends current investment. Finite or numerical checks cover the recorded family; a formal checker certifies its encoded statement and checked correspondence. A non-discriminating probe establishes only non-separation.
 
-A non-discriminating probe still affects the conclusion by documenting
-non-separation, but it becomes durable only when it changes the canonical
-mathematics or passes the card-retention threshold below.
+Recommend one direction and at most two alternatives. Give the cheapest decisive next test and an outcome map: what each result would select, reject, split, park, or revive. Continue only within budget and when the expected decision value is clear.
 
-Recommend one next direction and at most two live alternatives. Give the
-cheapest decisive next test and an outcome map: what each result would select,
-reject, split, park, or revive. Run another round only within the agreed budget
-and when its expected decision value is clear.
+The tracer is complete when one consequential contrast is better determined—or its non-separation diagnosed—with scoped evidence, checked artifact risk, updated dispositions, and a next allocation.
 
-A tracer is complete when one consequential contrast is better determined—or
-its non-separation is diagnosed—with scoped evidence, checked artifact risk,
-updated dispositions, and a next allocation.
+## Retain only useful state
 
-## Promote, curate, and discard
+For a writable round:
 
-Before closing a file-backed round, classify the workpad's useful content:
+- **Canonical Markdown:** selected formalism, exact definitions and hypotheses, decisive evidence, load-bearing boundary witnesses, recommendation, interpretation-relevant obligations, and next discriminator.
+- **Native artifacts:** formal sources, certificates, programs, or datasets that must remain inspectable, linked from the canonical document.
+- **Research-memory cards:** reusable open, parked, or rejected directions; obstructions; expensive probes; source-applicability findings; and revival conditions.
+- **Workpad only:** working contracts, candidate versions, raw probes, comparisons, source notes, scout reports, routine failures, and superseded drafts.
 
-- **Canonical Markdown:** the selected formalism, exact current definitions
-  and hypotheses, decisive evidence, load-bearing boundary examples or
-  counterexamples, current recommendation, unresolved obligations that affect
-  interpretation, and the next discriminator.
-- **Native artifacts:** formal proof sources, certificates, programs, or
-  datasets that must remain independently inspectable; link them from the
-  canonical document.
-- **Research-memory cards:** reusable but noncanonical open, parked, or
-  rejected directions; structural obstructions; expensive probe results;
-  source-applicability findings; and revival conditions that would prevent
-  repeated work.
-- **Discard:** routine failed manipulations, cheap screens, superseded drafts,
-  raw scout chatter, and mechanical round history.
+A card needs a concrete next test, demonstrated rejection reason, useful obstruction, realistic revival condition, or enough cost to prevent repeated work. Its summary must be self-contained. Accepted mathematics never depends on memory or opaque card identifiers. Foreign theories remain read-only; a relied-upon foreign finding follows the shared protocol's local-snapshot and `card_origin` rules.
 
-Create a card only when it offers a concrete next test, a demonstrated reason
-for rejection, a useful obstruction, a realistic revival condition, or enough
-cost to justify preventing repetition. Make every card's summary mathematically
-self-contained. The companion may support later research, but accepted
-mathematics never depends on a card and canonical prose never requires an
-opaque card identifier to be understood.
-
-This skill is the sole writer for its standalone round. It may query other
-theories read-only and never ensures or creates their companions. If a foreign
-card materially affects the result, follow the shared protocol's local-snapshot
-and `card_origin` rules rather than creating a live cross-database dependency.
-
-Close in this order:
-
-1. integrate and verify the canonical document;
-2. apply one curated database batch;
-3. run the shared database checks and inspect every materially changed card;
-4. delete only the exact skill-created temporary directory.
-
-Retain the workpad and report its path when canonical integration, database
-application, or validation fails. If only cleanup fails, report the residual
-path; the completed canonical and database updates remain valid. Never perform
-Git operations without separate authorization.
+Close once under the shared protocol after integrating the canonical brief and curating cards.
 
 ## Return the brief first
 
-Every response starts with a standalone **Exploration brief**, organized by
-the user's decision. It contains:
+Start every response with a standalone **Exploration brief** organized around the user's decision:
 
-1. the current conclusion or live uncertainty and why it matters;
-2. the decisive mechanism and smallest useful witness, with exact scope;
-3. the live options and recommended direction; and
-4. the next discriminator, its outcome map, and a wedge question when human
-   meaning is the blocker.
+1. current conclusion or live uncertainty and why it matters;
+2. decisive mechanism and smallest witness, with exact scope;
+3. live options and recommendation; and
+4. next discriminator, outcome map, and wedge question when meaning blocks progress.
 
-Use a small decision table only when it reduces reading effort. Preserve every
-load-bearing hypothesis, quantifier, regime, and semantic distinction while
-using plain language around the formalism. Keep an intermediate brief near 500
-words and a concluding brief near 800–1,200 words unless the user requests
-depth.
+Use a small decision table only when it saves reading. Preserve every load-bearing hypothesis, quantifier, regime, and semantic distinction while keeping surrounding prose plain. Aim near 500 words mid-round and 800–1,200 words at conclusion unless the user requests otherwise.
 
-In chat-only mode, return the brief and create no persistent artifacts. In a
-file-backed round, make the canonical document self-contained and mention the
-companion only as optional research memory. Do not append database dumps,
-workpad records, or persistent specialist reports.
+In chat-only mode, return the brief only. In file-backed mode, keep the canonical document self-contained and describe the companion as optional memory; omit database dumps, raw round records, and persistent specialist reports.
 
-## Literature, boundaries, and completion
+## Boundaries and completion
 
-When any source enters the round, terminology, prior art, or novelty affects
-the decision, or before major investment in an apparently new direction, read
-the [literature and privacy protocol](references/literature-and-privacy.md).
+When sources, prior art, novelty, or privacy affect the decision—or before major investment in an apparently new direction—follow the [literature and privacy protocol](references/literature-and-privacy.md).
 
-This skill may use local derivations and micro-lemmas to discriminate
-structures, but it does not certify an end-to-end proof. Preserve an incidental
-complete argument in the returned brief for chat-only work or in the canonical
-document for a file-backed round, labelled `CANDIDATE FULL PROOF — NOT
-CERTIFIED`. Database persistence never upgrades a mathematical status.
+This skill may derive micro-lemmas but does not certify an end-to-end proof. Label any incidental complete argument `CANDIDATE FULL PROOF — NOT CERTIFIED`; persistence never upgrades its status.
 
-When comparison is no longer the primary task, hand off: meaning to
-`$formalize-concepts`, proof routes to `$explore-proof-strategies`, rigorous
-resolution to `$research-mathematics`, falsification to `$destroy-theory`, or
-hypothesis necessity to `$audit-assumptions`.
+When comparison stops being primary, hand off meaning to `$formalize-concepts`, routes to `$explore-proof-strategies`, rigorous resolution to `$research-mathematics`, falsification to `$destroy-theory`, or necessity to `$audit-assumptions`.
 
-Complete only when the brief supports a research decision, the canonical
-document is mathematically self-contained, every durable noncanonical item
-passes the card-retention threshold, validations succeed, and the temporary
-workpad has either been deleted or reported for recovery.
+Complete only when the brief supports a research decision, the canonical document (when written) is self-contained, every durable card passes the retention threshold, and shared-protocol closure succeeds or reports a recovery path.

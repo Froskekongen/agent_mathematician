@@ -1,370 +1,143 @@
 # Research Memory Protocol
 
-Read this reference for an authorized file-backed round run by
-`research-mathematics`, `explore-mathematical-structure`,
-`explore-proof-strategies`, `destroy-theory`, or `audit-assumptions`, and for
-multi-pair consolidation coordinated by `consolidate-math-documents`.
-Chat-only work and read-only review create no files.
+Read this protocol only for an authorized writable theory round. Nested and
+report-only work may query existing memory with `search` and `show`; it creates
+no theory artifacts and does not need the writable protocol.
 
-Schema 2 is the only supported companion schema. The CLI rejects every other
-schema version and provides no migration or compatibility path.
+Schema 2 is the only supported schema. Research state has three destinations:
 
-The protocol has three layers:
+1. **Canonical Markdown:** authoritative, self-contained mathematics.
+2. **`<stem>.research.sqlite`:** curated reusable noncanonical memory.
+3. **One OS-temporary workpad:** raw round state, deleted after a valid close.
 
-1. The canonical Markdown document is the authoritative, self-contained
-   mathematical account.
-2. Its `<stem>.research.sqlite` companion contains curated noncanonical
-   research memory.
-3. One generated OS-temporary workpad contains raw round state and is deleted
-   only after successful consolidation.
+The canonical document must remain understandable without its companion.
+Native proof sources, certificates, programs, and datasets remain deliberate
+artifacts linked from the canonical account rather than database payloads.
 
-The companion is optional for understanding the canonical mathematics. Losing
-it may lose useful research history, but never a hypothesis, definition,
-argument, or counterexample needed to interpret or trust the canonical result.
+## Roles and ownership
 
-## Establish one home theory
+| Role | Database access | Filesystem effect |
+|---|---|---|
+| Writable-home coordinator | One home database writable; others read-only | Owns the canonical update and one workpad |
+| Nested or report-only specialist | Existing databases read-only | No theory files or workpad |
+| Foreign/source lookup | Existing databases read-only | Missing databases remain missing |
+| Consolidation coordinator | One target database writable; sources read-only | Retires exact sources only after target closure |
 
-One round owns exactly one writable pair: a canonical document and its home
-database. Every other database is a source or foreign companion and remains
-read-only. Different home theories may be researched concurrently; parallel
-lanes for the same theory return to one coordinator and one final database
-transaction.
+One round has one writer and one final transaction. Parallel lanes for the same
+theory return findings to that writer. Different home theories may proceed
+concurrently. Never binary-merge competing database versions; select one and
+semantically reapply worthwhile cards from the other.
 
-Read the canonical document, inspect its frontmatter, and complete this
-preflight before creating a workpad or doing research:
+## Establish the home pair
 
-1. When a locator is present, resolve it relative to the canonical document
-   and run `ensure --canonical CANONICAL --db LOCATOR --require-existing`. A
-   missing located companion may represent lost research memory: stop, report
-   its exact path, and request recovery or reinitialization direction. Do not
-   create a replacement or proceed with a writable round.
-2. When no locator is present, run `ensure --canonical CANONICAL` without
-   `--require-existing`.
-   This creates the default companion when absent or validates the exact
-   existing pair without changing it. Only after success, add this frontmatter
-   to the canonical Markdown document:
+Read the canonical document before memory and preflight before creating a
+workpad:
+
+| Canonical state | Required action |
+|---|---|
+| Locator present | Resolve it relative to the document; run `ensure` with `--require-existing`. A missing companion stops the writable round. |
+| No locator | Run `ensure` without `--require-existing`; it creates or validates the canonical-stem companion. Add the locator only after success. |
+| New consolidation target | Draft in the workpad; create the stabilized Markdown target, then run `ensure`. Never ensure a source. |
+
+Default naming is `theory.md` with `theory.research.sqlite`; the exact canonical
+stem is also the default theory slug. Add:
 
 ```yaml
 research_memory:
-  path: ./<stem>.research.sqlite
+  path: ./theory.research.sqlite
   schema: 2
   optional_for_understanding: true
 ```
 
-New-target consolidation is the sole exception to that ordering because its
-canonical document does not exist yet. The consolidation coordinator first
-drafts the candidate in one OS-temporary workpad. Immediately before
-publication it re-checks that the explicitly selected target path is absent,
-creates the canonical Markdown document, runs `ensure` for that new writable
-home, adds the locator, and closes with one apply batch. It never ensures a
-source companion.
+The locator is authoritative after publication. Use revision-checked `relink`
+after a deliberate move or rename; the CLI neither moves files nor edits
+Markdown. Companions are intended to be Git-tracked, but skills leave staging
+and commits to separate authorization and report an untracked home companion
+at closure.
 
-Use the canonical stem by default: `theory.md` pairs with
-`theory.research.sqlite`; `ensure` also uses that stem as the default theory
-slug. Store a relative canonical path in the database. The locator becomes
-authoritative once written, even if the canonical document is later renamed.
-Use the revision-checked `relink` command after a move or rename makes the
-database's stored canonical path stale. The CLI never edits the locator or
-moves either file.
+## Retrieve and curate
 
-Run `ensure` only for the writable home pair. A nested specialist, report-only
-run, explanation, consolidation source, or foreign-theory lookup opens only
-existing databases read-only. It reports a missing source rather than creating
-one. This boundary preserves both authorization and the one-writer invariant.
+Read the canonical document first, then query:
 
-Companion databases are ordinary Git-tracked research artifacts, but a skill
-does not stage or commit them without separate authorization. Do not binary-
-merge competing branch versions of one database. Select one version and
-semantically reapply worthwhile cards from the other.
+1. home `active`, `open`, and `parked` summaries;
+2. relevant `rejected` cards only when reconsidering a similar route;
+3. foreign companions only for a concrete question.
 
-When the home pair is inside a Git repository, inspect and report the
-companion's tracking state at closure. A newly created companion remains
-untracked until the user separately authorizes staging; never imply that file
-creation alone made it durable in Git. Tracking status does not change the
-mathematical validity of an otherwise successful close.
-
-## Retrieve without importing authority
-
-Read the canonical document first. Query summaries in this order:
-
-1. `active`, `open`, and `parked` cards from the home theory;
-2. `rejected` cards relevant to a route now under consideration;
-3. foreign theory companions only when a concrete question warrants them.
-
-Open every non-home database read-only and never pass it to `ensure`. A foreign
-card is a lead, not a live dependency. When it materially affects local work,
-create a self-contained local snapshot card and attach one or more provenance
-rows. Each row records the source database locator, source semantic slug,
-source content digest, and a Markdown applicability mapping of objects,
-hypotheses, and unmatched assumptions. Prefer a stable repository-relative
-source locator when the source and target are versioned together. A
-repository-local locator must be a POSIX path relative to the target database;
-an external source must use a URI. Accepted
-cross-theory mathematics is restated in a canonical document; provenance rows
-are snapshots, not cross-file foreign keys.
-
-## Use cohesive cards
-
-A card is a context packet, not a normalized ledger fragment. Its summary must
-state enough scope and reasoning to be useful without traversing an edge or
-joining another record. Use a stable semantic slug rather than an opaque row
-number.
-
-Core fields are: kind, title, Markdown summary and optional detail, workflow
-disposition, optional claim status, reason, next test, revival condition,
-canonical anchor, revision, digest, and timestamps. Optional provenance lives
-in separate `card_origin` rows so a synthesized card can name multiple sources
-without fragmenting its mathematical account.
-The card's `content_sha256` covers only the cohesive card packet, not origins
-or navigational edges. Origin changes consume a database revision in the
-enclosing batch but do not change the card revision.
-Kinds and edge relations are extensible; useful kinds include `direction`,
-`proof-route`, `obstruction`, `counterexample`, `proof-obligation`,
-`assumption-relaxation`, `source-applicability`, and `verification-lesson`.
-
-Keep two status axes separate:
+A card is a cohesive Markdown context packet with a semantic slug. It remains
+understandable without following an edge. Keep disposition and mathematical
+status separate:
 
 - disposition: `open`, `active`, `parked`, `rejected`, `integrated`;
 - claim status: `conjectural`, `supported`, `refuted`, `proved`, `unresolved`,
-  or absent for nonclaims.
+  or absent.
 
-`Rejected` means that a research route is not worth current investment;
-`refuted` means evidence defeats a mathematical claim. Open and active cards
-need a next test, parked cards a revival condition, rejected cards a reason,
-and integrated cards a canonical anchor.
+`Rejected` allocates research effort; `refuted` records mathematical evidence.
+Open and active cards require a next test, parked cards a revival condition,
+rejected cards a reason, and integrated cards a canonical anchor. Retain only
+live directions, reusable obstructions or counterexamples, costly results
+likely to be repeated, realistic revival conditions, open obligations, or
+material source applicability. Accepted and load-bearing mathematics belongs
+in the canonical document; incidental attempts expire with the workpad.
 
-Retain a card only when it records a live direction, prevents likely repeated
-work, captures a structural obstruction or useful counterexample, preserves a
-realistic revival condition, or records reusable source applicability. Put
-accepted and load-bearing mathematics in the canonical document. Discard
-incidental attempts and generic failures.
+Foreign findings are leads rather than live dependencies. If one materially
+affects the home theory, create a self-contained local card and a `card_origin`
+row containing its last-known source locator, source slug, source card digest,
+and an applicability mapping of objects, hypotheses, and unmatched
+assumptions. Repository-local locators are POSIX paths relative to the target
+database; external sources use URIs. The locator may later become unavailable
+after authorized consolidation retirement; the provenance remains valid and
+is not a cross-database foreign key. Edges are sparse navigation between local
+cards only.
 
-Edges are sparse navigation aids between local cards. A card remains
-intelligible without them.
+## Work and close
 
-## Consolidate pairs semantically
+Create one generated directory under the OS temporary directory and record its
+path and round ID. Keep candidates, proof-DAG drafts, assumption maps, probes,
+source notes, specialist reports, manifests, verifier output, and the final
+batch there. Raw workpad content never enters SQLite.
 
-When the requested job is to combine multiple canonical documents and their
-companions, use `consolidate-math-documents` as the sole coordinator. Choose
-one writable target pair, treat every non-target input pair as a read-only
-source, and never create a missing source companion. The coordinator uses
-`export` to
-freeze source contents in the workpad, integrates accepted mathematics into a
-self-contained target canonical document, and applies one curated batch to the
-target database. There is no mechanical CLI merge or import command.
-
-Record a workpad mapping from each `(source locator, source slug)` to its local
-target slug. An absent target slug may be added. An identical existing card is
-a no-op. When the same slug names different content, either synthesize one
-revision-checked target card, choose a genuinely distinguishing semantic slug,
-or discard the source card; never silently upsert or append an opaque numeric
-suffix. Rewrite an edge only when both endpoints survive and skip an edge that
-already exists. Attach a `card_origin` row for every source card that materially
-influences a retained local card, including an explicit applicability mapping.
-Do not mechanically copy a source card's `integrated` disposition or canonical
-anchor; select target-appropriate state and applicability.
-
-## Know schema v2
-
-The companion uses standard SQLite features available through Python 3.9's
-standard library. It deliberately avoids `STRICT` tables, FTS5, JSON1, WAL,
-graph libraries, and migration frameworks. It sets `PRAGMA user_version=2`,
-enables foreign keys for every writable connection, and contains four tables:
-
-- `meta` has one row with the schema version, theory slug, canonical path
-  relative to the database, last consolidated canonical SHA-256, monotonically
-  increasing database revision, last applied round identifier and batch
-  digest, and UTC creation/update timestamps.
-- `card` uses the semantic `slug` as its primary key. It stores free-form
-  `kind`, `title`, self-contained `summary_md`, optional `detail_md`,
-  `disposition`, independent optional `claim_status`, `reason`, `next_test`,
-  `revival_condition`, `canonical_anchor`, card `revision`, normalized-content
-  `content_sha256`, and timestamps.
-- `edge` stores local `source_slug`, free-form `relation`, local
-  `target_slug`, and optional `note_md`. Its composite primary key is
-  `(source_slug, relation, target_slug)`; both slugs are cascading foreign
-  keys into `card`.
-- `card_origin` stores a local `card_slug`, `source_locator`, source semantic
-  `source_slug`, source card `source_digest`, and self-contained
-  `applicability_md`. Its composite primary key is
-  `(card_slug, source_locator, source_slug, source_digest)` and its local card
-  foreign key cascades on deletion. An index on `(source_locator, source_slug)`
-  supports provenance lookup. A source locator is descriptive provenance,
-  never a cross-database constraint.
-
-Kinds and relations remain extensible. The database constraints require a
-next test for `open` and `active`, a revival condition for `parked`, a reason
-for `rejected`, and a canonical anchor for `integrated`. Provenance source
-fields and applicability mappings are nonempty, and source digests are
-lowercase SHA-256 values.
-
-## Keep one transient workpad
-
-Create one generated directory below the OS temporary directory and record its
-exact path and round identifier. Candidate versions, assumption maps, proof
-DAG drafts, probe logs, source notes, specialist reports, finding
-dispositions, verifier records, checker output, and the final JSON batch live
-there. Raw workpad text never enters SQLite.
-
-Content-bound candidate and report identifiers are round-local. Native proof
-sources, certificates, programs, or datasets that must survive are promoted
-as deliberate artifacts and linked from the canonical document.
-
-## Close in a recoverable order
+Close in this order:
 
 1. Integrate accepted mathematics, load-bearing negative results, exact open
-   obligations, and a concise verification/provenance summary into the
-   canonical document.
-2. Curate only reusable noncanonical memory into one JSON batch.
-3. Apply the batch to the home database in one transaction.
-4. Run `check`, require `canonical_status` to be `current` for this close, then
-   `show` every added or materially changed card. A `requires_review` warning
-   remains non-mathematical in general, but during closure it signals a
-   post-apply edit or race that must be reconciled before cleanup.
-5. Delete only the generated round workpad.
+   obligations, and concise provenance into the canonical document.
+2. Curate reusable noncanonical material into one explicit batch.
+3. Apply it atomically to the home database.
+4. Run `check`, require `canonical_status: current`, and `show` every added or
+   materially changed card.
+5. Perform any coordinator-specific post-close action, such as consolidation
+   source retirement.
+6. Delete only the generated workpad.
 
-If canonical editing, database application, or validation fails, retain the
-workpad and report its path. If only workpad deletion fails, report the exact
-residual path; the canonical document and database remain closed.
+A canonical, database, validation, or post-close failure retains the workpad
+and its exact path. A cleanup-only failure leaves a valid pair and reports the
+residual directory. Source retirement is a filesystem phase after target
+closure, not part of the SQLite transaction; source companions remain
+read-only throughout consolidation.
 
-## Use the shared CLI
+## CLI routing
 
-The standard-library tool is
-[`research_memory.py`](../scripts/research_memory.py):
+Use the standard-library [research-memory CLI](../scripts/research_memory.py).
+Every command emits JSON.
 
-```text
-init   --canonical PATH --theory SLUG [--db PATH]
-ensure --canonical PATH [--theory SLUG] [--db PATH]
-       [--require-existing]
-relink --db PATH --canonical NEW_PATH --expected-canonical OLD_PATH
-       --expected-database-revision N
-apply  --db PATH --input JSON_FILE
-search --db PATH [--db PATH ...] [--text TEXT]
-       [--state STATE ...] [--kind KIND ...] [--limit N]
-show   --db PATH --slug SLUG
-export --db PATH
-check  --db PATH
-```
+| Need | Command |
+|---|---|
+| Current schema, fields, operation shapes, digest rule | `contract` |
+| Create or validate a writable home | `ensure` |
+| Strict explicit creation | `init` |
+| Repair ownership metadata after a move | `relink` |
+| Apply one revision-checked transaction | `apply` |
+| Retrieve summaries | `search` |
+| Inspect one full card, origins, and local edges | `show` |
+| Freeze a complete read-only source snapshot | `export` |
+| Validate schema, integrity, ownership, digest, and sidecars | `check` |
 
-All commands emit JSON. `search`, `show`, `export`, and `check` open databases
-read-only and never create a missing file. `apply` mutates one existing home
-database with one `BEGIN IMMEDIATE` transaction. Its batch carries a round
-identifier, expected database revision, post-edit canonical digest, and
-explicit card, origin, and edge operations. Updates and deletions require
-expected revisions or exact keys; there are no implicit upserts. An immediate
-retry of the same round and batch digest is idempotent.
+Run `contract` before constructing an unfamiliar batch instead of relying on a
+copied example. `apply` uses explicit add/update/delete operations, expected
+revisions or exact keys, and no implicit upserts. Repeating the immediately
+previous round ID and batch digest is idempotent; reusing that round ID with
+different content is rejected. `search`, `show`, `export`, and `check` are
+read-only and never create missing databases.
 
-`ensure` requires an existing Markdown canonical document. It derives
-`<stem>.research.sqlite` and the exact canonical stem as the theory slug when
-they are omitted. An absent target is created in `DELETE` journal mode unless
-`--require-existing` is present; an existing target is validated without
-mutation. A theory or canonical-path mismatch, malformed database, symlink, or
-missing required target is an error. Canonical digest staleness is returned as
-`requires_review` rather than silently synchronized.
-
-`init` is the strict lower-level creation command retained for explicit use.
-It requires a theory slug and an existing canonical Markdown document,
-refuses every existing destination, and creates schema 2. Database-aware
-skills use `ensure` for normal writable-home preflight.
-
-`relink` is the explicit, revision-checked metadata repair for a moved or
-renamed canonical document. It changes only the relative canonical path,
-database revision, and update timestamp; it preserves the stored canonical
-digest, last-round metadata, cards, origins, and edges. `search` accepts
-repeated `--db` options, defaults to `active`, `open`, and `parked`, and
-searches slug, title, summary, and detail with parameterized `LIKE`; rejected
-and integrated cards require an explicit state filter. `show` returns a
-complete card, all its provenance rows, and its immediate local edges.
-`export` returns a deterministic full read-only snapshot for source curation.
-It contains complete metadata, all cards in every disposition, all origins,
-and all edges in stable order, plus a SHA-256 `export_digest` over that semantic
-payload.
-`check` runs schema/version, quick-integrity, foreign-key, canonical-path and
-digest, card/provenance constraints, and rollback-journal/WAL/SHM-sidecar
-checks.
-
-### Build an apply batch
-
-The JSON object has exactly these top-level fields:
-
-```json
-{
-  "round_id": "2026-08-28-route-screen",
-  "batch_digest": "<computed as below>",
-  "expected_database_revision": 3,
-  "canonical_digest": "<SHA-256 of the post-edit canonical file>",
-  "card_operations": [
-    {
-      "op": "add",
-      "card": {
-        "slug": "compactness-route",
-        "kind": "proof-route",
-        "title": "Compactness route after truncation",
-        "summary_md": "A self-contained account of the route and its scope.",
-        "disposition": "open",
-        "claim_status": "unresolved",
-        "next_test": "Prove uniform tightness for the truncated family."
-      }
-    }
-  ],
-  "origin_operations": [
-    {
-      "op": "add",
-      "card_slug": "compactness-route",
-      "source_locator": "../related/related.research.sqlite",
-      "source_slug": "truncation-route",
-      "source_digest": "<source card content SHA-256>",
-      "applicability_md": "Map the source family to the local truncated family; uniform tightness remains unmatched."
-    }
-  ],
-  "edge_operations": []
-}
-```
-
-Card operations are explicit:
-
-- add: `{"op":"add","card":{...}}`;
-- update: `{"op":"update","slug":"...","expected_revision":2,
-  "changes":{...}}`;
-- delete: `{"op":"delete","slug":"...","expected_revision":2}`.
-
-Edge operations are
-`{"op":"add","source_slug":"...","relation":"...","target_slug":"...",
-"note_md":"..."}` and the corresponding `delete` form without `note_md`.
-
-Origin operations are
-`{"op":"add","card_slug":"...","source_locator":"...",
-"source_slug":"...","source_digest":"...","applicability_md":"..."}`
-and the corresponding exact-key `delete` form without `applicability_md`.
-Change an applicability mapping with an ordered exact delete followed by add;
-schema 2 has no implicit origin update operation.
-
-Within one apply transaction, operations run in card, origin, then edge order.
-Any failure rolls back all three groups. Origin-only and edge-only batches
-still consume the enclosing database revision.
-
-Compute `batch_digest` over the batch *without* its `batch_digest` member. The
-exact rule is SHA-256 of the UTF-8 bytes from:
-
-```python
-json.dumps(
-    batch_without_batch_digest,
-    ensure_ascii=False,
-    sort_keys=True,
-    separators=(",", ":"),
-)
-```
-
-The CLI verifies this digest before opening an idempotent-retry path.
-Immediately reusing the last round identifier with different valid content is
-rejected. Schema v2 intentionally stores only the last applied round, so round
-identifiers must be unique; an older identifier is not a durable global
-deduplication key. Every operation is validated before commit; a conflict or
-invalid operation rolls back the whole batch.
-
-The tool edits neither the canonical document nor the workpad and performs no
-Git operations. It never mechanically parses, imports, migrates, rewrites, or
-deletes legacy ledgers. An agent may read an existing user-generated ledger as
-source material during a later authorized round and semantically curate only
-worthwhile content into cards. After successful consolidation, report the old
-file as eligible for user-approved removal and otherwise leave it untouched.
+The CLI edits neither canonical documents nor workpads, performs no Git
+operation, and does not mechanically merge, migrate, import, or retire source
+artifacts.

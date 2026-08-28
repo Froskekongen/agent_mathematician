@@ -31,6 +31,7 @@ CARD_FIELDS = (
     "revival_condition",
     "canonical_anchor",
 )
+REQUIRED_CARD_FIELDS = ("slug", "kind", "title", "summary_md", "disposition")
 MUTABLE_CARD_FIELDS = tuple(name for name in CARD_FIELDS if name != "slug")
 OPTIONAL_CARD_FIELDS = frozenset(
     {
@@ -42,12 +43,28 @@ OPTIONAL_CARD_FIELDS = frozenset(
         "canonical_anchor",
     }
 )
+CARD_STATE_REQUIREMENTS = {
+    "open": ("next_test",),
+    "active": ("next_test",),
+    "parked": ("revival_condition",),
+    "rejected": ("reason",),
+    "integrated": ("canonical_anchor",),
+}
 ORIGIN_FIELDS = (
     "card_slug",
     "source_locator",
     "source_slug",
     "source_digest",
     "applicability_md",
+)
+APPLY_BATCH_FIELDS = (
+    "round_id",
+    "batch_digest",
+    "expected_database_revision",
+    "canonical_digest",
+    "card_operations",
+    "origin_operations",
+    "edge_operations",
 )
 SHA256_RE = re.compile(r"[0-9a-f]{64}\Z")
 REQUIRED_COLUMNS = {
@@ -299,11 +316,7 @@ def require_revision(value: Any, label: str, minimum: int = 0) -> int:
 
 def normalize_card(raw: Mapping[str, Any]) -> dict[str, Any]:
     require_keys(raw, CARD_FIELDS, "card")
-    missing = [
-        name
-        for name in ("slug", "kind", "title", "summary_md", "disposition")
-        if name not in raw
-    ]
+    missing = [name for name in REQUIRED_CARD_FIELDS if name not in raw]
     if missing:
         raise ResearchMemoryError(f"card is missing field(s): {', '.join(missing)}")
 
@@ -323,14 +336,11 @@ def normalize_card(raw: Mapping[str, Any]) -> dict[str, Any]:
         raise ResearchMemoryError(
             "card.claim_status must be null or one of: " + ", ".join(CLAIM_STATUSES)
         )
-    if card["disposition"] in ("open", "active") and card["next_test"] is None:
-        raise ResearchMemoryError("open and active cards require card.next_test")
-    if card["disposition"] == "parked" and card["revival_condition"] is None:
-        raise ResearchMemoryError("parked cards require card.revival_condition")
-    if card["disposition"] == "rejected" and card["reason"] is None:
-        raise ResearchMemoryError("rejected cards require card.reason")
-    if card["disposition"] == "integrated" and card["canonical_anchor"] is None:
-        raise ResearchMemoryError("integrated cards require card.canonical_anchor")
+    for field in CARD_STATE_REQUIREMENTS[card["disposition"]]:
+        if card[field] is None:
+            raise ResearchMemoryError(
+                f"{card['disposition']} cards require card.{field}"
+            )
     return card
 
 
@@ -510,15 +520,7 @@ def load_batch(path: Path) -> Mapping[str, Any]:
 
 
 def validate_batch(raw: Mapping[str, Any]) -> dict[str, Any]:
-    fields = {
-        "round_id",
-        "batch_digest",
-        "expected_database_revision",
-        "canonical_digest",
-        "card_operations",
-        "origin_operations",
-        "edge_operations",
-    }
+    fields = set(APPLY_BATCH_FIELDS)
     require_keys(raw, fields, "batch")
     missing = sorted(fields - set(raw))
     if missing:
@@ -1547,6 +1549,109 @@ def command_export(args: argparse.Namespace) -> dict[str, Any]:
     }
 
 
+def command_contract(_args: argparse.Namespace) -> dict[str, Any]:
+    """Return the machine-readable schema-2 authoring contract without a database."""
+    return {
+        "ok": True,
+        "command": "contract",
+        "schema_version": SCHEMA_VERSION,
+        "locator": {
+            "yaml_key": "research_memory",
+            "default_value": {
+                "path": "./<stem>.research.sqlite",
+                "schema": SCHEMA_VERSION,
+                "optional_for_understanding": True,
+            },
+            "default_database_name": "<stem>.research.sqlite",
+            "default_theory_slug": "<stem>",
+            "stem_rule": "canonical filename with its final .md or .markdown suffix removed",
+        },
+        "statuses": {
+            "disposition": list(DISPOSITIONS),
+            "claim_status": {"values": list(CLAIM_STATUSES), "nullable": True},
+        },
+        "card": {
+            "fields": list(CARD_FIELDS),
+            "required_fields": list(REQUIRED_CARD_FIELDS),
+            "optional_nullable_fields": sorted(OPTIONAL_CARD_FIELDS),
+            "state_requirements": {
+                state: list(fields)
+                for state, fields in CARD_STATE_REQUIREMENTS.items()
+            },
+            "kind": "nonempty extensible string",
+        },
+        "apply_batch": {
+            "fields": list(APPLY_BATCH_FIELDS),
+            "digest_rule": {
+                "algorithm": "sha256",
+                "encoding": "utf-8",
+                "exclude_top_level_fields": ["batch_digest"],
+                "json": {
+                    "ensure_ascii": False,
+                    "sort_keys": True,
+                    "separators": [",", ":"],
+                },
+            },
+            "operations": {
+                "card": {
+                    "add": {
+                        "op_value": "add",
+                        "required_fields": ["op", "card"],
+                        "card_fields": list(CARD_FIELDS),
+                    },
+                    "update": {
+                        "op_value": "update",
+                        "required_fields": [
+                            "op",
+                            "slug",
+                            "expected_revision",
+                            "changes",
+                        ],
+                        "allowed_change_fields": list(MUTABLE_CARD_FIELDS),
+                        "changes_must_be_nonempty": True,
+                    },
+                    "delete": {
+                        "op_value": "delete",
+                        "required_fields": ["op", "slug", "expected_revision"],
+                    },
+                },
+                "origin": {
+                    "add": {
+                        "op_value": "add",
+                        "required_fields": ["op", *ORIGIN_FIELDS],
+                    },
+                    "delete": {
+                        "op_value": "delete",
+                        "required_fields": ["op", *ORIGIN_FIELDS[:4]],
+                    },
+                },
+                "edge": {
+                    "add": {
+                        "op_value": "add",
+                        "required_fields": [
+                            "op",
+                            "source_slug",
+                            "relation",
+                            "target_slug",
+                        ],
+                        "optional_fields": ["note_md"],
+                    },
+                    "delete": {
+                        "op_value": "delete",
+                        "required_fields": [
+                            "op",
+                            "source_slug",
+                            "relation",
+                            "target_slug",
+                        ],
+                    },
+                    "relation": "nonempty extensible string",
+                },
+            },
+        },
+    }
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = JSONArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -1600,6 +1705,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     export_parser.add_argument("--db", required=True)
     export_parser.set_defaults(handler=command_export)
+
+    contract_parser = subparsers.add_parser(
+        "contract", help="print the schema-2 authoring contract"
+    )
+    contract_parser.set_defaults(handler=command_contract)
 
     check_parser = subparsers.add_parser("check", help="validate one companion database")
     check_parser.add_argument("--db", required=True)

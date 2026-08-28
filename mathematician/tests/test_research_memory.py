@@ -163,6 +163,99 @@ class ResearchMemoryCLITest(unittest.TestCase):
         self.assertFalse(result["ok"])
         self.assertIn("required", result["error"])
 
+    def test_contract_is_deterministic_self_contained_and_needs_no_database(self) -> None:
+        self.db.unlink()
+        self.canonical.unlink()
+        before = set(self.root.iterdir())
+        runs = [
+            subprocess.run(
+                [sys.executable, str(SCRIPT), "contract"],
+                cwd=self.root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            for _ in range(2)
+        ]
+        for completed in runs:
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertEqual(completed.stderr, "")
+        self.assertEqual(runs[0].stdout, runs[1].stdout)
+        self.assertEqual(set(self.root.iterdir()), before)
+
+        contract = json.loads(runs[0].stdout)
+        self.assertEqual(contract["schema_version"], 2)
+        self.assertEqual(
+            contract["locator"]["default_value"],
+            {
+                "path": "./<stem>.research.sqlite",
+                "schema": 2,
+                "optional_for_understanding": True,
+            },
+        )
+        self.assertEqual(contract["locator"]["default_theory_slug"], "<stem>")
+        self.assertEqual(
+            contract["statuses"]["disposition"],
+            ["open", "active", "parked", "rejected", "integrated"],
+        )
+        self.assertTrue(contract["statuses"]["claim_status"]["nullable"])
+        self.assertEqual(
+            contract["card"]["required_fields"],
+            ["slug", "kind", "title", "summary_md", "disposition"],
+        )
+        self.assertEqual(
+            contract["card"]["state_requirements"]["rejected"], ["reason"]
+        )
+
+        batch = contract["apply_batch"]
+        self.assertEqual(
+            batch["fields"],
+            [
+                "round_id",
+                "batch_digest",
+                "expected_database_revision",
+                "canonical_digest",
+                "card_operations",
+                "origin_operations",
+                "edge_operations",
+            ],
+        )
+        self.assertEqual(
+            batch["digest_rule"],
+            {
+                "algorithm": "sha256",
+                "encoding": "utf-8",
+                "exclude_top_level_fields": ["batch_digest"],
+                "json": {
+                    "ensure_ascii": False,
+                    "sort_keys": True,
+                    "separators": [",", ":"],
+                },
+            },
+        )
+        operations = batch["operations"]
+        self.assertEqual(
+            operations["card"]["update"]["required_fields"],
+            ["op", "slug", "expected_revision", "changes"],
+        )
+        self.assertEqual(
+            operations["origin"]["delete"]["required_fields"],
+            ["op", "card_slug", "source_locator", "source_slug", "source_digest"],
+        )
+        self.assertEqual(
+            operations["edge"]["add"]["optional_fields"], ["note_md"]
+        )
+
+        help_result = subprocess.run(
+            [sys.executable, str(SCRIPT), "--help"],
+            cwd=self.root,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(help_result.returncode, 0, help_result.stderr)
+        self.assertIn("contract", help_result.stdout)
+
     def test_ensure_creates_reuses_and_requires_existing(self) -> None:
         canonical = self.root / "topic.v2.markdown"
         canonical.write_text("# Topic v2\n", encoding="utf-8")
@@ -1089,7 +1182,6 @@ class SuiteStructureTest(unittest.TestCase):
         for name in participating:
             text = (skills_root / name / "SKILL.md").read_text(encoding="utf-8")
             self.assertIn("research-memory", text, name)
-            self.assertIn("ensure", text, name)
 
         formalize = (skills_root / "formalize-concepts" / "SKILL.md").read_text(
             encoding="utf-8"
@@ -1128,19 +1220,22 @@ class SuiteStructureTest(unittest.TestCase):
         consolidate = (
             skills_root / "consolidate-math-documents" / "SKILL.md"
         ).read_text(encoding="utf-8")
+        consolidate_flat = " ".join(consolidate.split())
         self.assertIn("disable-model-invocation: true", consolidate)
         for required in (
             "read-only",
-            "byte-for-byte",
             "new target",
             "Preview",
             "same-theory unification",
             "cross-theory synthesis",
-            "merge-equivalent",
+            "retirement manifest",
+            "discard-with-source",
             "unresolved-conflict",
             "card_origin",
+            "source-retirement",
         ):
-            self.assertIn(required, consolidate)
+            self.assertIn(required, consolidate_flat)
+        self.assertNotIn("`source-only`", consolidate)
 
         protocol = (
             skills_root
@@ -1149,10 +1244,34 @@ class SuiteStructureTest(unittest.TestCase):
             / "research-memory.md"
         ).read_text(encoding="utf-8")
         self.assertIn("Schema 2 is the only supported", protocol)
-        self.assertIn("init   --canonical", protocol)
+        self.assertIn("`contract`", protocol)
         self.assertIn("card_origin", protocol)
         self.assertNotIn("origin_uri", protocol)
         self.assertNotIn("origin_digest", protocol)
+
+        retirement = (
+            skills_root
+            / "consolidate-math-documents"
+            / "references"
+            / "source-retirement.md"
+        ).read_text(encoding="utf-8")
+        for required in (
+            "tracked",
+            "clean",
+            "unstaged",
+            "partial",
+            "retire_sources.py",
+        ):
+            self.assertIn(required, retirement)
+
+        # Guard the two shared hot paths against instruction sediment.
+        self.assertLessEqual(len(protocol.split()), 1100)
+        self.assertLessEqual(len(consolidate.split()), 1100)
+        database_aware_words = len(protocol.split()) + sum(
+            len((skills_root / name / "SKILL.md").read_text(encoding="utf-8").split())
+            for name in participating
+        )
+        self.assertLessEqual(database_aware_words, 8000)
 
     def test_relative_markdown_links_exist(self) -> None:
         link_pattern = re.compile(r"(?<!!)\[[^]]*\]\(([^)]+)\)")
@@ -1196,6 +1315,22 @@ class SuiteStructureTest(unittest.TestCase):
             self.assertTrue((installed_research / "references" / "research-memory.md").is_file())
             self.assertTrue(
                 (destination / "consolidate-math-documents" / "SKILL.md").is_file()
+            )
+            self.assertTrue(
+                (
+                    destination
+                    / "consolidate-math-documents"
+                    / "references"
+                    / "source-retirement.md"
+                ).is_file()
+            )
+            self.assertTrue(
+                (
+                    destination
+                    / "consolidate-math-documents"
+                    / "scripts"
+                    / "retire_sources.py"
+                ).is_file()
             )
             self.assertFalse(obsolete.exists())
             self.assertEqual(sentinel.read_text(encoding="utf-8"), "preserve")

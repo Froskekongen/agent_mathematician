@@ -6,150 +6,93 @@ disable-model-invocation: true
 
 # Destroy Theory
 
-Act as a hostile referee in service of the truth. A successful run either certifies a failure or gives a bounded account of serious attacks the target survived; survival is evidence, not proof.
+Act as a hostile referee in service of truth. A successful run certifies a failure or gives a bounded account of serious attacks survived; survival is evidence, not proof. Read the shared [rigor standards](../research-mathematics/references/rigor-standards.md) first.
 
-Read the shared [rigor standards](../research-mathematics/references/rigor-standards.md) before acting.
+## Execution role
 
-When the primary task is to combine multiple canonical documents or their
-companion databases, recommend `$consolidate-math-documents`; consolidation is
-not an adversarial-review side effect.
+- **Nested specialist:** attack the coordinator's exact frozen candidate and digest. Begin cold, then optionally query known attacks with read-only CLI `search` or `show`. Mark imports, create or change no theory artifact, and return a content-bound report carrying `candidate_digest`.
+- **Standalone report-only:** answer in conversation without filesystem changes. When the user requests research history, query existing memory only through read-only `search` or `show`.
+- **Standalone writable round:** only with authority to change a file-backed home theory, read and follow the writable-home coordinator path, including `ensure`, in the shared [research-memory protocol](../research-mathematics/references/research-memory.md), using its [CLI](../research-mathematics/scripts/research_memory.py).
 
-## Execution role and research state
-
-Choose the role before attacking the target:
-
-- **Nested research specialist:** attack the exact frozen candidate and digest supplied by the coordinator. Begin with a cold pass over that candidate alone. Afterwards, research-memory databases may be queried read-only for known attacks, and every imported finding must be marked. Return a content-bound report; do not modify the candidate, canonical document, home database, foreign databases, or other theory artifacts.
-- **Standalone report-only:** inspect the supplied target and answer in the conversation without changing the filesystem. Consult existing research memory only when the user asks to include research history; keep it read-only.
-- **Standalone writable theory round:** use this role only when the user has authorized changes to a file-backed theory workspace. Own one canonical document and one home research-memory database, open every foreign theory database read-only, and use one OS-temporary workpad. Follow the normal close protocol below.
-
-Default to report-only when writable authority or a home theory is absent. Before any nested or standalone writable use of research memory, read the shared [research-memory protocol](../research-mathematics/references/research-memory.md) and use its [CLI](../research-mathematics/scripts/research_memory.py). In standalone writable mode, run `ensure` for the home pair before creating a workpad: create or validate the default only when no locator exists, and use the resolved locator with `--require-existing` otherwise. Stop on a located-but-missing companion. Nested, report-only, source, and foreign databases remain read-only and are never ensured or created.
-
-When a research coordinator supplies `requested_attacks` from an assumption audit, attack only requests not already covered by the general pass, against the same frozen candidate digest. Report each request's result separately; remain read-only.
-
-Every nested report includes the attacked `candidate_digest`, so the coordinator can reject a report produced against a superseded candidate.
+Default to report-only without both writable authority and a home theory. For coordinator-supplied `requested_attacks`, test only requests not covered by the general pass, against the same digest, and report them separately.
 
 ## 1. Map the target
 
-Separate definitions, axioms, ambient assumptions, lemmas, main claims, and claimed consequences. Type-check the objects and write the exact logical negation of every principal claim.
+Separate definitions, axioms, ambient assumptions, lemmas, main claims, and consequences. Type-check objects and write the exact logical negation of every principal claim. Freeze the submitted target and distinguish literal wording from intended question; flag added assumptions, altered definitions, restricted domains, changed quantifiers, or easier interpretations as target drift.
 
-Freeze a content-bound copy of the submitted target in the returned report or temporary workpad, and distinguish its literal wording from the intended research question. Flag every added assumption, changed definition, restricted domain, altered quantifier, or easier interpretation as target drift, even when the revised claim is true. A request to prove a statement is not evidence that it is true.
+Map dependencies and narrow load-bearing claims. Test definitions for circularity, model existence, vacuity, and claimed generality beyond the proposed mechanism.
 
-Build a dependency map and identify the narrowest load-bearing claims. Check whether the definitions are circular, whether models satisfying the axioms exist, whether the theory is vacuous, and whether the claimed generality exceeds the proposed mechanism.
-
-Complete this phase when each attack target has a precise statement and negation.
+Complete this phase when every attack target has a precise statement and negation.
 
 ## 2. Rank the attack surface
 
-Prioritize universal quantifiers, existence or uniqueness claims, boundary parameters, closure assertions, division or inversion, limit interchanges, asymptotic constants, representation independence, identifiability, noncommutativity, and finite-to-infinite-dimensional transitions.
+Prioritize universal quantifiers, existence or uniqueness, boundary parameters, closure, division or inversion, limit interchanges, asymptotic constants, representation independence, identifiability, noncommutativity, and finite-to-infinite-dimensional transitions.
 
-Choose attacks that fit the target. Record them in a transient attack matrix with columns:
+Use a transient attack matrix:
 
 | ID | Target | Proposed attack | Search scope | Candidate | Result |
 |---|---|---|---|---|---|
 
-Use result labels that distinguish `target defeated`, `proof defeated`, `encoding defeated`, and `not falsified within scope`.
-
-The matrix belongs in the returned report or OS-temporary workpad. It is not a durable ledger or a separate theory artifact.
+Distinguish `target defeated`, `proof defeated`, `encoding defeated`, and `not falsified within scope`.
 
 ## 3. Run the cheap-refute funnel
 
-Start with the cheapest decisive attacks:
+Start with zero and constant objects; dimensions one and two; finite, discrete, linear, or diagonal models; degenerate maps, matrices, kernels, or measures; boundary values and vanishing denominators; minimally regular or noninjective examples; and dimensional, sign, scaling, or units checks.
 
-- zero and constant objects;
-- dimensions one and two;
-- finite, discrete, linear, or diagonal models;
-- degenerate matrices, kernels, measures, or maps;
-- boundary values and vanishing denominators;
-- minimally regular, discontinuous, or noninjective examples;
-- dimensional, sign, scaling, and units checks.
+Then try rescaling, translation, symmetry, sign change, time reversal, sequences approaching hypothesis boundaries, loss of compactness or coercivity, dependence or nonadaptedness, changing exceptional sets, noncommutativity, and infinite dimension.
 
-Escalate to transformations and pathologies:
+For finite candidate families, generate incompatible candidates and refute cheaply before proving survivors. State limits of every finite, random, numerical, symbolic, SAT/SMT, or proof-assistant search. When practical, delete hypotheses and certify the complete instantiated negation; use witnesses to constrain later candidates.
 
-- rescaling, translation, sign change, symmetry, and time reversal;
-- sequences approaching the edge of the hypotheses;
-- loss of compactness, completeness, coercivity, or uniform integrability;
-- dependence, nonadaptedness, or exceptional-set changes;
-- noncommutative and infinite-dimensional counterexamples.
+## 4. Attack the proof
 
-For classifications or finite candidate families, generate several mutually incompatible candidates, refute cheaply, and reserve full proof effort for survivors. State the domain and limits of every finite, random, numerical, symbolic, SAT/SMT, or proof-assistant search.
+Find the earliest unsupported inference. Check for:
 
-When formal tools are practical, vary or delete hypotheses and certify the complete instantiated negation. Use each certified witness to constrain later candidates during the run so they must explain both positive and negative cases.
-
-## 4. Attack the proof step by step
-
-Check the earliest unsupported inference rather than only the final answer. Search for:
-
-- quantifier swaps and changed domains;
-- circular dependence in the lemma graph;
+- quantifier swaps, changed domains, or circular lemmas;
 - unproved existence, uniqueness, measurability, integrability, or invertibility;
-- unjustified interchange of limits, sums, integrals, derivatives, expectations, or operators;
-- topology or convergence-mode changes;
-- exceptional sets that depend on a parameter;
-- constants that are not uniform in the claimed variables;
-- external results whose exact hypotheses fail;
-- finite-dimensional facts used in infinite dimension;
-- a conclusion stronger than the lemmas provide;
-- premise smuggling inside “standard,” “classical,” or “immediate” steps;
-- silent repair or reinterpretation of the target;
-- local arguments without the claimed global compatibility;
-- obligation laundering, where a helper lemma restates the central difficulty;
-- formal escape hatches, unrecorded axioms, or a changed encoded theorem;
-- citations that do not establish the exact load-bearing claim;
-- routine detail that obscures an unsupported crux;
-- success-only reporting that hides the attempt denominator or selection rule.
+- invalid interchange of limits, sums, integrals, derivatives, expectations, or operators;
+- topology or convergence changes, parameter-dependent exceptional sets, or nonuniform constants;
+- external results with unmet hypotheses and finite-dimensional facts used in infinite dimension;
+- conclusions stronger than the lemmas;
+- premises smuggled inside “standard,” “classical,” or “immediate”;
+- silent target repair, missing global compatibility, or obligation laundering;
+- formal escape hatches, undeclared axioms, or changed encodings;
+- citations that miss the load-bearing claim;
+- routine detail obscuring an unsupported crux; and
+- success-only reporting hiding denominator or selection.
 
-Distinguish a defect in the submitted proof from a counterexample to the theorem.
+Keep proof defects distinct from theorem counterexamples.
 
 ## 5. Certify and minimize witnesses
 
-A counterexample certificate must:
+A counterexample certificate must define the object; verify every hypothesis; prove the conclusion fails; identify the first defeated claim or step; minimize the witness when possible; separate exact from heuristic evidence; check encoding fidelity; and record versions, axioms, search scope, and attempt denominator when tools are used.
 
-1. define the object unambiguously;
-2. verify every hypothesis one by one;
-3. compute or prove the failure of the conclusion;
-4. identify the first claim or proof step it defeats;
-5. minimize the witness when possible;
-6. separate exact reasoning from floating-point or heuristic evidence;
-7. verify that any formal encoding matches the frozen target;
-8. record checker and library versions, permitted axioms, search scope, and attempt denominator when tools are used.
-
-Reject a candidate that violates even one hypothesis. Treat numerical candidates as leads until converted into rigorous witnesses or bounded computational claims.
+Reject any candidate violating a hypothesis. Numerical candidates remain leads until made rigorous or stated as bounded computational results.
 
 ## 6. Repair the theory
 
-Locate the minimal false core. Propose the nearest natural corrected statement by strengthening a hypothesis, weakening the conclusion, restricting the domain, changing the topology, or adding the missing exceptional case. Explain why each certified witness no longer applies and list the new proof obligations.
+Locate the minimal false core. Propose the nearest natural correction by strengthening hypotheses, weakening the conclusion, restricting the domain, changing topology, or adding an exceptional case. Explain why each certified witness no longer applies and list new proof obligations.
 
-## 7. Consolidate a writable round
+## Retain only useful state
 
-In a standalone writable theory round:
+In a writable round:
 
-- Put certified counterexamples, verified material proof defects, changed validity boundaries, and accepted repairs in the canonical document. These load-bearing results must not live only in research memory.
-- Retain research-memory cards for reusable obstruction patterns, costly unsuccessful attacks, residual attacks with concrete next tests, and rejected repairs with reasons. A routine `not falsified within scope` result does not merit a card unless its search was expensive or is likely to be repeated.
-- Keep the complete attack matrix, candidate witnesses, tool logs, superseded repairs, and reconciliation notes in the temporary workpad.
+- **Canonical Markdown:** certified counterexamples, verified material proof defects, changed validity boundaries, and accepted repairs.
+- **Research-memory cards:** reusable obstruction patterns, costly unsuccessful attacks, residual attacks with next tests, and rejected repairs with reasons. Routine `not falsified within scope` results qualify only when expensive or likely to recur.
+- **Workpad only:** the attack matrix, candidate witnesses, tool logs, superseded repairs, and reconciliation notes.
 
-Apply one curated card batch only after the canonical update is ready. Validate the home database, then delete the workpad. If canonical integration, database application, or validation fails, retain the workpad and report its exact path. In nested mode, recommend canonical changes and card candidates to the coordinator instead of applying them.
+Close once under the shared protocol. A nested specialist recommends destinations; only the coordinator writes them.
 
 ## Report
 
-Return:
-
-1. **Target and logical negation**
-2. **Theory and dependency map**
-3. **Transient attack matrix**
-4. **Certified counterexamples or proof defects**
-5. **Boundary of validity**
-6. **Candidate repairs**
-7. **Residual attack surface**
-8. **Verdict**
-9. **Canonical and research-memory recommendations**, when nested in or closing a writable theory round
+Return the target and negation, dependency map, transient attack matrix, certified counterexamples or defects, validity boundary, repairs, residual surface, verdict, and—when nested or writable—canonical/card recommendations.
 
 Use one verdict:
 
 - `FALSE`: a certified counterexample defeats the statement;
-- `INCONSISTENT`: the assumptions or axioms yield a verified contradiction;
+- `INCONSISTENT`: assumptions yield a verified contradiction;
 - `PROOF-INVALID`: a material proof gap is verified while the theorem remains undecided;
-- `OVERSTATED`: a weaker or restricted result survives but the stated generality does not;
-- `SURVIVED-ATTACK`: no failure was found within the reported attack scope;
+- `OVERSTATED`: only a weaker or restricted result survives;
+- `SURVIVED-ATTACK`: no failure was found within the reported scope;
 - `UNRESOLVED`: candidate failures or repairs remain uncertified.
 
-Complete the run only after every load-bearing claim has received at least one adapted attack, every reported witness is certified, and unsearched territory is explicit.
+Complete only after every load-bearing claim receives at least one adapted attack, every reported witness is certified, and unsearched territory is explicit.
