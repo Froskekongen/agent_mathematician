@@ -170,9 +170,26 @@ python3 mathematician/install_skills.py all
 Use `--dry-run` to inspect destinations. Restart the agent if the current
 session does not discover the newly installed skills.
 
+## Releasing
+
+Install and authenticate the [GitHub CLI](https://cli.github.com/), then release
+from a clean checkout of the GitHub default branch:
+
+```sh
+make release                 # next patch version
+make release BUMP=minor      # next minor version
+make release BUMP=major      # next major version
+make release VERSION=1.2.0   # exact version
+```
+
+The command checks the branch and remote state, updates `CITATION.cff` and the
+citations below, runs the full test suite, commits and tags the release, pushes
+both atomically, and publishes a GitHub release with generated notes. If the
+GitHub release step fails after the push, rerun the same command to finish it.
+
 ## Citation
 
-> Aune, E. (2026). *Agent Mathematician: Agent skills for mathematical research* (Version 0.1.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.21996115
+> Aune, E. (2026). *Agent Mathematician: Agent skills for mathematical research* (Version 0.1.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.21996114
 
 ```bibtex
 @software{aune_agent_mathematician_2026,
@@ -181,10 +198,11 @@ session does not discover the newly installed skills.
   version = {0.1.0},
   year = {2026},
   publisher = {Zenodo},
-  doi = {10.5281/zenodo.21996115},
-  url = {https://doi.org/10.5281/zenodo.21996115}
+  doi = {10.5281/zenodo.21996114},
+  url = {https://doi.org/10.5281/zenodo.21996114}
 }
 ```
 
-The concept DOI in the badge covers all releases; cite the version DOI above
-for reproducibility. See [`CITATION.cff`](CITATION.cff) and [`LICENSE`](LICENSE).
+The concept DOI in the badge and citation resolves to the latest release. For
+strict reproducibility, cite the version DOI shown by Zenodo for that release.
+See [`CITATION.cff`](CITATION.cff) and [`LICENSE`](LICENSE).

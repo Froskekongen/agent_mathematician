@@ -33,14 +33,14 @@ revised file is a maintainer rationale and is not routed.
 
 | Measure | Current | Evaluated revised | Live revised |
 |---|---:|---:|---:|
-| Public skill lines | 939 | 633 | 644 |
-| Public skill words | 8,440 | 3,958 | 3,938 |
-| Full routed-runtime lines | 1,621 | 1,167 | 1,185 |
-| Full routed-runtime words | 14,012 | 7,210 | 7,261 |
+| Public skill lines | 939 | 633 | 688 |
+| Public skill words | 8,440 | 3,958 | 4,518 |
+| Full routed-runtime lines | 1,621 | 1,167 | 1,229 |
+| Full routed-runtime words | 14,012 | 7,210 | 7,841 |
 | Canonical + memory implementation lines | 3,860 | 2,723 | 2,724 |
 | Public canonical/memory commands | 14 | 4 | 4 |
 
-Against current, the live suite removes 53.3% of public-skill words, 48.2% of
+Against current, the live suite removes 46.5% of public-skill words, 44.0% of
 all runtime words, 29.4% of memory implementation lines, and 10 of 14 public
 commands. The canonical-section parser remains an internal module rather than
 a second user-facing CLI. The two model-invokable review workers add only 294
