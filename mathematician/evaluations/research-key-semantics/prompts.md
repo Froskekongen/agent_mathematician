@@ -82,6 +82,16 @@ key unless it is retained as an independently linkable subject.
 the standard term, and change the conclusion status from "checked" to
 "accepted" without changing either subject.
 
+**Branch checks:** Run each from an independent copy of the fixture:
+
+- **Supplied only:** Using `note.md` as context, explain in chat why uniform
+  convergence preserves continuity. Do not request a file change.
+- **Separate target:** Create a separate canonical explanation named
+  `uniform-convergence-explained.md`.
+- **Fidelity defect:** Use a current `note.md` pair whose accepted conclusion
+  instead says that pointwise convergence preserves continuity. Ask to rewrite
+  it in place for clarity without changing its mathematical meaning.
+
 ## S8 — `formalize-concepts`
 
 **Base:** Formalize the informal idea "a sequence eventually stays inside every

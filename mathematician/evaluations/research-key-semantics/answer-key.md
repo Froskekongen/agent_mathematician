@@ -11,7 +11,7 @@ names pass; workflow-shaped names do not.
 | S4 | compactness hypothesis; boundary witness | audit summary; recommendation | current target pair when writing was requested |
 | S5 | noncompact counterexample mechanism; evidence boundary if independently linkable | verdict | current target pair when writing was requested |
 | S6 | unit-sphere argument; dimension-dependence boundary | source order; migration ledger; consolidation decision | one current target pair; sources unchanged |
-| S7 | uniform-tail estimate; continuity of the uniform limit | motivation; current status | same in-place pair, current after terminology/link refresh |
+| S7 | uniform-tail estimate; continuity of the uniform limit | motivation; current status | authorized in-place pair current; branch ownership rules below |
 | S8 | sequence convergence definition | handoff state; explanation order | subject plus proposed key only; no SQLite work |
 
 For each base/follow-up pair, compare the mapping from mathematical subject to
@@ -30,6 +30,10 @@ For S7, merely receiving `note.md` would not authorize a rewrite; the explicit
 wording in the base prompt does. The rewrite must preserve unchanged subject
 keys, synchronize affected card text and `term`/`symbol` facets, retain old
 terminology only as provenance where needed, and refresh changed links.
+The branch checks require, respectively: byte-for-byte unchanged source pair;
+a new target with its own companion and an unchanged source pair; and no
+publication plus handoff when fidelity would require repairing the false
+pointwise-limit conclusion.
 
 For S8, a proposed key such as `sequence-limit-epsilon-definition` is
 acceptable, but it is not authoritative until a receiving writer reads a

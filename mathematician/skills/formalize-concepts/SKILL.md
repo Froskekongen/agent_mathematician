@@ -85,14 +85,12 @@ Discard cosmetic variants and transient brainstorms. If a genuine fork remains, 
 
 Complete this phase when there is a selected candidate or one sharply stated unresolved fork.
 
-When a downstream file-backed research round will retain a definition,
-mechanism, conjecture, obstruction, or open question, read the shared
+For downstream file-backed retention, read the shared
 [research-memory protocol](../research-mathematics/references/research-memory.md)
-and hand off both the durable mathematical subject in words and a proposed
-semantic key. Sequence labels such as `A1` remain transient local notation.
-The proposed key is not authoritative: the receiving writable coordinator
-reads the target outline and decides whether to reuse an existing key or
-allocate a new one. This skill does not create companions, manage database
+and hand off the durable mathematical subject in words plus a proposed semantic
+key. The proposed key is not authoritative: the receiving writable coordinator
+reads the target outline and decides reuse or allocation. Sequence labels such
+as `A1` remain transient. This skill does not create companions, manage database
 state, or insert canonical-section markers.
 
 ## 6. Stop at the right boundary

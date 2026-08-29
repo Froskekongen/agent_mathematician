@@ -10,7 +10,8 @@ For each scenario in `prompts.md`, use a fresh workspace and the named skill.
 Run the base request, archive read-only copies of its response, canonical pair,
 and `check` result, then run the metamorphic follow-up in the same workspace.
 Give a fresh grader both persisted states and `answer-key.md`, but do not expose
-the answer key to the solver.
+the answer key to the solver. Run each S7 branch check from an independent copy
+of its stated fixture.
 
 File-backed skills must finish with a current Markdown/SQLite pair. A chat-only
 run must create neither file. `formalize-concepts` must perform no database
@@ -28,6 +29,8 @@ A scenario passes only when all applicable checks pass:
 - one key identifies one subject, with no aliases after a correction, split,
   or merge;
 - every writable result is self-contained and its companion reports `current`;
+- S7 respects explicit write authorization, pair ownership, and the
+  no-publication fidelity gate;
 - every retained card or artifact link resolves to the intended subject;
 - `formalize-concepts` proposes rather than allocates a document key and does
   not touch SQLite.

@@ -138,18 +138,53 @@ class SkillInvocationTest(unittest.TestCase):
         self.assertIn("this skill does not create companions", formalize)
         self.assertNotIn("sole writer", formalize)
 
-    def test_explanation_rewrite_requires_explicit_authorization(self) -> None:
+    def test_explanation_rewrite_uses_shared_memory_contract(self) -> None:
         explain = " ".join(
             self.skill_texts()["explain-mathematics"].split()
         ).lower()
-        self.assertIn("merely supplying or naming a file does not authorize", explain)
-        self.assertIn(
-            "explicit request that names an existing canonical target and asks to "
-            "update or rewrite it",
-            explain,
+        protocol_path = (
+            SKILLS / "research-mathematics" / "references" / "research-memory.md"
         )
-        self.assertIn("two markdown documents never share one sqlite database", explain)
-        self.assertIn("apply one optimistic memory transaction", explain)
+        protocol = " ".join(
+            protocol_path.read_text(encoding="utf-8").split()
+        ).lower()
+
+        self.assertRegex(
+            explain,
+            r"(?:supplying|naming).{0,80}(?:does not authorize|is not authorization)",
+        )
+        self.assertIn("named canonical target", explain)
+        self.assertRegex(explain, r"in-place.{0,80}only.{0,80}markdown/sqlite pair")
+        self.assertRegex(
+            explain,
+            r"separate explanation.{0,100}own.{0,30}companion.{0,100}source pair"
+            r".{0,30}read-only",
+        )
+        self.assertRegex(
+            explain,
+            r"(?:no two markdown documents share|never share).{0,20}"
+            r"(?:one )?(?:sqlite )?database",
+        )
+        self.assertRegex(
+            explain,
+            r"(?:before writing|for writable work).{0,80}protocol.{0,80}sole writer",
+        )
+
+        for invariant in (
+            r"same close transaction.{0,100}remap every card and artifact link",
+            r"apply one (?:optimistic (?:memory )?)?transaction",
+            r"run `check`",
+            r"exactly (?:re)?read every changed key, card, and artifact",
+        ):
+            self.assertRegex(protocol, invariant)
+
+        terminology = protocol[protocol.index("canonical terminology") :]
+        for invariant in (
+            r"(?:update|synchronize) (?:every )?affected card field",
+            r"`term`.{0,20}`symbol`.{0,20}facet",
+            r"refresh affected links",
+        ):
+            self.assertRegex(terminology, invariant)
 
     def test_formalization_hands_off_only_a_proposed_key(self) -> None:
         formalize = " ".join(

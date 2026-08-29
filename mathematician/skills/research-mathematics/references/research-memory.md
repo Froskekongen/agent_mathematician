@@ -140,12 +140,11 @@ indexed metadata, file digest, references, and canonical/card links; it does
 not execute it or store raw logs. A tool-derived integrity result, a declared
 run outcome, and the card's mathematical status remain separate.
 
-When a native artifact's metadata names a rekeyed canonical subject, update
-and reindex that native artifact in the same authorized round. Otherwise
-preserve the canonical key or stop. During a Markdown-first rekey transaction,
-an exact stored card or curated-artifact link may be deleted after its former
-target has disappeared; additions and updates still require current targets,
-and final relationship validation rejects any incomplete migration atomically.
+If native-artifact metadata names a rekeyed subject, update and reindex the
+artifact in the same round; otherwise preserve the key or stop. A
+Markdown-first rekey may delete exact stored card or curated-artifact links
+after the old target disappears. Additions and updates still require current
+targets, and final validation atomically rejects an incomplete migration.
 
 ## Write and close
 
@@ -153,6 +152,11 @@ Create one generated OS-temporary workpad for candidates, assumption maps,
 proof graphs, probes, source notes, specialist reports, raw outputs, and the
 final changeset. Durable files contain their own metadata; the workpad is not a
 repository manifest.
+
+When canonical terminology changes, synchronize affected card fields and
+`term` or `symbol` facets, retain superseded wording only as provenance, and
+refresh affected links. Canonical terms and definitions stay in Markdown;
+create neither a registry nor cards that merely duplicate exposition.
 
 Close in this order:
 

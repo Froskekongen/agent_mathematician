@@ -13,19 +13,16 @@ exact target and status.
 
 ## File modes
 
-With no explicit file-change request, answer in chat and keep every supplied
-file and companion read-only. Merely supplying or naming a file does not
-authorize a rewrite. When the user asks about research history, rejected
-routes, or development process, read the
+Default to chat; files and companions remain read-only unless the user
+explicitly asks to update or rewrite a named canonical target. Merely supplying
+or naming one is not authorization. For research history, read the
 [research-memory protocol](../research-mathematics/references/research-memory.md),
-query the companion read-only, and label the result as research history.
+query the companion read-only, and label the result as history.
 
-An explicit request that names an existing canonical target and asks to update
-or rewrite it authorizes an in-place rewrite of exactly that Markdown/SQLite
-pair. Read the research-memory protocol completely and act as its sole writer.
-Create a separate explanatory target only when the user explicitly requests
-one; it owns a new companion while the source pair remains read-only. Two
-Markdown documents never share one SQLite database.
+An in-place request authorizes only that target's Markdown/SQLite pair. An
+explicitly requested separate explanation gets its own companion and leaves
+the source pair read-only; no two Markdown documents share one database.
+For writable work, read the protocol completely and act as sole writer.
 
 ## 1. Set the audience contract
 
@@ -74,30 +71,13 @@ revalidated, and report the defect as unresolved. Recommend `$destroy-theory`;
 recommend `$audit-assumptions` for necessity or `$research-mathematics` for
 repair or certification.
 
-## 5. Rewrite a canonical pair when authorized
+## 5. Rewrite faithfully when authorized
 
-For an in-place rewrite, use one OS-temporary workpad to:
-
-1. freeze the canonical bytes and digest, database revision, key outline,
-   affected links, cards, artifacts, terminology, and claim statuses;
-2. map every subject, definition, term, notation, and key, then draft the
-   complete rewrite outside the target;
-3. verify that every definition, hypothesis, conclusion, dependency, status,
-   boundary, obligation, and provenance item survives unchanged in meaning;
-4. preserve keys for unchanged subjects, rekey only misleading keys or genuine
-   splits and merges, and plan the complete link migration;
-5. update affected card titles, summaries, details, reuse conditions, and
-   `term` and `symbol` facets to current terminology, retaining historical
-   wording as provenance; and
-6. refresh each card-key link whose section digest or card revision changed,
-   even when its relation and note do not.
-
-Keep accepted terminology and definitions in Markdown; do not create a term
-registry or cards that merely duplicate exposition. After fidelity passes,
-publish the Markdown, apply one optimistic memory transaction, run `check`,
-and exactly reread every changed key, card, and artifact. If fidelity exposes
-a load-bearing defect or requires mathematical repair, leave the original pair
-unchanged and hand off to the appropriate research or review skill.
+Draft outside the target from a workpad snapshot and audit the complete rewrite
+against the shared rigor chain and the protocol's canonical contract. Preserve
+meaning and provenance. If fidelity would require mathematical repair, leave
+the pair unchanged and hand off to the appropriate research or review skill.
+Otherwise close through the protocol.
 
 ## Return and completion
 
@@ -107,6 +87,4 @@ and optional next prerequisites. Distinguish intuition from justification.
 
 Complete only when the reader can identify the hypotheses, conclusion,
 mechanism, proof dependencies, and limitations, and when both a
-mechanism-bearing example and a boundary or nonexample have been checked. A
-writable rewrite also requires a current pair and exact rereads of every
-changed memory entity.
+mechanism-bearing example and a boundary or nonexample have been checked.

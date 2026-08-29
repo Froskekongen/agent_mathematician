@@ -19,13 +19,13 @@ larger autonomous budget, run one decision-relevant tracer round.
 
 ## 1. Frame contrasting candidates
 
-Begin with a brief source-domain orientation: the original problem, established
-meaning and constraints, current baseline, and evidence state. Define each
-decision-bearing term before abstraction. Then fix the mathematical job, typed
-objects and maps, one observable or question, an anchor example, fixed choices,
-reversible assumptions, and live semantic forks. Keep two to four candidates
-whose predictions differ. If meaning blocks comparison, ask one wedge question;
-if it still fails, stop this run and recommend `$formalize-concepts`.
+Orient first in source-domain terms: problem, established meaning and
+constraints, baseline, and evidence state. Define decision-bearing terms before
+abstraction. Then fix the mathematical job, typed objects and maps, one
+observable or question, an anchor example, fixed choices, reversible
+assumptions, and live semantic forks. Keep two to four candidates whose
+predictions differ. If meaning blocks comparison, ask one wedge question; if it
+still fails, stop this run and recommend `$formalize-concepts`.
 
 Complete this step when the candidates make distinct checkable predictions or
 the unresolved semantic fork is explicit.
@@ -65,13 +65,11 @@ follow [literature-and-privacy.md](references/literature-and-privacy.md).
 
 Lead with an exploration brief containing the current conclusion or live
 uncertainty, decisive mechanism and smallest witness, live options and
-recommendation, and next discriminator with its outcome map. Put the claim
-status and evidence scope beside the recommendation. Include the semantic
-wedge only when one remains.
-
-These report headings are presentation structure, not automatic indexed
-sections. For writable work, apply the research-memory protocol's semantic-key
-checks before marking only durable mathematical subjects.
+recommendation, and next discriminator with its outcome map. Put claim status
+and evidence scope beside the recommendation; include the semantic wedge only
+when one remains. Report headings do not imply research keys. For writable
+work, index only durable mathematical subjects under the protocol's semantic
+audit.
 
 For writable work, keep selected definitions, decisive evidence, boundaries,
 and the next obligation in canonical Markdown; retain only reusable directions,
