@@ -9,6 +9,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from contextlib import closing
 from pathlib import Path
 
 
@@ -135,6 +136,72 @@ The boundary statement.
     @staticmethod
     def issue_messages(payload: dict) -> str:
         return "\n".join(issue["message"] for issue in payload.get("errors", []))
+
+    def seed_rekey_fixture(self) -> tuple[Path, dict]:
+        self.bootstrap()
+        artifacts = self.root / "artifacts"
+        artifacts.mkdir()
+        source = artifacts / "check.py"
+        metadata = self.artifact_metadata()
+        source.write_text(f"RESEARCH_ARTIFACT = {metadata!r}\n", encoding="utf-8")
+        self.apply(
+            self.changeset(
+                "seed-rekey",
+                0,
+                cards=[
+                    {
+                        "op": "add",
+                        "card": self.card(
+                            "phase-route",
+                            title="Old phase route",
+                            summary_md="Uses the old phase terminology.",
+                            detail_md="The old phase definition drives the route.",
+                            facets=[
+                                {"type": "term", "value": "Old phase"},
+                                {"type": "symbol", "value": "q_old"},
+                            ],
+                        ),
+                    }
+                ],
+                artifacts=[{"op": "add", "source_path": "artifacts/check.py"}],
+                key_links=[
+                    {
+                        "op": "add",
+                        "card_slug": "phase-route",
+                        "canonical_key": "main-theorem",
+                        "relation": "supports",
+                        "note_md": "Supports the named theorem.",
+                    },
+                    {
+                        "op": "add",
+                        "card_slug": "phase-route",
+                        "canonical_key": "boundary-case",
+                        "relation": "tests",
+                    },
+                ],
+                artifact_links=[
+                    {
+                        "op": "add",
+                        "artifact_slug": "retained-check",
+                        "target_type": "key",
+                        "target_key": "main-theorem",
+                        "relation": "illustrates",
+                        "applicability_md": "Illustrates the exact finite target.",
+                    }
+                ],
+            )
+        )
+        return source, metadata
+
+    def rewrite_fixture_key(self, source: Path, metadata: dict, new_key: str) -> None:
+        self.canonical.write_text(
+            self.canonical.read_text(encoding="utf-8").replace(
+                "`main-theorem`", f"`{new_key}`"
+            ),
+            encoding="utf-8",
+        )
+        metadata["canonical_keys"] = [new_key]
+        source.write_text(f"RESEARCH_ARTIFACT = {metadata!r}\n", encoding="utf-8")
 
     def test_exactly_four_public_commands(self) -> None:
         parser = memory.build_parser()
@@ -533,6 +600,243 @@ The boundary statement.
         )
         current = self.run_cli("check", str(self.canonical))
         self.assertEqual(current["status"], "current")
+
+    def test_atomic_rekey_migrates_links_artifact_metadata_and_card_terms(self) -> None:
+        source, metadata = self.seed_rekey_fixture()
+        new_key = "phase-preserving-main-theorem"
+        self.rewrite_fixture_key(source, metadata, new_key)
+
+        applied = self.apply(
+            self.changeset(
+                "semantic-rewrite",
+                1,
+                cards=[
+                    {
+                        "op": "update",
+                        "slug": "phase-route",
+                        "expected_revision": 1,
+                        "set": {
+                            "title": "Constraint-preserving phase route",
+                            "summary_md": "Uses constraint-preserving phase terminology.",
+                            "detail_md": (
+                                "The constraint-preserving phase definition drives the route; "
+                                "the old phase wording is retained as provenance."
+                            ),
+                            "facets": [
+                                {"type": "term", "value": "Constraint-preserving phase"},
+                                {"type": "symbol", "value": "q_cp"},
+                            ],
+                        },
+                    }
+                ],
+                artifacts=[
+                    {
+                        "op": "update",
+                        "slug": "retained-check",
+                        "expected_revision": 1,
+                        "source_path": "artifacts/check.py",
+                    }
+                ],
+                key_links=[
+                    {
+                        "op": "delete",
+                        "card_slug": "phase-route",
+                        "canonical_key": "main-theorem",
+                        "relation": "supports",
+                        "expected_revision": 1,
+                    },
+                    {
+                        "op": "add",
+                        "card_slug": "phase-route",
+                        "canonical_key": new_key,
+                        "relation": "supports",
+                        "note_md": "Supports the renamed theorem.",
+                    },
+                    {
+                        "op": "update",
+                        "card_slug": "phase-route",
+                        "canonical_key": "boundary-case",
+                        "relation": "tests",
+                        "expected_revision": 1,
+                        "set": {},
+                    },
+                ],
+                artifact_links=[
+                    {
+                        "op": "delete",
+                        "artifact_slug": "retained-check",
+                        "target_type": "key",
+                        "target_key": "main-theorem",
+                        "relation": "illustrates",
+                    },
+                    {
+                        "op": "add",
+                        "artifact_slug": "retained-check",
+                        "target_type": "key",
+                        "target_key": new_key,
+                        "relation": "illustrates",
+                        "applicability_md": "Illustrates the renamed finite target.",
+                    },
+                ],
+            )
+        )
+
+        self.assertEqual(applied["database_revision"], 2)
+        self.assertEqual(self.run_cli("check", str(self.canonical))["status"], "current")
+        key = self.run_cli("read", str(self.canonical), "key", new_key)
+        self.assertEqual([card["slug"] for card in key["cards"]], ["phase-route"])
+        self.assertTrue(key["cards"][0]["link_current"])
+        self.assertEqual([artifact["slug"] for artifact in key["artifacts"]], ["retained-check"])
+
+        card = self.run_cli(
+            "read", str(self.canonical), "card", "phase-route", "--full"
+        )["card"]
+        self.assertEqual(card["revision"], 2)
+        self.assertEqual(
+            [(facet["type"], facet["value"]) for facet in card["facets"]],
+            [("symbol", "q_cp"), ("term", "Constraint-preserving phase")],
+        )
+        self.assertTrue(all(link["reviewed_card_revision"] == 2 for link in card["key_links"]))
+
+        artifact = self.run_cli(
+            "read", str(self.canonical), "artifact", "retained-check", "--full"
+        )["artifact"]
+        self.assertEqual(artifact["revision"], 2)
+        self.assertEqual(artifact["metadata"]["canonical_keys"], [new_key])
+        self.assertEqual(
+            {(link["target_key"], link["source"]) for link in artifact["links"]},
+            {(new_key, "curated"), (new_key, "metadata")},
+        )
+
+    def test_rekey_rolls_back_when_any_stale_link_is_omitted(self) -> None:
+        source, metadata = self.seed_rekey_fixture()
+        new_key = "phase-preserving-main-theorem"
+        self.rewrite_fixture_key(source, metadata, new_key)
+        artifact_update = [
+            {
+                "op": "update",
+                "slug": "retained-check",
+                "expected_revision": 1,
+                "source_path": "artifacts/check.py",
+            }
+        ]
+        cases = (
+            (
+                "curated-link",
+                "artifact 'retained-check' links missing canonical key",
+                {
+                    "artifacts": artifact_update,
+                    "key_links": [
+                        {
+                            "op": "delete",
+                            "card_slug": "phase-route",
+                            "canonical_key": "main-theorem",
+                            "relation": "supports",
+                            "expected_revision": 1,
+                        },
+                        {
+                            "op": "add",
+                            "card_slug": "phase-route",
+                            "canonical_key": new_key,
+                            "relation": "supports",
+                        },
+                    ],
+                },
+            ),
+            (
+                "card-link",
+                "card 'phase-route' links missing canonical key",
+                {
+                    "artifacts": artifact_update,
+                    "artifact_links": [
+                        {
+                            "op": "delete",
+                            "artifact_slug": "retained-check",
+                            "target_type": "key",
+                            "target_key": "main-theorem",
+                            "relation": "illustrates",
+                        },
+                        {
+                            "op": "add",
+                            "artifact_slug": "retained-check",
+                            "target_type": "key",
+                            "target_key": new_key,
+                            "relation": "illustrates",
+                        },
+                    ],
+                },
+            ),
+        )
+        for name, expected_error, operations in cases:
+            with self.subTest(omitted=name):
+                failed = self.apply(
+                    self.changeset(f"omit-{name}", 1, **operations), success=False
+                )
+                self.assertIn(expected_error, failed["error"])
+                with closing(sqlite3.connect(self.database)) as connection:
+                    self.assertEqual(
+                        connection.execute("SELECT revision FROM meta").fetchone()[0], 1
+                    )
+                    self.assertEqual(
+                        set(connection.execute("SELECT canonical_key FROM card_key")),
+                        {("main-theorem",), ("boundary-case",)},
+                    )
+                    self.assertEqual(
+                        set(connection.execute("SELECT target_key,source FROM artifact_link")),
+                        {("main-theorem", "curated"), ("main-theorem", "metadata")},
+                    )
+
+    def test_link_additions_and_updates_still_require_current_targets(self) -> None:
+        source, metadata = self.seed_rekey_fixture()
+        self.rewrite_fixture_key(source, metadata, "phase-preserving-main-theorem")
+
+        operations = (
+            {
+                "key_links": [
+                    {
+                        "op": "update",
+                        "card_slug": "phase-route",
+                        "canonical_key": "main-theorem",
+                        "relation": "supports",
+                        "expected_revision": 1,
+                        "set": {"note_md": "Must not update a vanished target."},
+                    }
+                ]
+            },
+            {
+                "key_links": [
+                    {
+                        "op": "add",
+                        "card_slug": "phase-route",
+                        "canonical_key": "main-theorem",
+                        "relation": "depends-on",
+                    }
+                ]
+            },
+            {
+                "artifact_links": [
+                    {
+                        "op": "add",
+                        "artifact_slug": "retained-check",
+                        "target_type": "key",
+                        "target_key": "main-theorem",
+                        "relation": "depends-on",
+                    }
+                ]
+            },
+        )
+        for index, operation in enumerate(operations):
+            with self.subTest(operation=index):
+                failed = self.apply(
+                    self.changeset(f"missing-target-{index}", 1, **operation),
+                    success=False,
+                )
+                self.assertIn("canonical key does not exist: main-theorem", failed["error"])
+
+        self.assertEqual(
+            self.run_cli("read", str(self.canonical), "meta")["meta"]["database_revision"],
+            1,
+        )
 
     def test_native_artifact_metadata_is_static_hashed_and_never_executed(self) -> None:
         self.bootstrap()

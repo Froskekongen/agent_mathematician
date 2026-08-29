@@ -17,7 +17,7 @@ review, explanation, and document consolidation.
 - `destroy-theory`: falsify a statement or locate proof and validity failures.
 - `audit-assumptions`: trace hypotheses and test necessity or weakening.
 - `explain-mathematics`: teach advanced mathematics across specialty
-  boundaries.
+  boundaries, optionally rewriting an explicitly named canonical pair.
 - `consolidate-math-documents`: reconcile canonical accounts and safely retire
   their exact source pairs.
 
@@ -35,6 +35,8 @@ references under `research-mathematics/references/` carry cross-suite rigor,
 memory, and conditional computation contracts.
 The [paired architecture pilot](mathematician/evaluations/architecture-pair/pilot-results.md)
 records the measured complexity, quality, and cost tradeoffs.
+The [research-key semantics corpus](mathematician/evaluations/research-key-semantics/README.md)
+checks stable subject identity and writer ownership across all eight skills.
 
 ## Rigor model
 
@@ -82,6 +84,13 @@ deep link:
 **Research key:** `rank-drop-obstruction`
 ```
 
+A key is the document-scoped stable identity of one durable mathematical
+subject. Navigation, summaries, report roles, and other workflow wrappers stay
+unindexed; one key does not aggregate multiple independently linkable subjects.
+Keys survive reordering and status or recommendation changes. All eight skills
+inherit this contract. `formalize-concepts` proposes a subject and key but
+creates no database; the receiving coordinator decides the authoritative key.
+
 The companion format is schema 4 only. Incompatible databases are rejected;
 there is no migration or compatibility layer. One coordinator writes one home
 pair, while nested specialists and foreign-theory readers remain read-only.
@@ -104,6 +113,12 @@ python3 mathematician/skills/research-mathematics/scripts/research_memory.py che
 exact selected records may request full detail. Consult CLI help for changeset
 fields. The tool edits neither Markdown nor source artifacts and executes no
 artifact code.
+
+Seven skills can coordinate authorized file-backed work. In particular,
+`explain-mathematics` remains chat-only unless the user explicitly names an
+existing canonical target and asks to update or rewrite it. Such a rewrite
+updates that Markdown/SQLite pair together; an explicitly requested separate
+explanation owns a different companion and leaves the source pair read-only.
 
 ## Computational artifacts
 

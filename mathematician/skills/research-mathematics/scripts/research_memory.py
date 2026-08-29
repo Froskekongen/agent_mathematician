@@ -1233,14 +1233,14 @@ def apply_key_link_operations(
         slug = require_slug(item.get("card_slug"), f"{label}.card_slug")
         key = require_slug(item.get("canonical_key"), f"{label}.canonical_key")
         relation = normalize_relation(item.get("relation"), f"{label}.relation")
-        section = document.by_key.get(key)
-        if section is None:
-            raise ResearchMemoryError(f"canonical key does not exist: {key}")
         card = connection.execute("SELECT revision FROM card WHERE slug=?", (slug,)).fetchone()
         if card is None:
             raise ResearchMemoryError(f"card does not exist: {slug}")
         identity = (slug, key, relation)
         if op == "add":
+            section = document.by_key.get(key)
+            if section is None:
+                raise ResearchMemoryError(f"canonical key does not exist: {key}")
             note = optional_text(item.get("note_md"), f"{label}.note_md", maximum=4_000)
             connection.execute(
                 """INSERT INTO card_key(
@@ -1270,6 +1270,9 @@ def apply_key_link_operations(
                     identity,
                 )
             else:
+                section = document.by_key.get(key)
+                if section is None:
+                    raise ResearchMemoryError(f"canonical key does not exist: {key}")
                 patch = require_mapping(item.get("set"), f"{label}.set")
                 require_keys(patch, ("note_md",), f"{label}.set")
                 note = (
@@ -1324,9 +1327,9 @@ def apply_artifact_link_operations(
             raise ResearchMemoryError(f"{label}.target_type must be 'card' or 'key'")
         target_key = require_slug(item.get("target_key"), f"{label}.target_key")
         relation = normalize_relation(item.get("relation"), f"{label}.relation")
-        _require_artifact_target(connection, document, target_type, target_key)
         identity = (artifact, target_type, target_key, relation, "curated")
         if op == "add":
+            _require_artifact_target(connection, document, target_type, target_key)
             applicability = optional_text(
                 item.get("applicability_md"), f"{label}.applicability_md", maximum=4_000
             )
@@ -2295,7 +2298,9 @@ Minimal example:
 
 Card optional fields: detail_md, claim_status, reason, next_test,
 revival_condition, facets. Artifact metadata is read statically from the native
-RESEARCH_ARTIFACT dict in source_path. Every array defaults to empty.
+RESEARCH_ARTIFACT dict in source_path. Every array defaults to empty. A delete may
+name an exactly stored link whose former target no longer exists; adds and key-link
+updates require current targets, and the final integrity pass rejects stale links.
 """
 
 

@@ -18,6 +18,7 @@ EXPECTED_SKILLS = {
     "research-mathematics",
 }
 MODEL_WORKERS = {"audit-assumptions", "destroy-theory"}
+MEMORY_WRITERS = EXPECTED_SKILLS - {"formalize-concepts"}
 SKILL_REFERENCE = re.compile(r"`\$([a-z0-9-]+)`")
 
 
@@ -105,6 +106,59 @@ class SkillInvocationTest(unittest.TestCase):
         for caller, text in skills.items():
             if caller != "research-mathematics":
                 self.assertIsNone(automatic.search(" ".join(text.split())), caller)
+
+    def test_every_skill_inherits_the_research_key_contract(self) -> None:
+        for name, text in self.skill_texts().items():
+            self.assertIn("research-memory.md", text, name)
+
+        protocol = (
+            SKILLS
+            / "research-mathematics"
+            / "references"
+            / "research-memory.md"
+        ).read_text(encoding="utf-8")
+        normalized = " ".join(protocol.split()).lower()
+        self.assertIn("stable identity of one durable mathematical referent", normalized)
+        for check in ("necessity", "granularity", "stability"):
+            self.assertIn(f"**{check}:**", normalized)
+        self.assertIn("keys are document-scoped", normalized)
+        self.assertIn("remap every card and artifact link", normalized)
+        self.assertLess(
+            normalized.index("audit every marker for necessity"),
+            normalized.index("freeze the resulting canonical digest"),
+        )
+
+    def test_exactly_seven_skills_have_writable_memory_roles(self) -> None:
+        skills = self.skill_texts()
+        self.assertEqual(len(MEMORY_WRITERS), 7)
+        for name in MEMORY_WRITERS:
+            normalized = " ".join(skills[name].split()).lower()
+            self.assertRegex(normalized, r"\b(?:writable|file-backed)\b", name)
+        formalize = " ".join(skills["formalize-concepts"].split()).lower()
+        self.assertIn("this skill does not create companions", formalize)
+        self.assertNotIn("sole writer", formalize)
+
+    def test_explanation_rewrite_requires_explicit_authorization(self) -> None:
+        explain = " ".join(
+            self.skill_texts()["explain-mathematics"].split()
+        ).lower()
+        self.assertIn("merely supplying or naming a file does not authorize", explain)
+        self.assertIn(
+            "explicit request that names an existing canonical target and asks to "
+            "update or rewrite it",
+            explain,
+        )
+        self.assertIn("two markdown documents never share one sqlite database", explain)
+        self.assertIn("apply one optimistic memory transaction", explain)
+
+    def test_formalization_hands_off_only_a_proposed_key(self) -> None:
+        formalize = " ".join(
+            self.skill_texts()["formalize-concepts"].split()
+        ).lower()
+        self.assertIn("durable mathematical subject in words", formalize)
+        self.assertIn("proposed semantic key", formalize)
+        self.assertIn("proposed key is not authoritative", formalize)
+        self.assertIn("receiving writable coordinator reads the target outline", formalize)
 
     def test_live_complexity_metrics_are_reproducible(self) -> None:
         skill_paths = sorted(SKILLS.glob("*/SKILL.md"))

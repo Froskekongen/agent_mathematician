@@ -2,8 +2,11 @@
 
 Read this reference for an authorized file-backed mathematical round or when
 research history must be queried. The canonical Markdown is authoritative and
-self-contained. Its SQLite companion is bounded, indexed memory for useful
-noncanonical material; raw round state belongs in one OS-temporary workpad.
+self-contained: it contains every decision-bearing definition, claim status,
+evidence scope, validity boundary, and open obligation without requiring its
+SQLite companion or a workpad. The companion is bounded, indexed memory for
+useful noncanonical material; raw round state belongs in one OS-temporary
+workpad.
 
 ## Canonical contract
 
@@ -24,10 +27,23 @@ first nonblank line:
 **Research key:** `rank-drop-obstruction`
 ```
 
-The key names one mathematical subject rather than a sequence, date, or
-status. Related subjects get distinct keys and database links. Markdown uses
-no generated anchors, aliases, or database deep links. The tool reads and
-validates markers; agents edit ordinary Markdown directly.
+A research key is the stable identity of one durable mathematical referent,
+not a heading, report role, current status, recommendation, or workflow
+position. Apply three semantic checks:
+
+1. **Necessity:** index only material worth durable retrieval or linking.
+   Summaries, navigation, and workflow wrappers normally remain unindexed.
+2. **Granularity:** one key names one subject. Split an aggregate section when
+   its subjects need distinct links; otherwise leave it unindexed.
+3. **Stability:** the key remains accurate after sections are reordered, later
+   rounds run, and statuses or recommendations change.
+
+Keys are document-scoped; similar keys across separate invocations are not a
+goal. Preserve a key whenever its subject is unchanged. A genuine correction,
+split, or merge may rekey the subject, but the same close transaction must
+remap every card and artifact link; create no aliases. Markdown uses no
+generated anchors or database deep links. The tool validates marker syntax and
+relationship integrity, while the coordinator audits semantic fitness.
 
 ## Ownership
 
@@ -124,6 +140,13 @@ indexed metadata, file digest, references, and canonical/card links; it does
 not execute it or store raw logs. A tool-derived integrity result, a declared
 run outcome, and the card's mathematical status remain separate.
 
+When a native artifact's metadata names a rekeyed canonical subject, update
+and reindex that native artifact in the same authorized round. Otherwise
+preserve the canonical key or stop. During a Markdown-first rekey transaction,
+an exact stored card or curated-artifact link may be deleted after its former
+target has disappeared; additions and updates still require current targets,
+and final relationship validation rejects any incomplete migration atomically.
+
 ## Write and close
 
 Create one generated OS-temporary workpad for candidates, assumption maps,
@@ -135,11 +158,13 @@ Close in this order:
 
 1. integrate accepted mathematics, exact open obligations, load-bearing
    negative results, and concise provenance into canonical Markdown;
-2. freeze the resulting canonical digest and curate only reusable memory;
-3. apply one transaction with the expected database revision and canonical
+2. audit every marker for necessity, granularity, and stability, and plan any
+   complete key/link migration;
+3. freeze the resulting canonical digest and curate only reusable memory;
+4. apply one transaction with the expected database revision and canonical
    digest;
-4. run `check`, then exactly read every changed key, card, and artifact; and
-5. perform any authorized post-close action and delete the workpad.
+5. run `check`, then exactly read every changed key, card, and artifact; and
+6. perform any authorized post-close action and delete the workpad.
 
 Markdown and SQLite cannot form one filesystem transaction. Publish Markdown
 first: if the database update fails, the canonical account remains
