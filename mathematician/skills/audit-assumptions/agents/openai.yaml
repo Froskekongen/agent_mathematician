@@ -4,4 +4,4 @@ interface:
   default_prompt: "Use $audit-assumptions to identify necessary hypotheses and possible weakenings."
 
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: true

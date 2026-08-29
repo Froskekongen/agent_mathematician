@@ -1,6 +1,6 @@
 ---
 name: explain-mathematics
-description: Explain a mathematical theory, theorem, or proof to a mathematically mature nonspecialist. Use when teaching or unpacking prerequisites, notation, intuition, proof structure, examples, nonexamples, and connections across fields without assuming expertise in every mathematical specialty.
+description: Explain advanced mathematics to a mature nonspecialist without changing its meaning or status.
 disable-model-invocation: true
 ---
 
@@ -48,18 +48,21 @@ parameterized, or pathological rungs only when they teach a distinct feature.
 For each rung state its objects, assumptions, calculation, lesson, and what it
 does not establish.
 
-## 4. Explain and check the proof
+## 4. Explain and check fidelity
 
-Present a proof map, expand the mechanism-bearing steps with assumptions
-annotated, and close the remaining nontrivial details at the chosen level.
-Allocate detail by proof risk: emphasize the crux, fragile reductions,
+Present a proof map, annotate assumptions at mechanism-bearing steps, preserve
+unresolved obligations and source status, and emphasize fragile reductions,
 cross-field transfers, and imported results.
 
 For an executable or machine-checked result, reconstruct the human mechanism,
 map the intended theorem to the encoded statement and dependencies, and state
-the checker's trust boundary and semantic limitations. Verify every example,
-prerequisite order, analogy boundary, citation, and theorem qualifier. Compare
-a heavily rewritten exposition against the checked proof.
+the checker's trust boundary and semantic limitations. Check every example,
+prerequisite order, analogy boundary, citation, and theorem qualifier; compare
+a heavily rewritten exposition against the checked proof. On a load-bearing
+defect, preserve the recorded source status only as provenance, label it not
+revalidated, and report the defect as unresolved. Recommend `$destroy-theory`;
+recommend `$audit-assumptions` for necessity or `$research-mathematics` for
+repair or certification.
 
 ## Return and completion
 

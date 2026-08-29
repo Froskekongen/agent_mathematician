@@ -1,6 +1,6 @@
 ---
 name: consolidate-math-documents
-description: Consolidate selected mathematical documents into one self-contained canonical target, then safely retire the old source documents and companions.
+description: Consolidate mathematical documents into one canonical target and safely retire their source pairs.
 disable-model-invocation: true
 ---
 
@@ -10,7 +10,7 @@ Produce one self-contained mathematical account without changing definitions,
 assumptions, validity boundaries, claim status, or provenance silently. Read
 the shared [rigor chain](../research-mathematics/references/rigor.md),
 [research-memory protocol](../research-mathematics/references/research-memory.md),
-and, before writable mutation, [source-retirement protocol](references/source-retirement.md).
+and, before retirement planning, [source-retirement protocol](references/source-retirement.md).
 Consolidation reconciles existing work; new mathematics remains uncertified.
 
 ## 1. Freeze the run
@@ -24,10 +24,11 @@ their companions remain read-only until close.
 Classify the job as same-theory unification or cross-theory synthesis. Freeze
 source bytes, portable paths, roles, canonical and companion digests, target
 baseline, native artifacts, and inbound links in one OS-temporary workpad.
-Create no repository manifest.
+Create no repository manifest. Freeze the prospective retirement set and source
+eligibility; the exact plan waits for a stabilized target draft.
 
-Complete this step when every input is immutable for the run and the exact
-retirement set passes non-mutating preflight.
+Complete this step when every input is immutable and the prospective retirement
+set and source eligibility are explicit.
 
 ## 2. Reconcile every unit
 
@@ -39,10 +40,13 @@ target-only, target-card, retain-native-artifact, discard-with-source, or
 unresolved-conflict. Record one target location or exclusion reason.
 
 Equal names do not imply equal objects. Merge only after comparing domains,
-quantifiers, hypotheses, and status. Same-theory work may merge proved
-equivalents; cross-theory work preserves modules and explicit translation and
-applicability maps. Neither recency nor target location resolves a conflict,
-and consolidation never upgrades status.
+quantifiers, hypotheses, and status, and only when equivalence is already
+certified in the frozen sources. Otherwise preserve `unresolved-conflict` and
+recommend `$audit-assumptions` for hypothesis mismatch, `$destroy-theory` for
+conflicting validity, or `$research-mathematics` for a new equivalence proof.
+Cross-theory work preserves modules and explicit translation and applicability
+maps. Neither recency nor target location resolves a conflict, and
+consolidation never upgrades status.
 
 Complete this step when every source unit has exactly one justified
 disposition.
@@ -62,21 +66,15 @@ counterexamples, and material applicability findings. A source-derived target
 card is self-contained and records its source digest and local mapping.
 
 Complete this step when the target remains understandable and auditable after
-every source disappears.
+every source disappears and its stable draft can bind the retirement plan.
 
 ## 4. Publish and retire
 
-Revalidate source digests, database revisions, target baseline, and retirement
-plan. Then publish the target Markdown; run `ensure` and add its returned
-scalar locator when absent; freeze the resulting document digest; apply one
-revision-and-digest-checked changeset; run `check`; and exactly read every
-changed key, card, and artifact. Revalidate and retire only the authorized
-source files and explicitly located companions, then confirm their absence and
-recheck the target.
-
-Tracked deletions remain unstaged. On target drift, stop before publication.
-On retirement failure, retain the valid target and workpad and report deleted
-and remaining paths; never restore over a recreated or edited path.
+Construct and check the exact retirement plan under the source-retirement
+protocol. Revalidate source digests, database revisions, and target baseline;
+publish and close the target pair under the research-memory protocol; then
+recheck and apply the frozen retirement plan. Recheck the target after
+retirement.
 
 ## Completion
 

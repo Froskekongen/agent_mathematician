@@ -1,7 +1,6 @@
 ---
 name: destroy-theory
-description: Falsify or stress-test a mathematical statement, proof, or theory. Use when asked to destroy, attack, red-team, referee, find counterexamples or gaps, test consistency or claimed generality, or locate the exact boundary where a claim fails.
-disable-model-invocation: true
+description: Falsify mathematical claims or proofs. Use for adversarial review, counterexample search, gap finding, boundary detection, or another skill's challenge gate.
 ---
 
 # Destroy Theory
@@ -53,7 +52,8 @@ conclusion strength, hidden premises, and renamed central obligations. Check
 an executable encoding separately from the intended theorem and its proof.
 
 Classify every finding as target defeated, proof defeated, encoding defeated,
-or not falsified within scope.
+or not falsified within scope. Record systematic weakening questions for
+`$audit-assumptions`; a nested run does not launch it.
 
 ## 4. Certify, minimize, and repair
 
@@ -65,13 +65,15 @@ it creates; a repair is a new target rather than a victory over the original.
 
 ## Return and completion
 
-Return the frozen target and negation, dependency and attack maps, certified
-witnesses or proof defects, exact validity boundary, candidate repairs,
-residual attack surface, search scope, and one shared truth status. Use finding
-types such as inconsistent assumptions, proof invalid, overstated claim, or
-survived within scope without inventing another status vocabulary. A certified
-counterexample or contradiction gives `REFUTED`; a proof defect or survived
-attack alone leaves the theorem `UNRESOLVED`.
+Return the target and negation, attack map, certified witnesses or defects,
+validity boundary, repairs, residual surface, search scope, and shared status.
+For nested work add `candidate_digest` and `requested_assumption_audits`, even
+when empty. Standalone work recommends `$audit-assumptions` for systematic
+weakenings or `$research-mathematics` to prove a repaired target.
+
+Only a certified counterexample or frozen-target contradiction forces
+`REFUTED`. Otherwise report status impact and exact open obligations, then use
+the shared status chain; a defeated proof or encoding cannot support `PROVED`.
 
 For writable work, preserve certified failures and accepted boundaries in
 canonical Markdown; retain only reusable obstructions, expensive negative

@@ -12,7 +12,7 @@ mathematical ability.
 - Evaluated revised arm: immutable tree archive SHA-256
   `0faf0144814ebad049ddb3fbeca3374eebf754f3e8413417e456f927fb450318`.
 
-The live revised tree has three small classes of post-pilot hardening and is
+The live revised tree has four small classes of post-pilot hardening and is
 therefore intentionally not byte-identical to the evaluated archive:
 
 1. facet order is canonicalized before card hashing;
@@ -20,7 +20,9 @@ therefore intentionally not byte-identical to the evaluated archive:
    prose must match actual early exits; and
 3. routing now says not to load the computational contract merely to classify
    a hand check, and not to create cards that only duplicate canonical or
-   artifact content.
+   artifact content; and
+4. the research challenge gate directly invokes the public falsification and
+   assumption workers, while broader phase changes remain user-controlled.
 
 ## Static complexity
 
@@ -31,17 +33,19 @@ revised file is a maintainer rationale and is not routed.
 
 | Measure | Current | Evaluated revised | Live revised |
 |---|---:|---:|---:|
-| Public skill lines | 939 | 633 | 634 |
-| Public skill words | 8,440 | 3,958 | 3,972 |
-| Full routed-runtime lines | 1,621 | 1,167 | 1,175 |
-| Full routed-runtime words | 14,012 | 7,210 | 7,295 |
+| Public skill lines | 939 | 633 | 644 |
+| Public skill words | 8,440 | 3,958 | 3,938 |
+| Full routed-runtime lines | 1,621 | 1,167 | 1,185 |
+| Full routed-runtime words | 14,012 | 7,210 | 7,261 |
 | Canonical + memory implementation lines | 3,860 | 2,723 | 2,724 |
 | Public canonical/memory commands | 14 | 4 | 4 |
 
-Against current, the live suite removes 52.9% of public-skill words, 47.9% of
+Against current, the live suite removes 53.3% of public-skill words, 48.2% of
 all runtime words, 29.4% of memory implementation lines, and 10 of 14 public
 commands. The canonical-section parser remains an internal module rather than
-a second user-facing CLI.
+a second user-facing CLI. The two model-invokable review workers add only 294
+bytes (37 words) of always-on descriptions; the larger phase skills remain
+explicit-only.
 
 ## Pilot protocol
 

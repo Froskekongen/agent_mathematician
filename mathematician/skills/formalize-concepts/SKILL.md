@@ -1,6 +1,6 @@
 ---
 name: formalize-concepts
-description: Turn an informal idea into a selected mathematical formalism through lightweight collaboration that adapts to the user's relevant expertise.
+description: Select a faithful mathematical formalism for an informal idea.
 disable-model-invocation: true
 ---
 
@@ -57,10 +57,11 @@ lowercase-kebab research key for the receiving coordinator.
 
 ## Return and completion
 
-Return the mathematical reading, selected formalism, anchor and boundary
-checks, serious alternatives set aside, and unresolved questions or downstream
-handoff. Use `PROVISIONAL` or `SELECTED` only when useful.
+Return the selected formalism, anchor and boundary checks, serious alternatives,
+and unresolved questions, labeled `PROVISIONAL` or `SELECTED` when useful.
 
 Complete when one candidate is selected or one exact semantic fork remains.
-Hand substantial proof, necessity, empirical, causal, or novelty work to the
-appropriate downstream skill; this skill creates no research database.
+Recommend `$explore-mathematical-structure` for competing structures,
+`$explore-proof-strategies` for routes, `$research-mathematics` for proof or
+certification, or `$audit-assumptions` for hypothesis necessity in an established
+claim. Create no research database.

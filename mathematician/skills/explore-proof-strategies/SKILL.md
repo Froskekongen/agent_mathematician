@@ -1,6 +1,6 @@
 ---
 name: explore-proof-strategies
-description: Explore a bounded, mathematically disciplined portfolio of proof strategies and preserve any candidate proof for later rigorous verification.
+description: Compare proof strategies for a fixed claim and preserve candidates for later certification.
 disable-model-invocation: true
 ---
 
@@ -15,10 +15,11 @@ A nested scout is read-only and reports against the supplied target digest.
 
 ## 1. Frame and screen
 
-Record the literal claim, interpretation, typed objects, quantifiers,
-assumptions, method constraints, and material ambiguities. Run a cheap truth
-screen on small, boundary, degenerate, and scaling cases. A failed screen needs
-a certified witness; survival means only not refuted within the stated scope.
+Freeze one target. If meaning or structure is unsettled, stop this run and
+recommend `$formalize-concepts` or `$explore-mathematical-structure`, respectively.
+Run a cheap truth screen on small, boundary, degenerate, and scaling cases.
+Close a hand-checkable witness locally; recommend `$destroy-theory` for material
+falsification or witness certification. Survival means only scoped non-refutation.
 
 Complete this step when every route can be judged against one target and the
 screen's coverage is explicit.

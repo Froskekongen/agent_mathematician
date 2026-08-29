@@ -1,6 +1,6 @@
 ---
 name: explore-mathematical-structure
-description: Explore a vague mathematical idea, question, or provisional formalism through rapid contrastive tests so the user can choose promising next directions.
+description: Compare candidate mathematical structures with small discriminating tests and return a research choice.
 disable-model-invocation: true
 ---
 
@@ -21,9 +21,9 @@ larger autonomous budget, run one decision-relevant tracer round.
 
 Fix the mathematical job, typed objects and maps, one observable or question,
 an anchor example, fixed choices, reversible assumptions, and live semantic
-forks. Keep two to four candidates whose predictions differ. When meaning
-blocks comparison, ask one wedge question whose answers select different
-structures or examples.
+forks. Keep two to four candidates whose predictions differ. If meaning blocks
+comparison, ask one wedge question; if it still fails, stop this run and recommend
+`$formalize-concepts`.
 
 Complete this step when the candidates make distinct checkable predictions or
 the unresolved semantic fork is explicit.
@@ -72,6 +72,7 @@ obstructions, expensive probes, and source-applicability findings in memory.
 
 Complete only when the brief supports a research decision, evidence scope and
 artifact risk are explicit, and every retained memory item has a concrete
-reuse condition. Label any incidental end-to-end argument
-`CANDIDATE FULL PROOF — NOT CERTIFIED` and hand rigorous resolution to
-`$research-mathematics`.
+reuse condition. Recommend `$explore-proof-strategies` for a precise claim
+without a route. Label an incidental end-to-end argument
+`CANDIDATE FULL PROOF — NOT CERTIFIED`; recommend `$research-mathematics` for
+rigorous resolution.

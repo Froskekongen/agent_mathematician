@@ -4,4 +4,4 @@ interface:
   default_prompt: "Use $destroy-theory to try to falsify this mathematical theory."
 
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: true

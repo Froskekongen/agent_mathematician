@@ -1,6 +1,6 @@
 ---
 name: research-mathematics
-description: Research, formulate, prove, verify, or repair a substantial mathematical theorem, conjecture, derivation, or theory. Use for open-ended mathematical research, rigorous proof construction, independent verification, or improving a theorem. Reserve this full workflow for nontrivial claims rather than routine calculations or exposition-only requests.
+description: Prove, verify, repair, or rigorously resolve a substantial mathematical claim.
 disable-model-invocation: true
 ---
 
@@ -8,8 +8,9 @@ disable-model-invocation: true
 
 Resolve a substantial claim rigorously or expose its exact failure or open
 obligation. Read and apply the shared [rigor chain](references/rigor.md)
-completely. If the target is not yet precise enough to judge, hand it to
-`$explore-mathematical-structure` rather than inventing a theorem.
+completely. If meanings or objects remain unsettled, stop this run and recommend
+`$formalize-concepts`; if a provisional formalism still lacks an exact target,
+stop and recommend `$explore-mathematical-structure`.
 
 For authorized file-backed work or explicit research-history retrieval, read
 the [research-memory protocol](references/research-memory.md). Chat-only work
@@ -28,9 +29,9 @@ the statement is well-posed.
 ## 2. Expose the mechanism and compare routes
 
 Test the smallest nontrivial, representative, boundary, and near-miss cases.
-Identify the structure that could make the claim true. Compare at least two
-materially different proof routes for a nontrivial claim; for each record its
-mechanism, assumptions, hardest subgoal, likely failure, and disposition.
+Identify the structure that could make the claim true. Compare credible routes
+only far enough to select one; when route selection is itself substantial, stop
+this run and recommend `$explore-proof-strategies`.
 
 Use material computation only when it can decide truth, route allocation, or a
 load-bearing step. Then read
@@ -39,7 +40,7 @@ the appropriate internal mode. Decide materiality first; do not load that
 reference merely to classify a hand-checkable calculation.
 
 Complete this step with a selected route justified by the mathematics, or an
-exact account of why no route is yet viable.
+explicit proof-strategy handoff.
 
 ## 3. Construct the evidence
 
@@ -53,17 +54,19 @@ open obligation.
 
 ## 4. Challenge the unchanged candidate
 
-Freeze the target, proof graph, assumptions, sources, permitted axioms, and
-artifacts under one candidate digest. Dispatch two cold specialist contexts
-against exactly that candidate:
+Freeze the target, proof graph, assumptions, sources, axioms, and artifacts
+under one digest. Dispatch two fresh, mutually isolated, read-only contexts on
+that candidate, digest, and no peer report: the first prompt invokes
+`$destroy-theory`; the second invokes `$audit-assumptions`.
 
-- a falsifier attacks the theorem, proof, specification, and critical lemmas;
-- an assumption auditor separates well-posedness, proof use, and theorem
-  necessity, and identifies uncovered witness searches.
-
-After both return, run only uncovered attacks. Each finding is repaired,
-closed by content-bound re-evaluation, or preserved as an open defect. A
-material repair creates a new candidate and repeats both reviews.
+Reject a mismatched `candidate_digest`. Deduplicate `requested_attacks` and
+`requested_assumption_audits`; route new items to `$destroy-theory` and
+`$audit-assumptions`, respectively. After the initial pair, allow at most one
+fresh call to each worker containing all unseen requests of its type; do not
+recurse, and preserve later requests as open obligations. The coordinator
+routes review work and integrates or repairs findings as sole writer;
+specialists only review. A material repair redigests and repeats both reviews;
+unavailable isolation leaves the gate open.
 
 Complete this step when both reports cover one unchanged digest and every
 material finding has a disposition.
@@ -86,7 +89,8 @@ argument and every verifier outcome, failure, or abstention is recorded.
 ## 6. Improve, contextualize, and close
 
 Only after stabilization, test useful strengthenings, weakenings, converses,
-bounds, stability, uniqueness, or extensions. Reopen the affected gates for
+bounds, stability, uniqueness, or extensions. Recommend `$audit-assumptions`
+when hypothesis minimization becomes substantial. Reopen affected gates for
 every accepted material change. When attribution or novelty matters, search
 primary literature for the exact claim and equivalent formulations, map
 hypotheses, and report coverage.

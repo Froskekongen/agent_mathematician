@@ -1,7 +1,6 @@
 ---
 name: audit-assumptions
-description: Audit hypotheses in a mathematical theorem, proof, or theory. Use when identifying hidden, missing, implied, or redundant assumptions; locating their exact proof uses; testing necessity; or proposing and validating weaker assumptions and alternative hypothesis sets.
-disable-model-invocation: true
+description: Audit mathematical assumptions. Use for hidden premises, proof uses, necessity witnesses, weakenings, or another skill's assumption gate.
 ---
 
 # Audit Assumptions
@@ -11,10 +10,9 @@ Determine what each assumption buys. Read and apply the shared
 well-posedness, use by this proof, theorem necessity, and evidence for necessity
 separate.
 
-Default to a conversation-only report. A nested audit is read-only, bound to
-the supplied candidate digest, and returns uncovered witness searches rather
-than launching another falsifier. For an authorized writable theory, first
-read the [research-memory protocol](../research-mathematics/references/research-memory.md).
+Default to a conversation-only report. Nested work is read-only and bound to
+the supplied digest. For writable work, read the
+[research-memory protocol](../research-mathematics/references/research-memory.md).
 
 ## 1. Normalize and map
 
@@ -73,7 +71,9 @@ Return a table of semantic assumption, origin, exact uses, well-posedness role,
 proof dependence, theorem necessity, evidence, and candidate weakening. Add
 hidden assumptions, interactions, alternative sufficient sets, certified
 witnesses, relaxation portfolio, prioritized obligations, and—for nested
-work—`candidate_digest` plus `requested_attacks`, even when empty.
+work—`candidate_digest` plus `requested_attacks`, even when empty. A standalone
+audit recommends `$destroy-theory` for broad falsification or
+`$research-mathematics` to prove a proposed relaxation.
 
 For writable work, keep accepted assumptions and proved relaxations in
 canonical Markdown and only reusable unresolved or rejected alternatives in

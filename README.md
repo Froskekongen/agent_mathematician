@@ -21,14 +21,18 @@ review, explanation, and document consolidation.
 - `consolidate-math-documents`: reconcile canonical accounts and safely retire
   their exact source pairs.
 
-The usual discovery path is `formalize-concepts` ->
+The usual user-controlled path is `formalize-concepts` ->
 `explore-mathematical-structure` -> `explore-proof-strategies` ->
-`research-mathematics`; skip settled stages.
+`research-mathematics`; skip settled stages. These phase changes are explicit
+`$skill-name` recommendations rather than automatic continuations.
 
-All public skills are user-invoked. Their short entrypoints contain only the
-task-specific purpose, steps, and completion gate. Shared references under
-`research-mathematics/references/` carry the cross-suite rigor, memory, and
-conditional computation contracts without adding another public skill.
+All eight skills remain directly user-invokable. Only `destroy-theory` and
+`audit-assumptions` are also model-invokable: `research-mathematics` calls them
+as cold, read-only workers at its mandatory challenge gate. The other six stay
+user-only, so phase routing cannot silently broaden a request. Short
+entrypoints contain only task-specific steps and completion gates; shared
+references under `research-mathematics/references/` carry cross-suite rigor,
+memory, and conditional computation contracts.
 The [paired architecture pilot](mathematician/evaluations/architecture-pair/pilot-results.md)
 records the measured complexity, quality, and cost tradeoffs.
 
