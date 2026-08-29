@@ -1,86 +1,75 @@
 ---
 name: explore-mathematical-structure
-description: Compare candidate mathematical structures with small discriminating tests and return a research choice.
+description: Compare mathematical viewpoints with small revealing examples and identify the most useful direction.
 disable-model-invocation: true
 ---
 
 # Explore Mathematical Structure
 
-Run a contrastive laboratory: build useful ways of seeing the mathematics,
-formalize only enough for candidates to disagree, and execute the cheapest
-useful discriminator. Read and apply the shared
-[mathematical-integrity contract](../research-mathematics/references/mathematical-integrity.md).
-This skill's rigor is contrastive and exploratory; it makes intuition
-recoverable without trying to certify a theorem.
+Explore several ways to see the same mathematics and learn which viewpoint is
+most useful. Follow the
+[shared mathematical integrity](../research-mathematics/references/mathematical-integrity.md).
+Aim for insight, revealing examples, and promising questions. This skill does
+not try to certify a theorem.
 
-Chat-only work creates no artifacts. For an authorized file-backed round, read
-the shared [research-memory protocol](../research-mathematics/references/research-memory.md)
-and act as its sole writer. Unless the user requests a one-shot artifact or a
-larger autonomous budget, run one decision-relevant tracer round.
+Chat-only work creates no files. For an authorized file-backed round, read the
+shared [research-memory rules](../research-mathematics/references/research-memory.md)
+and act as sole writer. Unless the user asks for a one-shot survey or a larger
+search, run one focused round of exploration.
 
-## 1. Orient and frame contrasting candidates
+## 1. Start from the phenomenon
 
-Orient first in source-domain terms: problem, established meaning and
-constraints, baseline, and evidence state. Define decision-bearing terms before
-abstraction. Then fix the mathematical job, typed objects and maps, one
-observable or question, an anchor example, fixed choices, reversible
-assumptions, and live semantic forks. Keep two to four candidates whose
-predictions differ.
+Describe the problem in its original setting before introducing abstraction.
+Identify what needs explaining, the main constraints, and one concrete example.
+Then develop two to four genuinely different viewpoints whose predictions can
+be compared.
 
-For each candidate, give a mental model or mechanism, its exact mathematical
-referents, the relations it preserves, its important mismatch or breakpoint,
-and a prediction that distinguishes it. Keep candidate versions visible rather
-than silently repairing them. If meaning blocks comparison, ask one wedge
-question; if it still fails, stop this run and recommend
-`$formalize-concepts`.
+For each viewpoint, give:
 
-Complete this step when the candidates make distinct checkable predictions or
-the unresolved semantic fork is explicit.
+- an intuitive picture or mechanism;
+- the exact objects and relations behind that picture;
+- what the picture captures and where it breaks; and
+- one prediction that distinguishes it from the alternatives.
 
-## 2. Predict and probe
+If the intended meaning is still too unclear for comparison, ask one focused
+question. If the answer is still missing, recommend `$formalize-concepts`.
 
-Before a decisive observation, record each candidate's prediction and nearest
-alternative explanation. Choose the smallest example, deformation, boundary,
-counterexample, or exact finite family likely to separate them.
+## 2. Test the viewpoints
 
-Keep cheap, hand-checkable probes local. For material computation, solver work,
-executable checking, or a promoted witness, read the shared
-[computational-checking role](../research-mathematics/references/computational-checking.md)
-and dispatch `discover`, `falsify`, or `certify` as appropriate. Preserve the
-encoded scope and evidence ceiling.
+Before looking at a decisive example, say what each viewpoint predicts. Choose
+the smallest useful example, deformation, boundary case, counterexample, or
+finite family that could separate them. Work it through far enough to show the
+mechanism, not merely the answer.
 
-Complete this step when one consequential contrast is better determined, or
-its non-separation is diagnosed within an explicit scope, and every
-load-bearing intuition has an exact referent and recovery test.
+Keep hand-checkable tests local. For material computation, solver work,
+executable checking, or a witness that will carry a later claim, read
+[computational-checking.md](../research-mathematics/references/computational-checking.md)
+and use its `discover`, `falsify`, or `certify` role as appropriate. Say what the
+computation actually checked and where its conclusion stops.
 
-## 3. Update without false closure
+## 3. Explain what was learned
 
-Keep original predictions visible beside any repair. Separate mathematical
-truth status, evidence coverage and fidelity, and workflow disposition.
-`REFUTED` requires a checked counterexample; `rejected` only ends current
-investment. Recommend one direction and at most two alternatives, then give
-the cheapest next discriminator and an outcome map for each possible result.
+Keep the original prediction beside any revised version. Distinguish “false”
+from “not useful for this direction”: only a checked contradiction or
+counterexample settles the first. Recommend the most promising viewpoint and
+explain why. Keep at most two alternatives when they still illuminate the
+problem, and give the next small test that would change the choice.
 
-For any unresolved recommendation that depends materially on analogy,
-experiment, or heuristic reasoning, state the conversion obligation that would
-justify a stronger mathematical claim. Continue only while expected decision
-value justifies the budget.
+If the recommendation relies on an analogy, experiment, or heuristic, state
+the conversion obligation needed before it can support a stronger claim.
 
-## 4. Prepare a certification handoff when useful
+## 4. Prepare for proof only when useful
 
-When exploration produces a precise claim worth resolving, package rather than
-certify it. Include:
+If a precise claim emerges, add a compact note for later proof work containing:
 
-- the current candidate or target version;
-- the mental model and proposed mechanism;
-- exact claims worth promoting;
-- fixed assumptions and live semantic choices;
-- heuristic, analogy, or source dependencies;
-- checks passed, failed, and not attempted, with their evidence ceilings;
-- open and conversion obligations; and
-- the suspected crux or cheapest decisive next step.
+- the exact claim and assumptions;
+- the guiding picture and proposed mechanism;
+- the examples or checks already tried, and what they show;
+- any heuristic or imported idea still needing justification; and
+- the likely crux or best next step.
 
-The handoff records a starting point, not a truth status.
+This note is the proof handoff. It is a starting point, not a proof or
+an upgrade in mathematical status.
 
 ## Literature and privacy
 
@@ -88,25 +77,22 @@ Before major investment in an apparently new direction, or whenever prior art,
 attribution, or sensitive unpublished material affects the decision, read and
 follow [literature-and-privacy.md](references/literature-and-privacy.md).
 
-## Return and completion
+## Write the result
 
-Lead with an exploration brief containing the current conclusion or live
-uncertainty, decisive mechanism and smallest witness, live options and
-recommendation, and next discriminator with its outcome map. Put claim status
-and evidence scope beside any exact recommendation; include the semantic wedge
-only when one remains. Add the certification handoff only when a precise claim
-is ready for downstream resolution. Report headings do not imply research
-keys. For writable work, index only durable mathematical subjects under the
-protocol's semantic audit.
+Write the exploration as mathematics, not as a laboratory log. Lead with the
+question, the competing pictures, the example that distinguishes them, what it
+teaches, and the most promising next direction. Use a table only when it makes
+the comparison easier to see. Add the proof-preparation note only when a precise
+claim is ready for later resolution.
 
-For writable work, keep selected definitions, decisive evidence, boundaries,
-and the next obligation in canonical Markdown; retain only reusable directions,
-obstructions, expensive probes, and source-applicability findings in memory.
+For writable work, keep the readable exploration, selected definitions,
+important boundaries, and next mathematical question in canonical Markdown.
+Memory may retain reusable abandoned directions, obstructions, expensive
+tests, and source findings. Do not copy memory mechanics into the document.
 
-Complete only when the brief supports a research decision, evidence scope and
-artifact risk are explicit, every load-bearing mental model is recoverable,
-and every retained memory item has a concrete reuse condition. Recommend
-`$explore-proof-strategies` for a precise claim without a route. Label an
-incidental end-to-end argument
-`CANDIDATE FULL PROOF — NOT CERTIFIED`; recommend `$research-mathematics` for
-rigorous resolution.
+Complete when the reader can explain the competing viewpoints, the mathematical
+test between them, the limits of that test, and why the recommended direction is
+promising. Recommend `$explore-proof-strategies` when a precise claim needs a
+proof route. Label an incidental end-to-end argument
+`CANDIDATE FULL PROOF — NOT CERTIFIED`, and recommend `$research-mathematics`
+for rigorous resolution.

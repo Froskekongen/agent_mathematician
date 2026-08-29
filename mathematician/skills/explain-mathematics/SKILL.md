@@ -6,107 +6,96 @@ disable-model-invocation: true
 
 # Explain Mathematics
 
-Build a bridge from the reader's mathematical background to the focal theory
-without changing the mathematics. Read and apply the shared
-[mathematical-integrity contract](../research-mathematics/references/mathematical-integrity.md).
-This skill's rigor is explanatory: preserve exact core mathematics and status
-while optimizing mental models, motivation, examples, and mechanism. A complete
-proof is optional unless the request is genuinely proof-bearing.
+Help the reader see why the mathematics works, not merely what its formal
+statements say. Follow the
+[shared mathematical integrity](../research-mathematics/references/mathematical-integrity.md).
+Preserve the exact mathematics and its current status, but optimize for
+motivation, mental models, examples, and mechanism. A complete proof is optional
+unless the request is genuinely proof-bearing.
 
-## File modes
+## File handling (internal)
 
-Default to chat; files and companions remain read-only unless the user
-explicitly asks to update or rewrite a named canonical target. Merely supplying
-or naming one is not authorization. For research history, read the
-[research-memory protocol](../research-mathematics/references/research-memory.md),
-query the companion read-only, and label the result as history.
+Default to chat. Supplying or naming a file is not authorization to change it;
+files and companions remain read-only unless the user explicitly asks to update
+or rewrite a named canonical target. For research history, read the
+[research-memory rules](../research-mathematics/references/research-memory.md),
+query the companion read-only, and describe the result as history.
 
-An in-place request authorizes only that target's Markdown/SQLite pair. An
-explicitly requested separate explanation gets its own companion and leaves
-the source pair read-only; no two Markdown documents share one database.
-For writable work, read the protocol completely and act as sole writer.
+An in-place request authorizes only that target's Markdown/SQLite pair. A
+separate explanation has its own companion and leaves the source pair read-only;
+no two Markdown documents share one database. For writable work, read the
+rules completely and act as sole writer.
 
-## 1. Set the audience contract
+## 1. Know the reader
 
-Infer the reader's relevant background from the request. Default to a
-mathematically mature nonspecialist. Partition prerequisites into assumed,
-bridged here, and optional.
+Infer the reader's relevant background from the request. Unless told otherwise,
+write for a mathematically mature reader who is new to this specialty. Decide
+what can be assumed, what needs a short reminder, and what must be developed
+here.
 
-Complete this step when the audience and prerequisite budget are explicit.
+## 2. Start with the point and a picture
 
-## 2. Orient with a recoverable mental model
+Begin with the problem, obstruction, or phenomenon that makes the mathematics
+worth studying. Give a mental picture in language or mathematics the reader
+already knows. Then say which exact objects and relations the picture represents.
+For an analogy, explain what carries over and where it breaks.
 
-Begin with the problem, obstruction, or phenomenon that makes the theory
-useful. Give a mental model in language or mathematics already available to
-the reader, then identify the exact objects and relations it represents. For a
-cross-field analogy, say what structure transfers and where the comparison
-breaks.
+Move from motivation to mechanism before giving the most abstract formulation.
+A useful order is: the problem, the new structure, how it resolves the problem,
+an informal result, and then the exact statement.
 
-Orient the reader before abstraction: motivation or obstruction, introduced
-structure, resolving mechanism, informal result, then the exact qualified
-theorem.
+## 3. Connect the picture to the exact mathematics
 
-Complete this step when the reader has a usable model whose exact referents and
-limits are visible.
+Introduce definitions, conventions, constructions, and imported results before
+they are used. Explain why each important definition has the form it does.
+State the main object or theorem with every qualifier that changes its meaning.
+Keep proved, conjectural, incomplete, and merely suggested material distinct,
+using natural prose rather than repeated status labels.
 
-## 3. Install the exact backbone
+## 4. Make the mechanism visible in examples
 
-Order field-specific definitions, conventions, constructions, and imported
-results by dependency. Introduce each bridged prerequisite before use. State
-the focal object or theorem with all qualifiers that affect meaning, and keep
-source, conjectural, incomplete, and proved material visibly distinct.
+Choose the shortest examples that make the central mechanism work and reveal a
+useful boundary. Usually one small example and one boundary case or nonexample
+are enough; one example may do both jobs. Add more only when they teach
+something genuinely different.
 
-Complete this step when the exact mathematics can be parsed without an
-undeclared specialist dependency and can be related back to the mental model.
+For each example, make the objects, assumptions, and calculation clear, then
+say what the example teaches and what it does not prove.
 
-## 4. Make the mechanism operate
+## 5. Add proof only where it helps
 
-Use the shortest checked example set that makes the mechanism operate and
-shows a relevant boundary. Usually one mechanism-bearing example and one
-boundary case or nonexample suffice; one example may do both jobs. Add a
-representative, parameterized, or pathological rung only when it teaches a
-distinct feature. For each rung state its objects, assumptions, calculation,
-lesson, and what it does not establish.
+If the proof explains the mechanism, give its main idea and show what each major
+step accomplishes. Spend detail on the crux and compress routine work that this
+reader can reconstruct. If a complete cross-specialty proof is needed,
+recommend `$write-proof-exposition`.
 
-Give a proof map only when the proof is focal or it materially explains the
-mechanism. Emphasize the crux and the purpose of its main components rather
-than expanding routine detail by default. If the user needs a complete proof
-that a nonspecialist mathematician can reconstruct, recommend
-`$write-proof-exposition`.
+## 6. Check the mathematics and write naturally
 
-## 5. Check explanatory and mathematical fidelity
+Check every important example, analogy boundary, citation, theorem qualifier,
+and move from the mental picture to the exact mathematics. Compare a substantial
+rewrite with the source theorem and proof when available.
 
-Preserve unresolved obligations and source status. Check every load-bearing
-example, analogy boundary, citation, theorem qualifier, and transition from the
-mental model to the exact mathematics. A heavily rewritten account is compared
-against its source claim and checked proof when one exists.
+For a machine-checked result, explain the human mathematical idea and state
+what the formal encoding actually says, what the checker verified, and what it
+assumes. If an important step or source does not check out, say so plainly and
+keep the issue unresolved. Recommend `$destroy-theory` for a possible defect,
+`$audit-assumptions` for a question about necessity, or `$research-mathematics`
+for repair or certification.
 
-For an executable or machine-checked result, reconstruct the human mechanism,
-map the intended theorem to the encoded statement and dependencies, and state
-the checker's trust boundary and semantic limitations. On a load-bearing
-defect, preserve the recorded source status only as provenance, label the local
-account not revalidated, and report the defect as unresolved. Recommend
-`$destroy-theory`; recommend `$audit-assumptions` for necessity or
-`$research-mathematics` for repair or certification.
+For an authorized rewrite, draft separately and compare the final account with
+the source before replacing it. Preserve meaning, status, and provenance. If a
+faithful explanation would require new mathematics, leave the source unchanged
+and hand that work to the appropriate research skill.
 
-## 6. Rewrite faithfully when authorized
+## Completion
 
-Draft outside the target from a workpad snapshot and audit the complete rewrite
-against the integrity and canonical contracts. Preserve meaning, status, and
-provenance. If fidelity would require mathematical repair, leave the pair
-unchanged and hand off to the appropriate research or review skill. Otherwise
-close through the protocol.
+Write a natural mathematical explanation, not a visible audit trail. Do not
+force fixed headings. Lead with motivation and the governing idea; place
+definitions, examples, exact statements, proof ideas, and boundaries where they
+best support understanding. Keep file rules, database terms, internal checks,
+and routing notes out of the explanation.
 
-## Return and completion
-
-Use the smallest useful ordering of audience contract, orientation,
-mental model, definitions, exact theorem, mechanism, example ladder, optional
-proof map, boundary cases, and next prerequisites. Distinguish intuition from
-justification without interrupting every intuitive passage with proof
-ceremony.
-
-Complete only when the reader can identify the exact object or claim, explain
-the mechanism in the mental model, distinguish that model from its
-justification, and see both a checked mechanism-bearing example and a checked
-boundary or nonexample. Proof dependencies are required only to the depth
-promised by the request.
+Complete when the reader can say what the main objects are, why the definitions
+are natural, how the mechanism works in a checked example, where the picture
+breaks, and which parts are intuition versus proof. Give proof detail only to
+the depth promised by the request.

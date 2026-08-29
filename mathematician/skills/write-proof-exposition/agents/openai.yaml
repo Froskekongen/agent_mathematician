@@ -1,7 +1,7 @@
 interface:
   display_name: "Write Proof Exposition"
   short_description: "Make complete proofs readable across specialties"
-  default_prompt: "Use $write-proof-exposition to turn this stabilized proof into a self-contained account for mathematicians outside the specialty."
+  default_prompt: "Use $write-proof-exposition to turn this established proof into a self-contained account for mathematicians outside the specialty."
 
 policy:
   allow_implicit_invocation: false

@@ -1,97 +1,103 @@
 ---
 name: audit-assumptions
-description: Audit mathematical assumptions. Use for hidden premises, proof uses, necessity witnesses, weakenings, or another skill's assumption gate.
+description: Trace what mathematical assumptions do and whether they are needed for the statement, the proof, or the theorem, including when another skill needs a fresh assumption review.
 ---
 
 # Audit Assumptions
 
-Determine what each assumption buys. Read and apply the shared
-[mathematical-integrity contract](../research-mathematics/references/mathematical-integrity.md).
-This skill's rigor is assumption-local: well-posedness, use by this proof,
-theorem necessity, redundancy, and successful weakening require different
-certificates and never collapse into one verdict.
+Find out what each assumption is doing. Follow the
+[shared mathematical integrity](../research-mathematics/references/mathematical-integrity.md).
+Keep three questions separate: Is the assumption needed to make the statement
+meaningful? Is it used by this proof? Is it genuinely needed for the theorem to
+be true? These questions need different evidence.
 
-Default to a conversation-only report. Nested work is read-only and bound to
-the supplied digest. For writable work, read the
-[research-memory protocol](../research-mathematics/references/research-memory.md).
+Default to a conversation-only result. Nested work is read-only and tied to the
+supplied digest. For writable work, read the
+[research-memory rules](../research-mathematics/references/research-memory.md).
 
-## 1. Normalize and map
+## 1. State the theorem and trace each assumption
 
-Rewrite the theorem precisely. Split compound hypotheses into atomic semantic
-units and include ambient conventions, definition requirements, premises
-imported by results, hidden proof assumptions, boundary or convergence
-qualifiers, and interpretation choices. Record implication, equivalence,
-incompatibility, and jointly sufficient sets.
+Write the theorem precisely. Split compound hypotheses into individual
+assumptions. Include ambient conventions, conditions needed by definitions,
+assumptions imported through cited results, hidden proof premises, boundary or
+convergence conditions, and choices of interpretation. Note when assumptions
+imply, contradict, or work only in combination with one another.
 
-Link every assumption to the exact expressions, definitions, lemmas,
+Trace each assumption through the proof: identify the definitions, lemmas,
 interchanges, existence or uniqueness claims, constants, and imported results
-that use it. For each answer independently:
+that use it. Ask separately:
 
 1. Is it needed for well-posedness?
 2. Is it used by this proof?
 3. Is it necessary for the theorem?
 4. What evidence supports each answer?
 
-Complete this step when every explicit and discovered assumption occurs once
-in the map and every proof use is linked or marked unused.
+Complete this step when every explicit or hidden assumption appears once in the
+map and every proof use is linked or marked unused.
 
-## 2. Remove, mutate, and mine
+## 2. Try removing or weakening assumptions
 
-Delete each assumption while keeping the rest fixed; test whether another
-implies it; weaken it to the local property actually used; try nearby or
-incomparable replacements; and inspect interacting groups and alternative
-sufficient sets. Diff the resulting statement's hypotheses, conclusion,
-definitions, domains, quantifiers, convergence modes, and interpretation.
+Remove each assumption while keeping the others fixed. Check whether another
+assumption already implies it. Replace it with the weaker local property the
+proof actually uses, and try natural alternatives. Also inspect groups of
+assumptions that work together. For every changed theorem, state clearly how
+its hypotheses, conclusion, definitions, domains, quantifiers, convergence, or
+interpretation differ from the original.
 
-At each proof use, extract the weakest local sufficient property and ask
-whether approximation, localization, truncation, density, compactness,
-duality, or a different route can globalize it. Build a weakening ladder rather
-than jumping to a speculative endpoint.
+At each proof use, identify the weakest local property that would suffice. Ask
+whether approximation, localization, truncation, density, compactness, duality,
+or a different proof can extend that local property to the full theorem. Weaken
+assumptions in understandable steps rather than jumping to a speculative final
+version.
 
 For a material finite, randomized, symbolic, numerical, or certificate-backed
-necessity search, read the shared
-[computational-checking role](../research-mathematics/references/computational-checking.md)
-and dispatch `falsify`. Failure to find a witness leaves theorem necessity
-unresolved.
+search, read
+[computational-checking.md](../research-mathematics/references/computational-checking.md)
+and use `falsify`. Failure to find a counterexample does not show that the
+assumption is necessary.
 
 Complete this step when each assumption has a tested removal or weakening and
 every remaining search has exact scope and a proposed next test.
 
-## 3. Classify and evaluate
+## 3. Say what each assumption contributes
 
-Classify each assumption as necessary for well-posedness, demonstrably
-theorem-necessary, needed by the current proof, sufficient but nonminimal,
-redundant, or unresolved. Call it technical only after a verified route removes
-it.
+For each assumption, say whether it is needed to state the problem, needed by
+the current proof, known to be necessary for the theorem, stronger than needed,
+redundant, or still unresolved. Call an assumption merely technical only after
+a checked proof removes it.
 
-Match each conclusion to its local certificate:
+Use the right evidence for each conclusion:
 
-- well-posedness records the expression, object, or interpretation that fails
-  without the assumption;
-- proof dependence identifies every exact proof node that uses it;
-- theorem necessity gives a checked witness satisfying the remaining
-  hypotheses and defeating the conclusion;
-- redundancy derives it from the remaining assumptions or supplies a checked
-  proof that avoids it; and
-- weakening states the revised theorem, affected proof nodes, semantic-fidelity
-  diff, and exact new obligations.
+- To show that an assumption is needed for the statement to make sense, identify
+  the expression, object, or interpretation that fails without it.
+- To show that the present proof needs it, identify the exact steps that use it.
+- To show that the theorem needs it, give a checked example satisfying the
+  other assumptions but violating the conclusion.
+- To show that it is redundant, derive it from the other assumptions or give a
+  checked proof that avoids it.
+- For a weakening, state the revised theorem, the proof steps it changes, and
+  what remains to be proved.
 
-Anything short of the corresponding certificate remains unresolved at that
-level, even when another level is settled.
+If the required evidence is missing, leave that particular question unresolved
+even if the other questions have answers.
 
-## Return and completion
+## Write the result
 
-Return a table of semantic assumption, origin, exact uses, well-posedness role,
-proof dependence, theorem necessity, evidence, and candidate weakening. Add
-hidden assumptions, interactions, alternative sufficient sets, certified
-witnesses, relaxation portfolio, prioritized obligations, and—for nested
-work—`candidate_digest` plus `requested_attacks`, even when empty. A standalone
-audit recommends `$destroy-theory` for broad falsification or
-`$research-mathematics` to prove a proposed relaxation.
+Lead with the mathematical lesson: which assumptions express the setting,
+which drive the proof, which appear genuinely necessary, and where a cleaner
+theorem may be possible. Use a compact table when it makes the comparison easier
+to see, with columns for the assumption, where it comes from, where it is used,
+what is known about necessity, the supporting evidence, and a possible
+weakening. Explain important interactions and counterexamples in prose.
 
-For writable work, keep accepted assumptions and proved relaxations in
-canonical Markdown and only reusable unresolved or rejected alternatives in
-memory. Do not assign one truth status to the audit as a whole. Complete only
-when every assumption and proof use is mapped, every necessity or redundancy
-claim has its matching certificate, and every proposed relaxation has an exact
-statement, evidence level, and proof obligations.
+For nested work, append the internal fields `candidate_digest` and
+`requested_attacks`, even when empty; do not weave them into the mathematical
+discussion. A standalone audit recommends `$destroy-theory` for broader
+counterexample search or `$research-mathematics` to prove a proposed weakening.
+
+For writable work, place accepted assumptions and proved weakenings near the
+theorem or proof they clarify. Keep only reusable unresolved or rejected ideas
+in memory. Do not turn the canonical document into an audit ledger. Complete
+when every assumption and proof use is traced, every claim of necessity or
+redundancy has the right evidence, and every proposed weakening has an exact
+statement and clear remaining proof work.

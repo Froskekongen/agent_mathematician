@@ -83,14 +83,15 @@ class SkillInvocationTest(unittest.TestCase):
     def test_research_invokes_both_cold_review_workers(self) -> None:
         skills = self.skill_texts()
         research = skills["research-mathematics"]
-        challenge = research.split("## 4. Challenge the unchanged candidate", 1)[1]
-        challenge = challenge.split("## 5. Verify freshly", 1)[0]
+        challenge_start = research.index("## 4.")
+        challenge_end = research.index("## 5.", challenge_start)
+        challenge = research[challenge_start:challenge_end]
         normalized = " ".join(challenge.split()).lower()
         self.assertIn("dispatch two fresh, mutually isolated", normalized)
         self.assertIn("the first prompt invokes `$destroy-theory`", normalized)
         self.assertIn("the second invokes `$audit-assumptions`", normalized)
         self.assertIn("that candidate, digest, and no peer report", normalized)
-        self.assertIn("reject a mismatched `candidate_digest`", normalized)
+        self.assertIn("mismatched `candidate_digest`", normalized)
         self.assertIn("at most one fresh call to each worker", normalized)
         self.assertIn(
             "the coordinator routes review work and integrates or repairs findings "
@@ -133,6 +134,8 @@ class SkillInvocationTest(unittest.TestCase):
             self.assertIn(invariant, integrity)
         self.assertIn("conversion obligation", integrity)
         self.assertIn("it is not a proof protocol", integrity)
+        self.assertIn("use these rules behind the scenes", integrity)
+        self.assertIn("workflow labels", integrity)
         self.assertLessEqual(
             len(integrity_path.read_text(encoding="utf-8").splitlines()), 90
         )
@@ -204,7 +207,7 @@ class SkillInvocationTest(unittest.TestCase):
         )
         self.assertRegex(
             explain,
-            r"(?:before writing|for writable work).{0,80}protocol.{0,80}sole writer",
+            r"(?:before writing|for writable work).{0,80}rules.{0,80}sole writer",
         )
 
         for invariant in (
@@ -227,8 +230,9 @@ class SkillInvocationTest(unittest.TestCase):
         exposition = " ".join(
             self.skill_texts()["write-proof-exposition"].split()
         ).lower()
-        self.assertIn("source fidelity plus audience-relative reconstructibility", exposition)
-        self.assertIn("inherits rather than establishes", exposition)
+        self.assertIn("outside the specialty can follow and reconstruct", exposition)
+        self.assertIn("keeps the source result's mathematical status", exposition)
+        self.assertIn("does not prove, repair, or strengthen", exposition)
         self.assertIn("named canonical target", exposition)
         self.assertRegex(exposition, r"in-place.{0,80}only.{0,80}markdown/sqlite pair")
         self.assertRegex(
@@ -242,30 +246,32 @@ class SkillInvocationTest(unittest.TestCase):
         )
         self.assertIn("$explain-mathematics", exposition)
         self.assertIn("$research-mathematics", exposition)
+        self.assertIn("write mathematics, not an audit report", exposition)
 
-    def test_exploration_and_review_have_task_local_gates(self) -> None:
+    def test_skills_have_task_local_rigor_and_reader_facing_outputs(self) -> None:
         skills = {
             name: " ".join(text.split()).lower()
             for name, text in self.skill_texts().items()
         }
         for name in ("explore-mathematical-structure", "explore-proof-strategies"):
-            self.assertIn("certification handoff", skills[name])
+            self.assertIn("proof handoff", skills[name])
             self.assertIn("conversion obligation", skills[name])
         self.assertIn("proof is optional", skills["explain-mathematics"])
         self.assertIn("$write-proof-exposition", skills["explain-mathematics"])
-        self.assertIn("assumption-local", skills["audit-assumptions"])
-        self.assertIn("different certificates", skills["audit-assumptions"])
-        self.assertIn("negative-certificate rigor", skills["destroy-theory"])
+        self.assertIn("these questions need different evidence", skills["audit-assumptions"])
+        self.assertIn("do not turn the canonical document into an audit ledger", skills["audit-assumptions"])
+        self.assertIn("a negative conclusion needs exact evidence", skills["destroy-theory"])
+        self.assertIn("do not turn the canonical document into an attack log", skills["destroy-theory"])
         self.assertIn("not falsified in scope", skills["destroy-theory"])
 
-    def test_formalization_hands_off_only_a_proposed_key(self) -> None:
+    def test_formalization_hands_off_only_a_suggested_key(self) -> None:
         formalize = " ".join(
             self.skill_texts()["formalize-concepts"].split()
         ).lower()
-        self.assertIn("durable mathematical subject in words", formalize)
-        self.assertIn("proposed semantic key", formalize)
-        self.assertIn("proposed key is not authoritative", formalize)
-        self.assertIn("receiving writable coordinator reads the target outline", formalize)
+        self.assertIn("plain description of the mathematical subject", formalize)
+        self.assertIn("suggested research key", formalize)
+        self.assertIn("next writable skill decides whether to reuse that key", formalize)
+        self.assertIn("does not create companions", formalize)
 
 
 if __name__ == "__main__":

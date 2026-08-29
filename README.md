@@ -32,11 +32,11 @@ explicit `$skill-name` recommendations rather than automatic continuations.
 
 All nine skills remain directly user-invokable. Only `destroy-theory` and
 `audit-assumptions` are also model-invokable: `research-mathematics` calls them
-as cold, read-only workers at its mandatory challenge gate. The other seven stay
-user-only, so phase routing cannot silently broaden a request. Short
-entrypoints contain only task-specific steps and completion gates; shared
+as cold, read-only workers during its mandatory challenge step. The other seven
+stay user-only, so phase routing cannot silently broaden a request. Short
+entrypoints contain only task-specific steps and completion rules; shared
 references under `research-mathematics/references/` carry the small integrity,
-memory, and conditional computation contracts. The exhaustive claim-resolution
+memory, and conditional computation rules. The exhaustive claim-resolution
 reference is research-only.
 The [historical paired architecture pilot](mathematician/evaluations/architecture-pair/pilot-results.md)
 records the preceding architecture refactor; it does not evaluate the current
@@ -48,21 +48,24 @@ checks stable subject identity and writer ownership across the suite.
 
 Every skill shares four stable mathematical-integrity invariants:
 
-- **fidelity:** keep the exact mathematical referent and every material version
-  change identifiable;
-- **warrant:** make the role, scope, and evidence ceiling of load-bearing
-  contributions visible;
-- **recoverable intuition:** connect mental models, analogies, and heuristics to
-  exact objects, preserved structure, breakpoints, and—when an unresolved
-  stronger claim depends on them—conversion obligations; and
-- **calibration:** use language and status no stronger than the active skill's
-  evidence and completion gate.
+- **fidelity:** preserve the exact objects, assumptions, and statement, and name
+  any changed version;
+- **warrant:** say what each kind of evidence supports and where its scope ends;
+- **recoverable intuition:** connect mental models and analogies to exact
+  mathematics, including what carries over, where the picture breaks, and what
+  remains to be justified; and
+- **calibration:** match every conclusion to the evidence and the active skill's
+  completion rule.
+
+These checks guide the work, not the writing style. Canonical documents should
+lead with mathematical ideas, examples, arguments, and conclusions; internal
+digests, checklists, search logs, and file bookkeeping stay in compact technical
+notes or memory unless they help the reader understand the mathematics.
 
 Rigor is otherwise task-local. Exploration closes a discriminating test and a
-certification handoff; explanation closes an audience-relative mental model and
-checked examples; falsification and assumption audit require their own local
-certificates. Only `research-mathematics` uses the complete claim-resolution
-chain:
+compact proof handoff; explanation closes an audience-relative mental model and
+checked examples; falsification and assumption review require their own local
+evidence. Only `research-mathematics` uses the complete claim-resolution chain:
 
 ```text
 TARGET -> EVIDENCE -> CHALLENGE -> VERIFY -> STATUS

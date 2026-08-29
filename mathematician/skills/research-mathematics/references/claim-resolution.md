@@ -7,8 +7,8 @@ a substantial claim:
 TARGET -> EVIDENCE -> CHALLENGE -> VERIFY -> STATUS
 ```
 
-This is the research completion protocol, not a suite-wide cadence. It applies
-the shared [mathematical-integrity contract](mathematical-integrity.md) while
+This is the research completion process, not a suite-wide cadence. It applies
+the [shared mathematical integrity](mathematical-integrity.md) while
 closing a proof, refutation, or exact unresolved boundary. An exact
 counterexample, a precise gap, or an unresolved result is a successful rigorous
 outcome when reported at its warranted status.

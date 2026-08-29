@@ -1,7 +1,7 @@
 interface:
   display_name: "Destroy Theory"
-  short_description: "Try systematically to falsify a mathematical theory"
-  default_prompt: "Use $destroy-theory to try to falsify this mathematical theory."
+  short_description: "Find counterexamples and proof gaps"
+  default_prompt: "Use $destroy-theory to look for counterexamples, proof gaps, and the true boundary of this claim."
 
 policy:
   allow_implicit_invocation: true

@@ -1,21 +1,22 @@
 ---
 name: consolidate-math-documents
-description: Consolidate mathematical documents into one canonical target and safely retire their source pairs.
+description: Combine mathematical documents into one coherent account and safely retire their source pairs.
 disable-model-invocation: true
 ---
 
 # Consolidate Mathematical Documents
 
-Produce one self-contained mathematical account without changing definitions,
-assumptions, validity boundaries, claim status, or provenance silently. Read
-the shared
-[mathematical-integrity contract](../research-mathematics/references/mathematical-integrity.md),
-[research-memory protocol](../research-mathematics/references/research-memory.md),
-and, before retirement planning, [source-retirement protocol](references/source-retirement.md).
-This skill's rigor is reconciliation fidelity. Consolidation inherits existing
-mathematical status; any genuinely new mathematics remains uncertified.
+Create one coherent mathematical account from several documents. Preserve
+definitions, assumptions, validity limits, mathematical status, and provenance.
+Follow the
+[shared mathematical integrity](../research-mathematics/references/mathematical-integrity.md),
+[research-memory rules](../research-mathematics/references/research-memory.md),
+and, before retiring any source, the
+[source-retirement rules](references/source-retirement.md). Consolidation may
+reorganize and clarify existing mathematics, but it does not certify new
+mathematics.
 
-## 1. Freeze the run
+## 1. Fix the sources and target
 
 Require an explicit deduplicated source list and at least two mathematical
 documents in total. In preview mode, report without filesystem changes. In a
@@ -23,64 +24,70 @@ writable run, require an explicit absent Markdown target or explicit existing
 canonical target; exactly that target pair is writable, while all sources and
 their companions remain read-only until close.
 
-Classify the job as same-theory unification or cross-theory synthesis. Freeze
-source bytes, portable paths, roles, canonical and companion digests, target
-baseline, native artifacts, and inbound links in one OS-temporary workpad.
-Create no repository manifest. Freeze the prospective retirement set and source
-eligibility; the exact plan waits for a stabilized target draft.
+Decide whether the documents describe one theory or connect several theories.
+In a temporary work area, record immutable copies and digests of the sources,
+their companions, the target baseline, native artifacts, and inbound links.
+Create no repository manifest. Record which sources might later be retired, but
+wait for a stable target draft before making the final retirement plan.
 
 Complete this step when every input is immutable and the prospective retirement
 set and source eligibility are explicit.
 
-## 2. Reconcile every unit
+## 2. Reconcile the mathematics behind the scenes
 
-Inventory every definition, notation choice, ambient structure, assumption,
-claim and truth status, dependency, boundary, counterexample, obligation,
-citation, link, native artifact, research key, card, origin, and relation. Give
-each one disposition: integrate, merge-equivalent, retain-as-alternative,
-target-only, target-card, retain-native-artifact, discard-with-source, or
-unresolved-conflict. Record one target location or exclusion reason.
+Build an internal reconciliation map covering every definition, notation
+choice, ambient structure, assumption, claim and status, dependency, boundary,
+counterexample, open problem, citation, link, native artifact, research key,
+memory card, origin, and relation. For each item, decide whether to integrate
+it, merge an equivalent version, keep it as an alternative, preserve it only in
+memory or as a native artifact, discard it with its source, or leave a visible
+conflict. Record where each retained item will go or why it is excluded.
 
-Equal names do not imply equal objects. Merge only after comparing domains,
-quantifiers, hypotheses, and status, and only when equivalence is already
-certified in the frozen sources. Otherwise preserve `unresolved-conflict` and
-recommend `$audit-assumptions` for hypothesis mismatch, `$destroy-theory` for
-conflicting validity, or `$research-mathematics` for a new equivalence proof.
-Cross-theory work preserves modules and explicit translation and applicability
-maps. Neither recency nor target location resolves a conflict, and
-consolidation never upgrades status.
+Equal names need not denote equal objects. Compare domains, quantifiers,
+assumptions, and status before merging anything, and merge only when the sources
+already establish equivalence. Otherwise keep the conflict visible. Recommend
+`$audit-assumptions` for mismatched assumptions, `$destroy-theory` for
+incompatible validity claims, or `$research-mathematics` when a new equivalence
+proof is needed. When several theories are involved, keep their modules clear
+and explain the translations between them. Recency alone does not resolve a
+conflict.
 
-Complete this step when every source unit has exactly one justified
-disposition.
+Complete this step when every source item has one clear destination or one clear
+reason for exclusion. The reconciliation map is an internal tool, not the
+outline of the final document.
 
-## 3. Build the target
+## 3. Write one coherent account
 
-Draft a complete canonical account in the workpad. Preserve all accepted
-definitions, assumptions, support, boundaries, load-bearing negative results,
-unresolved conflicts, citations, and deliberate native artifacts. Resolve
-relative links and label collisions. Assign one semantic research key per
-durable mathematical subject using the visible marker defined by the memory
-protocol.
+Organize the target for mathematical understanding rather than source order.
+Introduce notation once, place definitions before use, connect motivation to
+results, and keep proofs, examples, counterexamples, and boundaries near the
+claims they explain. Preserve accepted assumptions, support, important negative
+results, unresolved conflicts, citations, and deliberate native artifacts.
+Resolve relative links and label collisions. Assign one research key per
+durable mathematical subject under the memory rules.
 
-Curate source memory semantically rather than merging databases. Keep only
-reusable obligations, revivable directions, demonstrated obstructions,
-counterexamples, and material applicability findings. A source-derived target
-card is self-contained and records its source digest and local mapping.
+Curate source memory rather than merging databases. Keep only reusable open
+problems, directions worth reviving, demonstrated obstructions,
+counterexamples, and important source-applicability findings. A target memory
+card derived from a source must make sense on its own and retain its source
+digest and local mapping.
 
-Complete this step when the target remains understandable and auditable after
-every source disappears and its stable draft can bind the retirement plan.
+Complete this step when the target is understandable without opening the source
+documents and its stable draft is ready to bind the retirement plan. Do not copy
+the reconciliation ledger, file mechanics, or database language into the
+mathematical narrative.
 
-## 4. Publish and retire
+## 4. Publish and retire safely
 
 Construct and check the exact retirement plan under the source-retirement
-protocol. Revalidate source digests, database revisions, and target baseline;
-publish and close the target pair under the research-memory protocol; then
-recheck and apply the frozen retirement plan. Recheck the target after
-retirement.
+rules. Revalidate source digests, database revisions, and the target baseline;
+publish and close the target pair under the research-memory rules; then recheck
+and apply the fixed retirement plan. Recheck the target after retirement.
 
 ## Completion
 
 A writable run is complete only when the target pair validates, every source
-unit has a disposition, every authorized source pair is absent and recoverable
-from Git, and the temporary workpad is deleted. Preview returns the same
-reconciliation, conflict, and prospective-retirement map without mutations.
+item is accounted for, every authorized retired source pair is absent and
+recoverable from Git, and the temporary work area is deleted. A preview returns
+the reconciliation, conflicts, and proposed retirement plan without changing
+files.

@@ -1,7 +1,7 @@
 interface:
   display_name: "Research Mathematics"
-  short_description: "Research mathematical claims with referee-grade rigor"
-  default_prompt: "Use $research-mathematics to investigate this conjecture rigorously."
+  short_description: "Prove or refute a substantial claim"
+  default_prompt: "Use $research-mathematics to prove or refute this claim and state exactly what remains open."
 
 policy:
   allow_implicit_invocation: false

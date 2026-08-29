@@ -1,7 +1,7 @@
 interface:
   display_name: "Explore Proof Strategies"
-  short_description: "Scout diverse proof strategies before certification"
-  default_prompt: "Use $explore-proof-strategies to scout several approaches to this mathematical claim."
+  short_description: "Compare proof ideas and find the crux"
+  default_prompt: "Use $explore-proof-strategies to compare several proof ideas and identify the most promising route and its central difficulty."
 
 policy:
   allow_implicit_invocation: false

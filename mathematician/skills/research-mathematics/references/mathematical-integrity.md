@@ -2,10 +2,15 @@
 
 Use this reference in every mathematical skill. It keeps intuition fast without
 blurring what has actually been shown. It is not a proof protocol; each skill
-defines its own completion gate.
+defines its own completion rule.
 
 Apply these rules to any detail that could change a claim, recommendation,
 status, or the reader's mental model.
+
+Use these rules behind the scenes. Build mathematical documents around
+questions, ideas, examples, arguments, and conclusions. Put checklists,
+workflow labels, digests, search logs, and database details in a short technical
+note only when the reader needs them.
 
 ## Fidelity: preserve the mathematics
 
@@ -55,7 +60,7 @@ check to the untested scope. Naming it does not complete it.
 
 ## Calibration: report the right level of certainty
 
-Use language that matches the evidence and the active skill's completion gate.
+Use language that matches the evidence and the active skill's completion rule.
 Keep mathematical status separate from plausibility, confidence, usefulness,
 workflow choice, explanatory value, and provenance. Explaining, rewriting,
 translating, or consolidating a result does not change its mathematical status.
