@@ -8,10 +8,12 @@ disable-model-invocation: true
 
 Produce one self-contained mathematical account without changing definitions,
 assumptions, validity boundaries, claim status, or provenance silently. Read
-the shared [rigor chain](../research-mathematics/references/rigor.md),
+the shared
+[mathematical-integrity contract](../research-mathematics/references/mathematical-integrity.md),
 [research-memory protocol](../research-mathematics/references/research-memory.md),
 and, before retirement planning, [source-retirement protocol](references/source-retirement.md).
-Consolidation reconciles existing work; new mathematics remains uncertified.
+This skill's rigor is reconciliation fidelity. Consolidation inherits existing
+mathematical status; any genuinely new mathematics remains uncertified.
 
 ## 1. Freeze the run
 

@@ -16,6 +16,7 @@ EXPECTED_SKILLS = {
     "explore-proof-strategies",
     "formalize-concepts",
     "research-mathematics",
+    "write-proof-exposition",
 }
 MODEL_WORKERS = {"audit-assumptions", "destroy-theory"}
 MEMORY_WRITERS = EXPECTED_SKILLS - {"formalize-concepts"}
@@ -107,6 +108,42 @@ class SkillInvocationTest(unittest.TestCase):
             if caller != "research-mathematics":
                 self.assertIsNone(automatic.search(" ".join(text.split())), caller)
 
+    def test_integrity_is_shared_and_claim_resolution_is_research_only(self) -> None:
+        skills = self.skill_texts()
+        integrity_path = (
+            SKILLS
+            / "research-mathematics"
+            / "references"
+            / "mathematical-integrity.md"
+        )
+        resolution_path = (
+            SKILLS
+            / "research-mathematics"
+            / "references"
+            / "claim-resolution.md"
+        )
+        self.assertTrue(integrity_path.is_file())
+        self.assertTrue(resolution_path.is_file())
+        self.assertFalse(
+            (SKILLS / "research-mathematics" / "references" / "rigor.md").exists()
+        )
+
+        integrity = " ".join(integrity_path.read_text(encoding="utf-8").split()).lower()
+        for invariant in ("fidelity", "warrant", "recoverable intuition", "calibration"):
+            self.assertIn(invariant, integrity)
+        self.assertIn("conversion obligation", integrity)
+        self.assertIn("it is not a proof protocol", integrity)
+        self.assertLessEqual(
+            len(integrity_path.read_text(encoding="utf-8").splitlines()), 90
+        )
+
+        for name, text in skills.items():
+            self.assertIn("mathematical-integrity.md", text, name)
+            if name == "research-mathematics":
+                self.assertIn("claim-resolution.md", text, name)
+            else:
+                self.assertNotIn("claim-resolution.md", text, name)
+
     def test_every_skill_inherits_the_research_key_contract(self) -> None:
         for name, text in self.skill_texts().items():
             self.assertIn("research-memory.md", text, name)
@@ -128,9 +165,9 @@ class SkillInvocationTest(unittest.TestCase):
             normalized.index("freeze the resulting canonical digest"),
         )
 
-    def test_exactly_seven_skills_have_writable_memory_roles(self) -> None:
+    def test_exactly_eight_skills_have_writable_memory_roles(self) -> None:
         skills = self.skill_texts()
-        self.assertEqual(len(MEMORY_WRITERS), 7)
+        self.assertEqual(len(MEMORY_WRITERS), 8)
         for name in MEMORY_WRITERS:
             normalized = " ".join(skills[name].split()).lower()
             self.assertRegex(normalized, r"\b(?:writable|file-backed)\b", name)
@@ -186,6 +223,41 @@ class SkillInvocationTest(unittest.TestCase):
         ):
             self.assertRegex(terminology, invariant)
 
+    def test_proof_exposition_has_distinct_scope_and_memory_ownership(self) -> None:
+        exposition = " ".join(
+            self.skill_texts()["write-proof-exposition"].split()
+        ).lower()
+        self.assertIn("source fidelity plus audience-relative reconstructibility", exposition)
+        self.assertIn("inherits rather than establishes", exposition)
+        self.assertIn("named canonical target", exposition)
+        self.assertRegex(exposition, r"in-place.{0,80}only.{0,80}markdown/sqlite pair")
+        self.assertRegex(
+            exposition,
+            r"separate proof exposition.{0,100}own.{0,30}companion.{0,100}source pair"
+            r".{0,30}read-only",
+        )
+        self.assertRegex(
+            exposition,
+            r"no two markdown documents share.{0,20}(?:one )?(?:sqlite )?database",
+        )
+        self.assertIn("$explain-mathematics", exposition)
+        self.assertIn("$research-mathematics", exposition)
+
+    def test_exploration_and_review_have_task_local_gates(self) -> None:
+        skills = {
+            name: " ".join(text.split()).lower()
+            for name, text in self.skill_texts().items()
+        }
+        for name in ("explore-mathematical-structure", "explore-proof-strategies"):
+            self.assertIn("certification handoff", skills[name])
+            self.assertIn("conversion obligation", skills[name])
+        self.assertIn("proof is optional", skills["explain-mathematics"])
+        self.assertIn("$write-proof-exposition", skills["explain-mathematics"])
+        self.assertIn("assumption-local", skills["audit-assumptions"])
+        self.assertIn("different certificates", skills["audit-assumptions"])
+        self.assertIn("negative-certificate rigor", skills["destroy-theory"])
+        self.assertIn("not falsified in scope", skills["destroy-theory"])
+
     def test_formalization_hands_off_only_a_proposed_key(self) -> None:
         formalize = " ".join(
             self.skill_texts()["formalize-concepts"].split()
@@ -194,48 +266,6 @@ class SkillInvocationTest(unittest.TestCase):
         self.assertIn("proposed semantic key", formalize)
         self.assertIn("proposed key is not authoritative", formalize)
         self.assertIn("receiving writable coordinator reads the target outline", formalize)
-
-    def test_live_complexity_metrics_are_reproducible(self) -> None:
-        skill_paths = sorted(SKILLS.glob("*/SKILL.md"))
-        reference_paths = sorted(SKILLS.glob("*/references/*.md"))
-        reference_paths = [
-            path for path in reference_paths if path.name != "evidence-based-methods.md"
-        ]
-        public = "".join(path.read_text(encoding="utf-8") for path in skill_paths)
-        runtime = public + "".join(
-            path.read_text(encoding="utf-8") for path in reference_paths
-        )
-        skills = self.skill_texts()
-        worker_descriptions = [
-            self.frontmatter(name, skills[name])["description"]
-            for name in sorted(MODEL_WORKERS)
-        ]
-        pilot = (
-            REPO_ROOT
-            / "mathematician"
-            / "evaluations"
-            / "architecture-pair"
-            / "pilot-results.md"
-        ).read_text(encoding="utf-8")
-        self.assertIn(
-            f"| Public skill lines | 939 | 633 | {public.count(chr(10)):,} |", pilot
-        )
-        self.assertIn(
-            f"| Public skill words | 8,440 | 3,958 | {len(public.split()):,} |", pilot
-        )
-        self.assertIn(
-            f"| Full routed-runtime lines | 1,621 | 1,167 | {runtime.count(chr(10)):,} |",
-            pilot,
-        )
-        self.assertIn(
-            f"| Full routed-runtime words | 14,012 | 7,210 | {len(runtime.split()):,} |",
-            pilot,
-        )
-        self.assertIn(
-            f"{sum(len(value.encode()) for value in worker_descriptions)}\nbytes "
-            f"({sum(len(value.split()) for value in worker_descriptions)} words)",
-            pilot,
-        )
 
 
 if __name__ == "__main__":

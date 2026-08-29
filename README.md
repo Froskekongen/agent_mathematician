@@ -2,8 +2,8 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21996114.svg)](https://doi.org/10.5281/zenodo.21996114)
 
-Eight opt-in skills for mathematical exploration, proof development, rigorous
-review, explanation, and document consolidation.
+Nine opt-in skills for mathematical exploration, proof development, rigorous
+review, explanation, proof-bearing exposition, and document consolidation.
 
 ## Skills
 
@@ -18,40 +18,61 @@ review, explanation, and document consolidation.
 - `audit-assumptions`: trace hypotheses and test necessity or weakening.
 - `explain-mathematics`: teach advanced mathematics across specialty
   boundaries, optionally rewriting an explicitly named canonical pair.
+- `write-proof-exposition`: turn stabilized mathematics into a complete,
+  cross-specialty proof exposition without changing its status.
 - `consolidate-math-documents`: reconcile canonical accounts and safely retire
   their exact source pairs.
 
 The usual user-controlled path is `formalize-concepts` ->
 `explore-mathematical-structure` -> `explore-proof-strategies` ->
-`research-mathematics`; skip settled stages. These phase changes are explicit
-`$skill-name` recommendations rather than automatic continuations.
+`research-mathematics` -> `write-proof-exposition`; skip settled stages and the
+final writing stage when it is not needed. `explain-mathematics` can branch from
+any stage while preserving the current mathematical status. Phase changes are
+explicit `$skill-name` recommendations rather than automatic continuations.
 
-All eight skills remain directly user-invokable. Only `destroy-theory` and
+All nine skills remain directly user-invokable. Only `destroy-theory` and
 `audit-assumptions` are also model-invokable: `research-mathematics` calls them
-as cold, read-only workers at its mandatory challenge gate. The other six stay
+as cold, read-only workers at its mandatory challenge gate. The other seven stay
 user-only, so phase routing cannot silently broaden a request. Short
 entrypoints contain only task-specific steps and completion gates; shared
-references under `research-mathematics/references/` carry cross-suite rigor,
-memory, and conditional computation contracts.
-The [paired architecture pilot](mathematician/evaluations/architecture-pair/pilot-results.md)
-records the measured complexity, quality, and cost tradeoffs.
+references under `research-mathematics/references/` carry the small integrity,
+memory, and conditional computation contracts. The exhaustive claim-resolution
+reference is research-only.
+The [historical paired architecture pilot](mathematician/evaluations/architecture-pair/pilot-results.md)
+records the preceding architecture refactor; it does not evaluate the current
+task-local-rigor design.
 The [research-key semantics corpus](mathematician/evaluations/research-key-semantics/README.md)
-checks stable subject identity and writer ownership across all eight skills.
+checks stable subject identity and writer ownership across the suite.
 
-## Rigor model
+## Integrity and task-local rigor
 
-Every evidence-bearing workflow uses one chain:
+Every skill shares four stable mathematical-integrity invariants:
+
+- **fidelity:** keep the exact mathematical referent and every material version
+  change identifiable;
+- **warrant:** make the role, scope, and evidence ceiling of load-bearing
+  contributions visible;
+- **recoverable intuition:** connect mental models, analogies, and heuristics to
+  exact objects, preserved structure, breakpoints, and—when an unresolved
+  stronger claim depends on them—conversion obligations; and
+- **calibration:** use language and status no stronger than the active skill's
+  evidence and completion gate.
+
+Rigor is otherwise task-local. Exploration closes a discriminating test and a
+certification handoff; explanation closes an audience-relative mental model and
+checked examples; falsification and assumption audit require their own local
+certificates. Only `research-mathematics` uses the complete claim-resolution
+chain:
 
 ```text
 TARGET -> EVIDENCE -> CHALLENGE -> VERIFY -> STATUS
 ```
 
-The target is frozen before proof or attack. Evidence is typed and scoped.
-Challenge attacks the literal claim and its dependencies. Verification uses a
-fresh context and separately checks intended statement, encoding, proof, and
-dependency closure. The terminal status is `PROVED`, `INCOMPLETE`,
-`CONJECTURAL`, `REFUTED`, or `UNRESOLVED`; workflow disposition and support tags
-remain separate.
+Within that research chain, the target is frozen, evidence is typed and scoped,
+challenge attacks the literal claim and dependencies, and fresh verification
+separately checks intended statement, encoding, proof, and dependency closure.
+The terminal status is `PROVED`, `INCOMPLETE`, `CONJECTURAL`, `REFUTED`, or
+`UNRESOLVED`; workflow disposition and support tags remain separate.
 
 ## Research memory
 
@@ -87,7 +108,7 @@ deep link:
 A key is the document-scoped stable identity of one durable mathematical
 subject. Navigation, summaries, report roles, and other workflow wrappers stay
 unindexed; one key does not aggregate multiple independently linkable subjects.
-Keys survive reordering and status or recommendation changes. All eight skills
+Keys survive reordering and status or recommendation changes. All nine skills
 inherit this contract. `formalize-concepts` proposes a subject and key but
 creates no database; the receiving coordinator decides the authoritative key.
 
@@ -114,11 +135,12 @@ exact selected records may request full detail. Consult CLI help for changeset
 fields. The tool edits neither Markdown nor source artifacts and executes no
 artifact code.
 
-Seven skills can coordinate authorized file-backed work. In particular,
-`explain-mathematics` remains chat-only unless the user explicitly names an
-existing canonical target and asks to update or rewrite it. Such a rewrite
-updates that Markdown/SQLite pair together; an explicitly requested separate
-explanation owns a different companion and leaves the source pair read-only.
+Eight skills can coordinate authorized file-backed work. In particular,
+`explain-mathematics` and `write-proof-exposition` remain chat-only unless the
+user explicitly names an existing canonical target and asks to update or
+rewrite it. Such a rewrite updates that Markdown/SQLite pair together; an
+explicitly requested separate explanation or proof exposition owns a different
+companion and leaves the source pair read-only.
 
 ## Computational artifacts
 

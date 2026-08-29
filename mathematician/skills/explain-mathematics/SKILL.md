@@ -7,9 +7,11 @@ disable-model-invocation: true
 # Explain Mathematics
 
 Build a bridge from the reader's mathematical background to the focal theory
-without changing the mathematics. When explaining a theorem or proof, use the
-shared [rigor chain](../research-mathematics/references/rigor.md) to preserve its
-exact target and status.
+without changing the mathematics. Read and apply the shared
+[mathematical-integrity contract](../research-mathematics/references/mathematical-integrity.md).
+This skill's rigor is explanatory: preserve exact core mathematics and status
+while optimizing mental models, motivation, examples, and mechanism. A complete
+proof is optional unless the request is genuinely proof-bearing.
 
 ## File modes
 
@@ -32,59 +34,79 @@ bridged here, and optional.
 
 Complete this step when the audience and prerequisite budget are explicit.
 
-## 2. Build the bridge
+## 2. Orient with a recoverable mental model
 
-Order field-specific definitions, conventions, constructions, and imported
-theorems by dependency. Introduce each bridged prerequisite before use. For a
-cross-field idea, give its purpose, exact statement, nearest familiar analogue,
-and the point where the analogy fails.
+Begin with the problem, obstruction, or phenomenon that makes the theory
+useful. Give a mental model in language or mathematics already available to
+the reader, then identify the exact objects and relations it represents. For a
+cross-field analogy, say what structure transfers and where the comparison
+breaks.
 
 Orient the reader before abstraction: motivation or obstruction, introduced
 structure, resolving mechanism, informal result, then the exact qualified
 theorem.
 
-Complete this step when the exact theorem can be parsed without an undeclared
-specialist dependency.
+Complete this step when the reader has a usable model whose exact referents and
+limits are visible.
 
-## 3. Expose the mechanism with examples
+## 3. Install the exact backbone
 
-Use the shortest example ladder that makes the mechanism appear, operate, and
-fail at a boundary. Include a smallest nontrivial example, a representative
-example, and at least one checked boundary case or nonexample. Add trivial,
-parameterized, or pathological rungs only when they teach a distinct feature.
-For each rung state its objects, assumptions, calculation, lesson, and what it
-does not establish.
+Order field-specific definitions, conventions, constructions, and imported
+results by dependency. Introduce each bridged prerequisite before use. State
+the focal object or theorem with all qualifiers that affect meaning, and keep
+source, conjectural, incomplete, and proved material visibly distinct.
 
-## 4. Explain and check fidelity
+Complete this step when the exact mathematics can be parsed without an
+undeclared specialist dependency and can be related back to the mental model.
 
-Present a proof map, annotate assumptions at mechanism-bearing steps, preserve
-unresolved obligations and source status, and emphasize fragile reductions,
-cross-field transfers, and imported results.
+## 4. Make the mechanism operate
+
+Use the shortest checked example set that makes the mechanism operate and
+shows a relevant boundary. Usually one mechanism-bearing example and one
+boundary case or nonexample suffice; one example may do both jobs. Add a
+representative, parameterized, or pathological rung only when it teaches a
+distinct feature. For each rung state its objects, assumptions, calculation,
+lesson, and what it does not establish.
+
+Give a proof map only when the proof is focal or it materially explains the
+mechanism. Emphasize the crux and the purpose of its main components rather
+than expanding routine detail by default. If the user needs a complete proof
+that a nonspecialist mathematician can reconstruct, recommend
+`$write-proof-exposition`.
+
+## 5. Check explanatory and mathematical fidelity
+
+Preserve unresolved obligations and source status. Check every load-bearing
+example, analogy boundary, citation, theorem qualifier, and transition from the
+mental model to the exact mathematics. A heavily rewritten account is compared
+against its source claim and checked proof when one exists.
 
 For an executable or machine-checked result, reconstruct the human mechanism,
 map the intended theorem to the encoded statement and dependencies, and state
-the checker's trust boundary and semantic limitations. Check every example,
-prerequisite order, analogy boundary, citation, and theorem qualifier; compare
-a heavily rewritten exposition against the checked proof. On a load-bearing
-defect, preserve the recorded source status only as provenance, label it not
-revalidated, and report the defect as unresolved. Recommend `$destroy-theory`;
-recommend `$audit-assumptions` for necessity or `$research-mathematics` for
-repair or certification.
+the checker's trust boundary and semantic limitations. On a load-bearing
+defect, preserve the recorded source status only as provenance, label the local
+account not revalidated, and report the defect as unresolved. Recommend
+`$destroy-theory`; recommend `$audit-assumptions` for necessity or
+`$research-mathematics` for repair or certification.
 
-## 5. Rewrite faithfully when authorized
+## 6. Rewrite faithfully when authorized
 
 Draft outside the target from a workpad snapshot and audit the complete rewrite
-against the shared rigor chain and the protocol's canonical contract. Preserve
-meaning and provenance. If fidelity would require mathematical repair, leave
-the pair unchanged and hand off to the appropriate research or review skill.
-Otherwise close through the protocol.
+against the integrity and canonical contracts. Preserve meaning, status, and
+provenance. If fidelity would require mathematical repair, leave the pair
+unchanged and hand off to the appropriate research or review skill. Otherwise
+close through the protocol.
 
 ## Return and completion
 
 Use the smallest useful ordering of audience contract, orientation,
-definitions, exact theorem, mechanism, example ladder, proof, boundary cases,
-and optional next prerequisites. Distinguish intuition from justification.
+mental model, definitions, exact theorem, mechanism, example ladder, optional
+proof map, boundary cases, and next prerequisites. Distinguish intuition from
+justification without interrupting every intuitive passage with proof
+ceremony.
 
-Complete only when the reader can identify the hypotheses, conclusion,
-mechanism, proof dependencies, and limitations, and when both a
-mechanism-bearing example and a boundary or nonexample have been checked.
+Complete only when the reader can identify the exact object or claim, explain
+the mechanism in the mental model, distinguish that model from its
+justification, and see both a checked mechanism-bearing example and a checked
+boundary or nonexample. Proof dependencies are required only to the depth
+promised by the request.

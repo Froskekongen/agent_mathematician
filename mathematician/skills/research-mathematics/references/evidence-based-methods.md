@@ -1,12 +1,13 @@
 # Maintainer Evidence Rationale
 
-Audited on **2026-08-16**. Claims about current capability below use work first public in 2026; older work appears only as methodological foundations.
+Audited on **2026-08-30**. Claims about current capability below use work first public in 2026; older work appears only as methodological foundations.
 
 This file preserves the literature behind the suite's design and evaluation.
 It is maintainer rationale, not a runtime reference routed from public skills.
-Runtime decisions belong in `rigor.md` and `computational-checking.md`. Rare
-successes, benchmark scores, kernel acceptance, and institutional novelty
-claims do not establish general reliability.
+Runtime decisions belong in `mathematical-integrity.md`,
+`claim-resolution.md`, and `computational-checking.md`. Rare successes,
+benchmark scores, kernel acceptance, and institutional novelty claims do not
+establish general reliability.
 
 ## Operational conclusions
 
@@ -20,6 +21,54 @@ claims do not establish general reliability.
 8. **Reconstruct the mechanism for humans:** map key lemmas and imported results from a certificate to the mathematical crux, then compare the rewrite with the checked artifact.
 
 Evidence profiles are complementary. Independent or peer-reviewed work strengthens external validity and semantic review; certificates strongly support an encoding's logical validity; expert-author cases can provide specialist semantics but remain correlated; institutional reports are useful leads, especially with runnable artifacts, while unsupported axes stay provisional.
+
+## Integrity, discovery, and understanding foundations
+
+The shared integrity contract is intentionally smaller than a proof protocol.
+Its four concerns—fidelity, warrant, recoverable intuition, and calibration—are
+an operational synthesis of the following literature, not a claim that these
+authors use the suite's terminology.
+
+- Terence Tao's [pre-rigorous, rigorous, and post-rigorous account](https://terrytao.wordpress.com/career-advice/theres-more-to-mathematics-than-rigour-and-proofs/)
+  treats mature intuition as supported by rigorous foundations and convertible
+  into rigorous argument when required. The suite does not attribute that
+  latent mastery to an AI system; it instead requires the exact mathematical
+  referent, recovery tests, and a visible conversion obligation when a
+  heuristic carries an unresolved stronger claim.
+- William Thurston's
+  [On Proof and Progress in Mathematics](https://arxiv.org/abs/math/9404236)
+  argues that mathematical progress and communication depend on mental models,
+  multiple representations, and ways of thinking that theorem-proof prose does
+  not transmit by itself. This supports treating mechanism-bearing intuition as
+  a first-class output rather than proof noise.
+- George Pólya's
+  [Mathematics and Plausible Reasoning](https://www.jstor.org/stable/j.ctv14164db)
+  develops induction, analogy, and checked consequences as instruments of
+  discovery. Andrew Aberdein's
+  [Evidence, Proofs, and Derivations](https://arxiv.org/abs/1904.02593)
+  likewise distinguishes mathematical evidence from completed derivation. The
+  runtime consequence is an evidence ceiling, not exclusion of plausible
+  reasoning.
+- Dedre Gentner's
+  [structure-mapping account of analogy](https://doi.org/10.1207/s15516709cog0702_3)
+  emphasizes systems of relations rather than superficial shared attributes.
+  The runtime analogy check therefore asks what relation is mapped and what
+  relevant structure fails to transfer.
+- The proof-comprehension model of
+  [Mejía-Ramos et al.](https://doi.org/10.1007/s10649-011-9349-7)
+  separates local meaning, logical status, and justification from holistic
+  ideas, modules, methods, and examples. Explanation and proof exposition need
+  both levels; routine line-by-line expansion alone is not comprehension.
+- Rebecca Lea Morris's
+  [motivated-proof account](https://arxiv.org/abs/2001.02657)
+  asks what task each step performs and where it could reasonably have come
+  from. This supports crux-weighted proof exposition and the ban on hiding a
+  central step beneath detailed routine algebra.
+
+The conversion obligation is therefore narrow. It is triggered only when an
+unresolved claim materially relies on heuristic support. An analogy used to
+explain an already established theorem instead needs recoverable referents and
+a breakpoint, not a redundant demand to re-prove the theorem.
 
 ## Evidence since 2026
 

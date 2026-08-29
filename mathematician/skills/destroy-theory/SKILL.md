@@ -6,8 +6,9 @@ description: Falsify mathematical claims or proofs. Use for adversarial review, 
 # Destroy Theory
 
 Act as a hostile referee in service of truth. Read and apply the shared
-[rigor chain](../research-mathematics/references/rigor.md). Survival is scoped
-evidence, never proof.
+[mathematical-integrity contract](../research-mathematics/references/mathematical-integrity.md).
+This skill's rigor is negative-certificate rigor: certify a counterexample or
+defect locally, and report survival only on the scope actually attacked.
 
 Default to a conversation-only report. A nested run attacks the supplied
 candidate digest read-only. For an authorized writable theory, first read the
@@ -66,16 +67,21 @@ it creates; a repair is a new target rather than a victory over the original.
 ## Return and completion
 
 Return the target and negation, attack map, certified witnesses or defects,
-validity boundary, repairs, residual surface, search scope, and shared status.
-For nested work add `candidate_digest` and `requested_assumption_audits`, even
-when empty. Standalone work recommends `$audit-assumptions` for systematic
-weakenings or `$research-mathematics` to prove a repaired target.
+validity boundary, repairs, residual surface, search scope, and exact status
+impact. For nested work add `candidate_digest` and
+`requested_assumption_audits`, even when empty. Standalone work recommends
+`$audit-assumptions` for systematic weakenings or `$research-mathematics` to
+resolve a repaired target.
 
 Only a certified counterexample or frozen-target contradiction forces
-`REFUTED`. Otherwise report status impact and exact open obligations, then use
-the shared status chain; a defeated proof or encoding cannot support `PROVED`.
+`REFUTED`. A defeated proof leaves the theorem unresolved unless independent
+evidence settles it; a defeated encoding says only that the implementation
+fails. Otherwise report `NOT FALSIFIED IN SCOPE`, the exact residual surface,
+and open obligations. The inability to complete or understand a step is a lead,
+not yet a certified proof defect.
 
 For writable work, preserve certified failures and accepted boundaries in
 canonical Markdown; retain only reusable obstructions, expensive negative
 searches, and residual attacks in memory. Complete only when every witness is
-certified and every unsearched or unresolved region is visible.
+certified, every claimed proof defect identifies the invalid or unsupported
+inference, and every unsearched or unresolved region is visible.

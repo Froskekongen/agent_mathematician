@@ -7,10 +7,12 @@ disable-model-invocation: true
 # Research Mathematics
 
 Resolve a substantial claim rigorously or expose its exact failure or open
-obligation. Read and apply the shared [rigor chain](references/rigor.md)
-completely. If meanings or objects remain unsettled, stop this run and recommend
-`$formalize-concepts`; if a provisional formalism still lacks an exact target,
-stop and recommend `$explore-mathematical-structure`.
+obligation. Read and apply the shared
+[mathematical-integrity contract](references/mathematical-integrity.md) and the
+research-only [claim-resolution chain](references/claim-resolution.md)
+completely. If meanings or objects remain unsettled, stop this run and
+recommend `$formalize-concepts`; if a provisional formalism still lacks an
+exact target, stop and recommend `$explore-mathematical-structure`.
 
 For authorized file-backed work or explicit research-history retrieval, read
 the [research-memory protocol](references/research-memory.md). Chat-only work
@@ -95,7 +97,7 @@ every accepted material change. When attribution or novelty matters, search
 primary literature for the exact claim and equivalent formulations, map
 hypotheses, and report coverage.
 
-Assign the terminal status under the shared rigor chain. Present the target,
+Assign the terminal status under the claim-resolution chain. Present the target,
 mechanism, proof dependencies, specialist findings and repairs, assumption
 analysis, independent verification, provenance, and exact remaining
 obligations. For file-backed work, keep accepted mathematics in canonical
@@ -103,5 +105,7 @@ Markdown, curate only reusable noncanonical memory, and complete the shared
 memory close.
 
 The run is complete only when the reported status is justified for one final
-target digest; `PROVED` additionally requires the entire shared completion
-gate.
+target digest; `PROVED` additionally requires the entire claim-resolution
+completion gate. When a stabilized proof needs a cross-specialty mathematical
+note, recommend `$write-proof-exposition` rather than expanding this research
+round into a separate writing task.

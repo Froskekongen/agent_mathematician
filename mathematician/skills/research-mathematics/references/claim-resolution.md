@@ -1,14 +1,17 @@
-# Shared Mathematical Rigor
+# Research Claim Resolution
 
-Use this chain whenever a skill evaluates or changes a mathematical claim:
+Read this chain completely only when `research-mathematics` attempts to resolve
+a substantial claim:
 
 ```text
 TARGET -> EVIDENCE -> CHALLENGE -> VERIFY -> STATUS
 ```
 
-Scale the work to the claim. A routine calculation needs local checking; a
-substantial theorem needs the full chain. An exact counterexample, a precise
-gap, or an unresolved result is a successful rigorous outcome.
+This is the research completion protocol, not a suite-wide cadence. It applies
+the shared [mathematical-integrity contract](mathematical-integrity.md) while
+closing a proof, refutation, or exact unresolved boundary. An exact
+counterexample, a precise gap, or an unresolved result is a successful rigorous
+outcome when reported at its warranted status.
 
 ## TARGET
 
@@ -41,8 +44,7 @@ renames the central difficulty remains open.
 
 For an imported result, obtain the exact statement from an authoritative
 source and map every hypothesis and convention. Source resemblance does not
-establish applicability; failure to find prior work does not establish
-novelty.
+establish applicability; failure to find prior work does not establish novelty.
 
 For material computation or executable checking, follow
 [computational-checking.md](computational-checking.md). Computation proves only

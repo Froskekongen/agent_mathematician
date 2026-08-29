@@ -6,9 +6,10 @@ description: Audit mathematical assumptions. Use for hidden premises, proof uses
 # Audit Assumptions
 
 Determine what each assumption buys. Read and apply the shared
-[rigor chain](../research-mathematics/references/rigor.md), keeping
-well-posedness, use by this proof, theorem necessity, and evidence for necessity
-separate.
+[mathematical-integrity contract](../research-mathematics/references/mathematical-integrity.md).
+This skill's rigor is assumption-local: well-posedness, use by this proof,
+theorem necessity, redundancy, and successful weakening require different
+certificates and never collapse into one verdict.
 
 Default to a conversation-only report. Nested work is read-only and bound to
 the supplied digest. For writable work, read the
@@ -61,9 +62,22 @@ every remaining search has exact scope and a proposed next test.
 Classify each assumption as necessary for well-posedness, demonstrably
 theorem-necessary, needed by the current proof, sufficient but nonminimal,
 redundant, or unresolved. Call it technical only after a verified route removes
-it. For every proposed weakening state the revised theorem, affected proof
-nodes, new obligations, witnesses or search scope, semantic-fidelity diff, and
-truth status under the shared rigor chain.
+it.
+
+Match each conclusion to its local certificate:
+
+- well-posedness records the expression, object, or interpretation that fails
+  without the assumption;
+- proof dependence identifies every exact proof node that uses it;
+- theorem necessity gives a checked witness satisfying the remaining
+  hypotheses and defeating the conclusion;
+- redundancy derives it from the remaining assumptions or supplies a checked
+  proof that avoids it; and
+- weakening states the revised theorem, affected proof nodes, semantic-fidelity
+  diff, and exact new obligations.
+
+Anything short of the corresponding certificate remains unresolved at that
+level, even when another level is settled.
 
 ## Return and completion
 
@@ -77,6 +91,7 @@ audit recommends `$destroy-theory` for broad falsification or
 
 For writable work, keep accepted assumptions and proved relaxations in
 canonical Markdown and only reusable unresolved or rejected alternatives in
-memory. Complete only when every assumption and proof use is mapped, every
-necessity claim has a certificate, and every proposed relaxation has exact
-proof obligations.
+memory. Do not assign one truth status to the audit as a whole. Complete only
+when every assumption and proof use is mapped, every necessity or redundancy
+claim has its matching certificate, and every proposed relaxation has an exact
+statement, evidence level, and proof obligations.

@@ -8,6 +8,12 @@ disable-model-invocation: true
 
 Turn intended meaning into the simplest faithful mathematics through a `show, then ask` loop. Let the user guide the concept at their useful level while keeping the discussion easy to revise.
 
+Read and apply the shared
+[mathematical-integrity contract](../research-mathematics/references/mathematical-integrity.md).
+This skill's rigor is semantic: selection establishes a faithful, usable
+formalization, not proof, uniqueness, novelty, causal validity, or empirical
+confirmation.
+
 ## Adapt to local expertise
 
 Infer relevant expertise from the user's definitions, notation, examples, constraints, and corrections rather than requesting a mathematical biography. Expertise may vary by topic.

@@ -16,6 +16,7 @@ SKILL_NAMES = (
     "formalize-concepts",
     "destroy-theory",
     "explain-mathematics",
+    "write-proof-exposition",
     "audit-assumptions",
 )
 
@@ -23,6 +24,7 @@ OBSOLETE_SKILL_PATHS = (
     Path("explore-mathematical-structure/references/exploration-ledger.md"),
     Path("explore-mathematical-structure/references/probes-and-evidence.md"),
     Path("research-mathematics/references/rigor-standards.md"),
+    Path("research-mathematics/references/rigor.md"),
 )
 
 
@@ -61,7 +63,7 @@ def main() -> None:
     """Parse targets and install the complete suite."""
     parser = argparse.ArgumentParser(
         description=(
-            "Install all eight skills globally. Codex and Cursor share the open-standard "
+            "Install all nine skills globally. Codex and Cursor share the open-standard "
             "~/.agents/skills root; Claude Code uses ~/.claude/skills."
         )
     )
