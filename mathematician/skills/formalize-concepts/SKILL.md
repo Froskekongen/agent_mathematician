@@ -10,9 +10,6 @@ Turn intended meaning into the simplest faithful mathematics through a `show, th
 
 Read and apply the shared
 [mathematical-integrity contract](../research-mathematics/references/mathematical-integrity.md).
-This skill's rigor is semantic: selection establishes a faithful, usable
-formalization, not proof, uniqueness, novelty, causal validity, or empirical
-confirmation.
 
 ## Adapt to local expertise
 
