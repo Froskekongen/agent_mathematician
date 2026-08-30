@@ -1,7 +1,7 @@
 interface:
   display_name: "Destroy Theory"
-  short_description: "Find counterexamples and proof gaps"
-  default_prompt: "Use $destroy-theory to look for counterexamples, proof gaps, and the true boundary of this claim."
+  short_description: "Find counterexamples, proof gaps, and boundaries"
+  default_prompt: "Use $destroy-theory to attack this claim, proof, or encoding and identify the smallest checked failure or the remaining search boundary."
 
 policy:
   allow_implicit_invocation: true

@@ -1,121 +1,110 @@
 ---
 name: formalize-concepts
-description: Turn an informal idea into a selected mathematical formalism through lightweight collaboration that adapts to the user's relevant expertise.
+description: Turn an informal idea into faithful mathematics by comparing concrete consequences and resolving the choices that matter.
 disable-model-invocation: true
 ---
 
 # Formalize Concepts
 
-Turn intended meaning into the simplest faithful mathematics through a `show, then ask` loop. Let the user guide the concept at their useful level while keeping the discussion easy to revise.
+Find the simplest mathematics that captures the intended behavior. Work in a
+`show, then ask` rhythm: propose something concrete, show what it means in an
+example, then ask one question whose answer would change the formalism.
 
 Follow the
 [shared mathematical integrity](../research-mathematics/references/mathematical-integrity.md).
 
-## Adapt to local expertise
+## Adapt to the mathematics the user knows
 
-Infer relevant expertise from the user's definitions, notation, examples, constraints, and corrections rather than requesting a mathematical biography. Expertise may vary by topic.
+Infer relevant expertise from the user's notation, examples, constraints, and
+corrections. Work directly with a structure they use precisely; when they
+reason informally, express the mathematical choices through examples and
+consequences. Clarify a local ambiguity without lowering the level of the whole
+discussion. Informal writing is not evidence of mathematical inexperience.
 
-- Work directly with supplied mathematical structures and results when the user uses them precisely.
-- Express choices through examples and consequences when the user reasons conceptually.
-- Clarify an ambiguous specialist term locally rather than lowering the whole discussion.
-- Do not infer lack of expertise from informal writing.
+When useful, invite the user to steer either the mathematics or its intended
+behavior:
 
-Offer this invitation near the start when it would help:
+> Give any structures, constraints, or results you want built in. Otherwise,
+> describe how the concept should behave and I will propose the mathematics.
 
-> If you want to steer the mathematical machinery directly, give any structures, constraints, or results you want considered. Otherwise, guide the intended behavior and I will propose the mathematics.
+## 1. Begin with the intended distinction
 
-## 1. Identify the mathematical job
+Restate what the concept is meant to describe or distinguish, and what later
+work—explanation, prediction, classification, optimization, control, or a
+theorem—should depend on it. Find one concrete instance it should capture and,
+when possible, a nearby instance it should treat differently. Separate
+descriptive, causal, and normative readings when they lead to different
+mathematical objects.
 
-Restate the idea compactly and determine what the formalism should do: describe, distinguish, explain, predict, classify, optimize, control, or support a theorem.
-
-Separate descriptive, causal, and normative claims when they would lead to different mathematics. Ask for a concrete anchor only when the request lacks one.
-
-Show the first proposal once the intended job and one meaningful example are
+If the user has already supplied a suitable structure, develop it. Otherwise,
+show the first candidate once the intended job and one revealing example are
 clear.
 
-## 2. Show a small candidate set
+## 2. Put candidate mathematics on the table
 
-Present the simplest plausible formalism and normally one materially different alternative. Add a third only when it exposes an independent interpretation. When the user has already fixed a suitable structure and no material ambiguity remains, develop that single candidate.
+Begin with the simplest plausible formalism. Add one genuinely different
+alternative when the examples admit two interpretations; add a third only for
+an independent conceptual fork.
 
-For each candidate, state briefly:
+For each candidate, identify the objects and admissible transformations, the
+relation, map, dynamics, constraint, or objective that carries the idea, and
+the user's intended terms in that language. Then derive one consequence on the
+anchor example and one limitation or boundary. Alternatives earn their place
+by changing the mathematics, not by renaming it.
 
-- main objects;
-- central relation, map, dynamics, constraint, or objective;
-- interpretation of the user's terms;
-- conceptual feature it captures;
-- one important consequence or limitation.
+Use concise definitions with an expert. Introduce notation through the object
+it denotes when the user is working more conceptually.
 
-Use concise formal definitions for an expert. Explain what notation represents before using it with a nonspecialist.
+## 3. Ask the consequential question
 
-Keep alternatives only when their differences are meaningful to the user, not
-merely changes of mathematical vocabulary.
+Expose the live fork and ask one question per round, or two only when they
+cannot be separated. State what each answer changes. For example, whether two
+systems with the same present state but different histories are identical
+decides whether the state can be Markovian or must retain path information.
 
-## 3. Ask a wedge question
+Pause after the candidates when the answer would change the meaning, admissible
+examples, or model class. Continue when the user has already answered,
+delegates the choice, or asks for a one-shot proposal. Make reversible
+technical choices by the simplest standard convention; mark a delegated
+conceptual choice as provisional.
 
-Ask one high-leverage question per round, or two only when they are inseparable. Make the consequence of each answer visible.
+## 4. Refine through consequences
 
-Match the user's demonstrated level. For example, ask either:
+Update the leading candidate and work through the anchor example. Check a
+boundary case or nonexample on which the alternatives differ, verify that the
+objects and operations are well-typed, and derive a simple consequence when it
+helps reveal the meaning of the definition.
 
-- “Should two systems with the same present state but different histories count as the same?”; or
-- “Should the state be Markovian, or should it live on path space?”
+Let these examples carry the conversation. Repeat `show, then ask` only while
+a genuine conceptual fork remains. The formalism is ready when it handles the
+anchor and its important boundary is understood.
 
-Ask only when the answer changes meaning, admissible examples, causal or normative content, or the model class. Make reversible technical choices using the simplest standard option. When the user delegates a material choice, select the simplest faithful candidate and mark it provisional in one sentence.
+## 5. Select and explain
 
-After showing candidates, normally pause for the user's answer when a live material fork remains. Do not merely bury the choice in a list of open questions. Continue without pausing only when the user has already resolved the fork, explicitly delegates it, or asks for a one-shot proposal.
+Clear endorsement, an incorporated correction with no remaining objection, or
+explicit delegation is enough to select a formalism. If a real fork survives,
+keep a leading `PROVISIONAL` candidate and state the choice that remains.
+Otherwise use `SELECTED` only when the label helps.
 
-Move on once one important ambiguity has been resolved or stated clearly.
+Write a short mathematical account: what is being modeled, why this formalism
+fits, its objects and relations, the anchor example, and a useful boundary.
+Mention a rejected alternative only when the comparison improves
+understanding. Selection says that the formalism captures the intended
+meaning; it does not prove uniqueness, novelty, causal validity, or empirical
+correctness.
 
-## 4. Refine through examples
+## Internal handoff
 
-Update the leading candidate, then test it visibly with:
-
-- one example it should capture;
-- one boundary case, nonexample, or comparison where alternatives differ;
-- a basic type or well-posedness check;
-- a cheap derived consequence when it helps the user judge whether the
-  formalism captures the intended meaning.
-
-Invite correction through the examples. Repeat the `show, then ask` loop only while a live conceptual fork remains.
-
-Refine until the candidate handles the anchor and its main limitation or
-disputed boundary is understood.
-
-## 5. Select without ceremony
-
-Treat clear endorsement, an incorporated correction without further objection, or explicit delegation as enough to select a formalism. Preserve:
-
-- the selected formalism;
-- a few serious alternatives and one decisive reason each was set aside;
-- unresolved choices that could materially change later mathematics.
-
-Discard cosmetic variants and transient brainstorms. If a genuine fork remains, keep a leading provisional candidate and state the fork rather than forcing closure.
-
-Finish selection with either a chosen formalism or one sharply stated remaining
-choice.
-
-If the result will be saved for later work, read the shared
+If the result will support later file-backed work, read the shared
 [research-memory rules](../research-mathematics/references/research-memory.md).
 Hand off a plain description of the mathematical subject and a suggested
-research key. The next writable skill decides whether to reuse that key or make
-a new one. This skill does not create companions, manage database state, or add
-canonical-section markers. Keep these storage details out of the mathematical
-account.
+research key. The next writable skill decides whether to reuse that key or
+make a new one. This skill does not create companions, manage database state,
+or add canonical-section markers.
 
-## 6. Stop at the right boundary
-
-Hand off when the next work is a substantial proof, systematic assumption test, consistency campaign, empirical validation, causal identification, or novelty investigation. Retrieve literature only when the user asks about existing formalisms, attribution, or novelty.
-
-Recommend `$explore-mathematical-structure` when the selected formalism needs an iterative test bed for intuition before the user chooses what to investigate. Recommend `$explore-proof-strategies` when a precise claim now needs proof routes, or `$research-mathematics` when the user wants rigorous mathematical resolution.
-
-## Report
-
-Write the result as a short mathematical account rather than a process log.
-Lead with what is being modeled and why the chosen formalism fits. Then give its
-objects, relationships, assumptions, and equations or definitions. Work through
-an anchor example and a useful boundary case. Mention rejected alternatives
-only when the comparison improves understanding, and end with any genuine open
-choice or next mathematical question.
-
-Use `PROVISIONAL` and `SELECTED` only when the distinction helps the reader.
-Selection means that the formalism captures the intended meaning; it does not
-by itself prove uniqueness, novelty, causal validity, or empirical correctness.
+Recommend `$explore-mathematical-structure` when the formalism needs a richer
+test bed for intuition, `$explore-proof-strategies` when a precise claim needs
+possible proof routes, or `$research-mathematics` when the user wants rigorous
+resolution. Hand off empirical validation, causal identification, systematic
+assumption review, consistency testing, and novelty research when those become
+separate tasks.

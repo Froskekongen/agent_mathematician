@@ -1,7 +1,7 @@
 interface:
   display_name: "Research Mathematics"
-  short_description: "Prove or refute a substantial claim"
-  default_prompt: "Use $research-mathematics to prove or refute this claim and state exactly what remains open."
+  short_description: "Resolve a substantial mathematical claim"
+  default_prompt: "Use $research-mathematics to prove, refute, repair, or locate the exact open step in this claim."
 
 policy:
   allow_implicit_invocation: false

@@ -236,9 +236,12 @@ class SkillInvocationTest(unittest.TestCase):
         exposition = " ".join(
             self.skill_texts()["write-proof-exposition"].split()
         ).lower()
-        self.assertIn("outside the specialty can follow and reconstruct", exposition)
-        self.assertIn("keeps the source result's mathematical status", exposition)
-        self.assertIn("does not prove, repair, or strengthen", exposition)
+        self.assertIn("reconstruct an established proof", exposition)
+        self.assertIn("outside the specialty", exposition)
+        self.assertRegex(
+            exposition,
+            r"status.{0,80}does not.{0,40}prove.{0,20}repair.{0,20}strengthen",
+        )
         self.assertIn("named canonical target", exposition)
         self.assertRegex(exposition, r"in-place.{0,80}only.{0,80}markdown/sqlite pair")
         self.assertRegex(
@@ -252,32 +255,58 @@ class SkillInvocationTest(unittest.TestCase):
         )
         self.assertIn("$explain-mathematics", exposition)
         self.assertIn("$research-mathematics", exposition)
-        self.assertIn("write mathematics, not an audit report", exposition)
+        self.assertRegex(
+            exposition,
+            r"publish only after.{0,80}(?:source )?comparison succeeds",
+        )
 
-    def test_skills_have_task_local_rigor_and_reader_facing_outputs(self) -> None:
+    def test_skills_preserve_task_local_rigor_and_internal_handoffs(self) -> None:
         skills = {
             name: " ".join(text.split()).lower()
             for name, text in self.skill_texts().items()
         }
         for name in ("explore-mathematical-structure", "explore-proof-strategies"):
             self.assertIn("proof handoff", skills[name])
-            self.assertIn("conversion obligation", skills[name])
-        self.assertIn("proof is optional", skills["explain-mathematics"])
+            self.assertRegex(
+                skills[name],
+                r"internal.{0,100}conversion obligation",
+            )
+        self.assertRegex(skills["explain-mathematics"], r"proof.{0,20}optional")
         self.assertIn("$write-proof-exposition", skills["explain-mathematics"])
-        self.assertIn("these questions need different evidence", skills["audit-assumptions"])
-        self.assertIn("do not turn the canonical document into an audit ledger", skills["audit-assumptions"])
-        self.assertIn("a negative conclusion needs exact evidence", skills["destroy-theory"])
-        self.assertIn("do not turn the canonical document into an attack log", skills["destroy-theory"])
-        self.assertIn("not falsified in scope", skills["destroy-theory"])
+
+        audit = skills["audit-assumptions"]
+        for distinction in (
+            "well-posedness",
+            "present proof",
+            "necessary for the theorem",
+        ):
+            self.assertIn(distinction, audit)
+        self.assertRegex(audit, r"necessity.{0,80}checked example")
+        self.assertRegex(audit, r"redundancy.{0,100}(?:derivation|checked proof)")
+        self.assertIn("candidate_digest", audit)
+        self.assertIn("requested_attacks", audit)
+
+        destroy = skills["destroy-theory"]
+        for outcome in (
+            r"the theorem.{0,20}false",
+            r"(?:this|the) proof.{0,20}fails",
+            r"encoding.{0,40}fails",
+            r"no defect.{0,30}(?:found|tested scope)",
+        ):
+            self.assertRegex(destroy, outcome)
+        self.assertIn("candidate_digest", destroy)
+        self.assertIn("requested_assumption_audits", destroy)
+        self.assertIn("refuted", destroy)
+        self.assertIn("not falsified in scope", destroy)
 
     def test_formalization_hands_off_only_a_suggested_key(self) -> None:
         formalize = " ".join(
             self.skill_texts()["formalize-concepts"].split()
         ).lower()
-        self.assertIn("plain description of the mathematical subject", formalize)
-        self.assertIn("suggested research key", formalize)
-        self.assertIn("next writable skill decides whether to reuse that key", formalize)
-        self.assertIn("does not create companions", formalize)
+        self.assertRegex(formalize, r"plain description.{0,30}mathematical subject")
+        self.assertRegex(formalize, r"suggested.{0,20}research key")
+        self.assertRegex(formalize, r"next writable skill.{0,80}(?:reuse|new one)")
+        self.assertRegex(formalize, r"does not.{0,20}create companions")
 
 
 if __name__ == "__main__":

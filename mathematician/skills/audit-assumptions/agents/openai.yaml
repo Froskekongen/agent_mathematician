@@ -1,7 +1,7 @@
 interface:
   display_name: "Audit Assumptions"
-  short_description: "Trace what each hypothesis is doing"
-  default_prompt: "Use $audit-assumptions to explain which assumptions shape the statement, the proof, and the theorem."
+  short_description: "Trace what each mathematical hypothesis contributes"
+  default_prompt: "Use $audit-assumptions to determine which hypotheses make the statement meaningful, drive the proof, or are necessary for the theorem."
 
 policy:
   allow_implicit_invocation: true

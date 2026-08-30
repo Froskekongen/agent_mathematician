@@ -1,7 +1,7 @@
 interface:
   display_name: "Consolidate Math Documents"
-  short_description: "Merge mathematics and retire old source pairs"
-  default_prompt: "Use $consolidate-math-documents to combine these documents into one coherent mathematical account, then safely retire the old source pairs."
+  short_description: "Unify mathematical accounts and retire sources"
+  default_prompt: "Use $consolidate-math-documents to reconcile these documents into one coherent mathematical account and safely retire the exact source pairs."
 
 policy:
   allow_implicit_invocation: false

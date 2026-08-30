@@ -1,7 +1,7 @@
 interface:
   display_name: "Explore Proof Strategies"
-  short_description: "Compare proof ideas and find the crux"
-  default_prompt: "Use $explore-proof-strategies to compare several proof ideas and identify the most promising route and its central difficulty."
+  short_description: "Compare proof mechanisms and expose the crux"
+  default_prompt: "Use $explore-proof-strategies to compare why several proof ideas might work and identify the route with the clearest crux."
 
 policy:
   allow_implicit_invocation: false

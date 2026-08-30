@@ -1,7 +1,7 @@
 interface:
   display_name: "Explain Mathematics"
-  short_description: "Teach advanced mathematics across specialties"
-  default_prompt: "Use $explain-mathematics to make this theory accessible outside its specialty."
+  short_description: "Make advanced mathematics intuitive and exact"
+  default_prompt: "Use $explain-mathematics to explain this topic through motivation, an exact mental model, and revealing examples."
 
 policy:
   allow_implicit_invocation: false

@@ -1,95 +1,107 @@
 ---
 name: destroy-theory
-description: Find counterexamples, proof gaps, failed encodings, or validity boundaries, including when another skill needs a fresh adversarial review.
+description: Attack mathematical claims, proofs, and encodings by finding checked counterexamples, invalid inferences, or validity boundaries, including a fresh review requested by another skill.
 ---
 
 # Destroy Theory
 
-Try to break the claim, proof, or encoding. Follow the
+Try to break the exact claim, proof, or encoding. Follow the
 [shared mathematical integrity](../research-mathematics/references/mathematical-integrity.md).
 A negative conclusion needs exact evidence: a checked counterexample,
-contradiction, or invalid inference. A search that finds nothing reports only
-where it searched.
+contradiction, or invalid inference. An unsuccessful search reports where it
+looked and nothing stronger.
 
-Default to a conversation-only result. A nested run examines the supplied
-candidate digest read-only. For authorized writable work, first read the
+Default to chat. A nested run examines the supplied candidate digest read-only.
+For authorized writable work, read the
 [research-memory rules](../research-mathematics/references/research-memory.md)
-and remain the sole writer.
+and act as sole writer.
 
-## 1. State the claim and its negation
+## 1. Fix the target and its negation
 
 Separate definitions, assumptions, lemmas, principal claims, and consequences.
-Type-check every object and write the exact logical negation of each principal
-claim. Distinguish literal wording from intended meaning and flag any repaired
-definition, added assumption, restricted domain, or changed quantifier as a
-new target.
+Type-check the objects and write the exact logical negation of every principal
+claim under attack. Keep literal wording distinct from intended meaning. A
+repaired definition, added assumption, restricted domain, or changed quantifier
+creates a new target.
 
-Complete this step when every claim being tested has a precise statement, a
-clear place in the argument, and an exact negation.
+Begin attacking only when the claim has a precise statement, a known place in
+the argument, and an exact negation.
 
-## 2. Try the cheapest counterexamples first
+## 2. Let the logical form choose the attack
 
-Prioritize important universal, existence, uniqueness, boundary, closure,
-inversion, interchange, uniformity, and finite-to-infinite claims. Adapt the
-following families rather than applying them mechanically: zero and constant
-objects; the smallest dimensions; finite, discrete, linear, or diagonal
-models; degenerate and boundary cases; scaling and symmetry mutations;
-minimally regular objects; loss of compactness; noncommutativity; and infinite
-dimension.
+A universal assertion asks for one object satisfying the hypotheses and
+violating the conclusion. Uniqueness asks for two admissible objects that the
+claim identifies incorrectly. An implication asks for its hypotheses together
+with the failure of its conclusion; an equivalence can fail in either
+direction. An existence theorem instead calls for an obstruction or a proof
+that no admissible object can exist.
+
+Search first in the smallest setting that still carries the proposed
+mechanism. Zero or constant objects, low dimensions, diagonal or finite models,
+boundary regularity, a scaling limit, or loss of compactness are useful only
+when they stress a specific inference. Let the mathematics of the claim choose
+the family.
 
 When material computation is needed, read
 [computational-checking.md](../research-mathematics/references/computational-checking.md)
-and use `falsify`. Record what candidates were searched, how many, under what
-budget, and where the search stopped. Treat a candidate as a counterexample only
-after checking it exactly.
+and use `falsify`. Record the encoded proposition, candidate family, budget,
+and stopping point. A computational candidate becomes a counterexample only
+after every hypothesis and the failed conclusion have been checked exactly.
 
-Complete this step when every important claim has received at least one attack
-suited to its mathematics, or when the unsearched territory is clear.
+Continue until every important claim has received an attack suited to its
+logical and mathematical form, or the main unsearched territory is explicit.
 
-## 3. Inspect the proof and encoding
+## 3. Inspect the proof and the encoding separately
 
-Locate the earliest unsupported inference. Check quantifier or domain changes,
-circularity, well-posedness, operation interchanges, topology, exceptional
-sets, uniform constants, imported hypotheses, finite-dimensional leakage,
-conclusion strength, hidden premises, and renamed central obligations. Check
-an executable encoding separately from the intended theorem and its proof.
+Locate the earliest unsupported inference. Check changes of domain or
+quantifier, well-posedness, circularity, operation interchanges, exceptional
+sets, topology, uniform constants, imported hypotheses, finite-dimensional
+reasoning used in an infinite-dimensional setting, and conclusions stronger
+than the lemmas support. A renamed or hidden central obligation remains an open
+obligation. Opacity is a reason to inspect a step, not evidence that it is
+false.
 
-Keep four outcomes distinct: the claim is false, this proof fails, the encoding
-fails to represent or establish the claim, or no defect was found in the tested
-scope. Record systematic questions about weaker assumptions for
+An executable encoding is a third object beside the theorem and its proof.
+Check whether it represents the intended statement and whether its output
+establishes the proposition claimed for it.
+
+Keep four outcomes distinct: the theorem is false, this proof fails, the
+encoding fails to represent or establish the theorem, or no defect was found in
+the tested scope. Record systematic questions about weaker assumptions for
 `$audit-assumptions`; a nested run does not launch it.
 
 ## 4. Check and simplify the finding
 
-A counterexample must define the object, verify every assumption, and show that
-the conclusion fails. Identify the first claim it defeats and distinguish the
-checked argument from any heuristic lead. Simplify the example when that makes
-the true boundary easier to see. Suggest the nearest natural correction and say
-what would still need proof; the corrected statement is a new claim.
+A counterexample must define the object, verify every hypothesis, and show
+that the conclusion fails. Identify the first claim it defeats and separate
+the checked argument from the heuristic that suggested it. Simplify the example
+when a smaller one makes the true boundary easier to understand.
+
+If a natural correction becomes visible, state it as a new claim and name what
+would still need proof. A broken proof or encoding does not by itself repair or
+settle the theorem.
 
 ## Write the result
 
-Lead with the mathematical outcome. If the claim fails, present the smallest
-clear counterexample or contradiction and explain the boundary it reveals. If
-only the proof or encoding fails, identify the first bad step and explain why it
-does not settle the theorem. If nothing fails, summarize the strongest tests and
-the important territory left unexplored.
+Lead with the mathematical outcome. For a false claim, present the smallest
+clear counterexample or contradiction and the boundary it reveals. For a proof
+or encoding failure, identify the first bad step and explain why the theorem
+remains unresolved. If no attack succeeds, summarize the strongest tests and
+the important territory left open.
 
 For nested work, append the internal fields `candidate_digest` and
-`requested_assumption_audits`, even when empty; keep them out of the mathematical
-narrative. Standalone work recommends `$audit-assumptions` for systematic
-weakenings or `$research-mathematics` to resolve a corrected claim.
+`requested_assumption_audits`, even when empty, outside the mathematical
+narrative. Standalone work may recommend `$audit-assumptions` for systematic
+weakening or `$research-mathematics` for a corrected claim.
 
-Only a checked counterexample or contradiction proves `REFUTED`. A broken proof
-leaves the theorem unresolved unless other evidence settles it; a broken
-encoding says only that the implementation fails. Otherwise report
-`NOT FALSIFIED IN SCOPE`, say what was tested, and name the main remaining ways
-the claim could fail. Difficulty understanding a step is a reason to investigate
-it, not evidence that the step is wrong.
+Only a checked counterexample or contradiction proves `REFUTED`. A broken
+proof leaves the theorem unresolved unless other evidence settles it, and a
+broken encoding settles only the implementation. Otherwise report
+`NOT FALSIFIED IN SCOPE`, state what was tested, and name the main remaining
+ways the claim could fail.
 
 For writable work, place checked counterexamples and accepted boundaries where
-they clarify the mathematics. Keep reusable obstructions, expensive negative
-searches, and untried attacks in memory. Do not turn the canonical document into
-an attack log. Complete when every reported counterexample is checked, every
-claimed proof defect identifies the invalid or unsupported inference, and the
-limits of the search are clear.
+they clarify the mathematics. Keep reusable obstructions, unfinished search
+directions, and review bookkeeping in memory. Finish when every reported
+counterexample and proof defect is checked and the limits of the search are
+clear.

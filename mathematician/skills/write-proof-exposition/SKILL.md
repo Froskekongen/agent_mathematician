@@ -1,16 +1,17 @@
 ---
 name: write-proof-exposition
-description: Turn an established proof into a self-contained account that a mathematician outside the specialty can follow, without changing the result.
+description: Reconstruct an established proof as a self-contained mathematical account for readers outside the specialty, without changing the result.
 disable-model-invocation: true
 ---
 
 # Write Proof Exposition
 
-Turn an established proof into an account that a mathematically mature reader
-outside the specialty can follow and reconstruct. Follow the
+Reconstruct an established proof for a mathematically mature reader outside the
+specialty. The reader should be able to follow the argument and recover every
+essential step. Follow the
 [shared mathematical integrity](../research-mathematics/references/mathematical-integrity.md).
-The exposition keeps the source result's mathematical status; it does not prove,
-repair, or strengthen the result.
+The exposition keeps the source result's mathematical status; it does not
+prove, repair, or strengthen the result.
 
 Use `$explain-mathematics` when intuitive understanding is primary and a
 complete proof is unnecessary. Use `$research-mathematics` when an essential
@@ -18,86 +19,87 @@ argument must be invented, repaired, challenged, or certified.
 
 ## File handling (internal)
 
-Default to chat; source files and companions remain read-only unless the user
-explicitly asks to update or rewrite a named canonical target. Merely supplying
-or naming one is not authorization. For research history, read the
-[research-memory rules](../research-mathematics/references/research-memory.md),
-query the companion read-only, and label the result as history.
+Default to chat. Merely supplying or naming a file is not authorization to
+change it; source files and companions remain read-only unless the user asks to
+update or rewrite a named canonical target. For research history, read the
+[research-memory rules](../research-mathematics/references/research-memory.md)
+and query the companion read-only, describing anything retrieved as history.
 
-An in-place request authorizes only that target's Markdown/SQLite pair. An
-explicitly requested separate proof exposition gets its own companion and
-leaves the source pair read-only; no two Markdown documents share one database.
-For writable work, read the rules completely and act as sole writer.
+An in-place rewrite authorizes only that target's Markdown/SQLite pair. A
+separate proof exposition has its own companion and leaves the source pair
+read-only; no two Markdown documents share one database. For writable work,
+read the rules completely and act as sole writer.
 
-## 1. Fix the source and the reader
+## 1. Fix the source and the intended reader
 
 Identify the exact theorem, definitions, assumptions, conventions, current
-status, proof or certificate, imported results, known limits, and provenance.
-Distinguish a complete proof from a proof sketch, an incomplete argument, or a
-citation that has not been checked here.
+status, proof or certificate, imported results, validity limits, and
+provenance. A proof sketch, incomplete argument, or unchecked citation remains
+such; exposition cannot promote it to a complete proof.
 
-Infer the reader's relevant background. Decide which prerequisites can be
-assumed, briefly recalled, developed here, or cited. “Self-contained” means
-complete relative to that stated background, not free of every dependency.
+Infer the reader's relevant background. Decide which prerequisites may be
+assumed, briefly recalled, developed, or cited. Self-contained means complete
+relative to that stated background, not free of every dependency.
 
-If an essential argument is missing, preserve the source's lower status and
-recommend `$research-mathematics` rather than silently adding new research.
+If an essential argument is absent, preserve the lower status and return the
+mathematical problem to `$research-mathematics`.
 
-## 2. Explain the idea before the details
+## 2. Reveal the architecture of the proof
 
-Begin with the problem, the governing mental picture, the main mechanism, and
-the proof's hardest idea. Then divide the argument into a small number of
-mathematical stages and say what each stage accomplishes. Connect this overview
-to the exact theorem so the picture remains useful once the proof becomes
-formal.
+Begin with the problem, the mechanism that makes the theorem plausible, and
+the hardest idea. Divide the proof into a few mathematical stages and explain
+what each stage accomplishes: what obstacle it removes, what new object it
+constructs, or what reduction it makes possible. Connect this architecture to
+the exact theorem before entering technical detail.
 
-Use examples, diagrams, or analogies when they reveal the mechanism. Identify
-the exact objects they describe, what structure they preserve, and where the
-comparison breaks. Compress routine details only when the intended reader can
-reconstruct them and they do not hide the central idea.
+Use an example, analogy, or diagram when it reveals the mechanism. Identify
+the objects and relations involved, the structure preserved, and the point
+where the model stops being reliable.
 
-## 3. Write a proof the reader can reconstruct
+## 3. Reconstruct the argument locally
 
-Present definitions and imported results before use. For each nonroutine step,
-explain what it accomplishes and where the idea comes from. Show every essential
-inference, or cite an exact theorem after checking its assumptions and
-conventions. Expand specialist shorthand around the crux; compress only work
-the target reader can reliably recover.
+Introduce definitions and imported results before they do work. For each
+nonroutine step, explain its mathematical task, why the move is natural at that
+point, which hypotheses it uses, and how it advances the global argument.
+Expand specialist shorthand around the crux.
 
-Keep the mathematical statement, its proof, and any formal or executable
-encoding distinct. For a machine-checked source, explain what the checker
-verified and what it assumes, while reconstructing the human mathematical idea.
-The readable reconstruction supplements the certificate; it does not replace it.
+Show every essential inference, or cite an exact theorem after matching its
+assumptions and conventions to the present setting. Compress routine work only
+when the intended reader can reliably recover it and the compression does not
+hide the central idea.
 
-## 4. Compare the exposition with the source
+Keep the theorem, its proof, and any formal or executable encoding distinct.
+For a machine-checked source, state what the checker verified and assumed while
+reconstructing the human mathematical argument. The exposition supplements the
+certificate; it does not replace it.
 
-Compare the source and exposition: theorem statement, definitions, assumptions,
-quantifiers, conventions, imported results, validity limits, provenance, and
-status must agree. Check examples, diagrams, formulas, citations, and any
-details expanded during the rewrite. Read the proof once locally, step by step,
-and once globally, for the main idea and flow.
+## 4. Compare the reconstruction with the source
 
-If the rewrite reveals a missing bridge, stronger conclusion, added assumption,
-or unverified repair, do not present the draft as a complete proof. State the
-problem plainly and return it to `$research-mathematics`; use `$destroy-theory`
-or `$audit-assumptions` when the issue specifically calls for those reviews.
+Read the draft once locally, checking each inference and imported result, and
+once globally, checking the architecture and flow. Then compare it with the
+source. The theorem statement, definitions, assumptions, quantifiers,
+conventions, dependencies, validity limits, status, and provenance must agree;
+check every example, formula, diagram, and citation added during the rewrite.
 
-## 5. Publish a readable account when authorized
+A missing bridge, stronger conclusion, added assumption, or unverified repair
+means the draft is not a complete exposition of the source proof. State the
+discrepancy and return it to `$research-mathematics`; use `$destroy-theory` or
+`$audit-assumptions` when the issue specifically calls for those reviews.
 
-Draft separately from the target and publish only after the comparison with the
-source succeeds. For authorized file-backed work, keep the mathematics and
-provenance in canonical Markdown, retain only reusable background in memory,
-and finish under the shared research-memory rules.
+## 5. Write and publish the account
 
-## Completion
+Let the argument determine the order. A natural account usually moves from
+motivation and proof architecture to the exact statement, prerequisites,
+proof, and meaningful boundaries. Keep status and provenance compact, and keep
+file rules, review mechanics, and internal routing outside the exposition.
 
-Write mathematics, not an audit report. Let the argument determine the order,
-but normally move from motivation and mental picture to the exact statement,
-needed prerequisites, proof idea, complete proof, and meaningful boundaries.
-Put status and provenance in a compact note when they matter. Keep file rules,
-review checklists, and internal routing out of the exposition.
+For authorized file-backed work, draft separately and publish only after the
+source comparison succeeds. Keep the mathematics and provenance in canonical
+Markdown, retain only reusable background in memory, and finish under the
+research-memory rules.
 
-Complete only when the theorem and status match the source, the proof closes
+Finish only when the theorem and status match the source, the proof closes
 relative to the stated prerequisites, every essential step or imported result
-is recoverable by the target reader, the central idea is more visible than the
-routine detail, and the exposition introduces no unverified mathematical change.
+is recoverable by the target reader, the central idea remains visible through
+the technical detail, and the exposition contains no unverified mathematical
+change.

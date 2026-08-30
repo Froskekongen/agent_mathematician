@@ -1,98 +1,94 @@
 ---
 name: explore-proof-strategies
-description: Compare possible proof ideas for a clear claim and identify the most promising route and its central difficulty.
+description: Explore why a clear claim might be true, compare proof ideas, and identify the most promising route and its crux.
 disable-model-invocation: true
 ---
 
 # Explore Proof Strategies
 
-Find several plausible ways to prove a claim and understand what makes each one
-work. Follow the
+Ask what could make the conclusion follow from the hypotheses, then develop a
+few plausible answers far enough to reveal their crux. Follow the
 [shared mathematical integrity](../research-mathematics/references/mathematical-integrity.md).
-The goal is a clear route and a visible crux, not a certified proof.
+This skill finds a route; it does not certify a proof.
 
-Default to a conversation-only result. For authorized writable work, first read
-the shared [research-memory rules](../research-mathematics/references/research-memory.md).
-A nested scout remains read-only and reports against the supplied target
-version.
+Default to chat. For authorized writable work, read the shared
+[research-memory rules](../research-mathematics/references/research-memory.md).
+A nested scout remains read-only and works against the supplied target version.
 
-## 1. Understand the claim
+## 1. Fix the claim and look at revealing cases
 
-State the exact claim. If nearby versions with different assumptions or
-conclusions are worth comparing, name them and say which version each strategy
-addresses. If the meaning or underlying structure is unsettled, recommend
-`$formalize-concepts` or `$explore-mathematical-structure` first.
+State the exact claim and keep nearby variants separate. If the objects or
+intended statement are still unsettled, recommend `$formalize-concepts` or
+`$explore-mathematical-structure` before choosing a proof strategy.
 
-Test a few small, boundary, degenerate, or scaling cases. Use them to understand
-why the claim might be true and to rule out routes that already conflict with
-the examples. A failed search for a counterexample is only evidence from that
-search; it is not a proof.
+Work through small, boundary, or nearly failing cases. Use them to see which
+hypotheses are active, what mechanism might force the conclusion, and which
+ideas already point in the wrong direction. An unsuccessful counterexample
+search reports only what was searched.
 
-## 2. Develop genuinely different ideas
+## 2. Develop genuinely different mechanisms
 
-Identify the structures already present in the problem. Develop a small set of
-strategies that differ in their main idea—for example, their invariant,
-representation, reduction, or central lemma.
+A strategy is more than the name of a method. It should explain why this
+problem has the structure the method needs. Develop a small set of routes that
+differ in their governing idea: the intermediate statement they seek, the
+representation they introduce, or the reduction that would make the conclusion
+unavoidable.
 
-For each strategy explain:
+For each serious route, describe its main mathematical move, the resulting
+sequence of lemmas or reductions, the hypotheses and imported results it uses,
+and the step on which it is likely to succeed or fail. Keep an alternative
+because it illuminates the problem or offers a credible path around the leading
+route's obstruction.
 
-- the main idea and why it fits this problem;
-- the likely sequence of intermediate results;
-- the hardest step;
-- assumptions or imported theorems it needs; and
-- how or where it is most likely to fail.
+When an idea comes from another field, identify the translated objects and the
+structure preserved by the translation. Explain how the desired conclusion
+returns to the original setting and where the correspondence may break.
 
-For an idea imported from another field, say how the objects translate, what
-structure survives the translation, how the conclusion returns to the original
-problem, and where the analogy may break.
+## 3. Test the mechanism and expose the crux
 
-Keep a route because of mathematical promise, not merely because it is
-different. Stop when the leading route has a concrete crux or when the useful
-alternatives have been exhausted.
+Give each serious route one cheap test chosen for its proposed mechanism. A
+candidate invariant should survive a revealing example; a reduction should
+preserve the needed hypotheses; a proposed lemma should be checked at the
+boundary where it is least plausible.
 
-## 3. Test and deepen the leading ideas
-
-Give every serious strategy one cheap test tailored to its proposed mechanism.
-When a material computation would change the choice, read
+When material computation could change the choice, read
 [computational-checking.md](../research-mathematics/references/computational-checking.md)
-and use `discover` or `falsify`. State only what the computation actually
-checked.
+and use `discover` or `falsify`. State the proposition encoded, the cases
+checked, and the limit of the result.
 
-Turn the leading strategies into a sequence of lemmas or reductions. For each
-one, identify the next calculation, example, source check, or lemma that would
-most clearly advance or defeat it.
+Develop the leading routes into a lemma spine. Name the next calculation,
+example, source check, estimate, construction, or lemma that would most clearly
+advance or defeat each one. Stop branching once one route has a concrete crux
+or the useful alternatives have been exhausted.
 
-If an end-to-end argument appears, stop branching and record the exact theorem,
-argument, new assumptions, imported results, fragile steps, and unperformed
-verification under:
+If an end-to-end argument appears, record the exact theorem, assumptions,
+imports, fragile steps, and missing verification in the internal handoff under
+`CANDIDATE FULL PROOF — NOT CERTIFIED`. Mark every part that still needs a
+mathematical check, source match, adversarial challenge, or independent
+verification.
 
-`CANDIDATE FULL PROOF — NOT CERTIFIED`
+## 4. Prepare the proof handoff
 
-## 4. Prepare for rigorous proof
+For each leading route, record the exact claim, guiding mechanism, lemma spine,
+assumptions, imported results, tests already made, known failure points, crux,
+and best next step. In reader-facing prose, name the actual missing lemma,
+estimate, construction, reduction, or check. The internal proof handoff may
+collect such items as conversion obligations.
 
-For each leading strategy, make a compact proof handoff with the exact
-claim, guiding idea, lemma sequence, assumptions, imported results, tests
-already tried, known failure points, conversion obligations, central crux, and
-best next step. If a candidate full proof exists, mark every part that still
-needs checking, source matching, challenge, or independent verification.
-
-`research-mathematics` will state the target afresh and decide whether the proof
-is complete. This handoff does not change the claim's status.
+`research-mathematics` will state the target afresh and decide its status. A
+candidate argument remains uncertified, and the handoff does not upgrade the
+claim.
 
 ## Write the result
 
-Write a mathematical comparison, not a search log. Lead with why the claim is
-plausible, then explain the main idea of each serious strategy, the example or
-test that informs it, and the decisive difficulty. Rank the strategies in prose
-or a small table only when the comparison becomes clearer.
+Write a mathematical comparison. Begin with why the claim is plausible, then
+explain each serious mechanism, the example or test that bears on it, and its
+decisive difficulty. Rank routes only when the comparison becomes clearer.
 
-For writable work, keep the selected route, its mathematical motivation, the
-important evidence, and the next proof task in canonical Markdown. Memory may
-retain reusable parked or rejected ideas, but its bookkeeping does not belong
-in the document.
+For writable work, keep the selected route, its motivation, the important
+evidence, and the next proof task in canonical Markdown. Memory may retain
+reusable parked or rejected ideas; its bookkeeping stays internal.
 
-Complete when the reader understands why the leading strategies might work,
-where each could fail, and what exact step should come next. Any heuristic that
-supports a stronger claim has a conversion obligation, and every candidate
-proof remains visibly uncertified. Recommend `$research-mathematics` for
-rigorous resolution.
+Finish when the reader understands why the leading routes might work, where
+each could fail, and which exact mathematical step should come next. Recommend
+`$research-mathematics` for rigorous resolution.

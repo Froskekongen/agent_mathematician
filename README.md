@@ -7,21 +7,24 @@ review, explanation, proof-bearing exposition, and document consolidation.
 
 ## Skills
 
-- `formalize-concepts`: select faithful mathematics for an informal idea.
-- `explore-mathematical-structure`: compare candidate structures with small
-  discriminating tests.
-- `explore-proof-strategies`: build and pressure-test a bounded proof-route
-  portfolio.
-- `research-mathematics`: construct, attack, and independently verify a
-  substantial result.
-- `destroy-theory`: falsify a statement or locate proof and validity failures.
-- `audit-assumptions`: trace hypotheses and test necessity or weakening.
-- `explain-mathematics`: teach advanced mathematics across specialty
-  boundaries, optionally rewriting an explicitly named canonical pair.
-- `write-proof-exposition`: turn stabilized mathematics into a complete,
-  cross-specialty proof exposition without changing its status.
-- `consolidate-math-documents`: reconcile canonical accounts and safely retire
-  their exact source pairs.
+- `formalize-concepts`: turn an informal idea into faithful mathematics through
+  examples, consequences, and consequential choices.
+- `explore-mathematical-structure`: compare ways of understanding a phenomenon
+  through exact realizations and revealing examples.
+- `explore-proof-strategies`: compare mechanisms that could prove a claim and
+  identify the most promising route and its crux.
+- `research-mathematics`: prove, refute, repair, or locate the exact open step
+  in a substantial claim.
+- `destroy-theory`: find checked counterexamples, proof gaps, failed encodings,
+  and validity boundaries.
+- `audit-assumptions`: distinguish what each hypothesis contributes to the
+  statement, the proof, and the theorem.
+- `explain-mathematics`: make advanced mathematics intuitive and exact for
+  readers outside the specialty.
+- `write-proof-exposition`: reconstruct an established proof as a complete
+  cross-specialty mathematical account.
+- `consolidate-math-documents`: reconcile several documents into one coherent
+  account and safely retire their exact source pairs.
 
 The usual user-controlled path is `formalize-concepts` ->
 `explore-mathematical-structure` -> `explore-proof-strategies` ->
@@ -46,26 +49,29 @@ checks stable subject identity and writer ownership across the suite.
 
 ## Integrity and task-local rigor
 
-Every skill shares four stable mathematical-integrity invariants:
+Every skill shares four stable mathematical-integrity obligations:
 
-- **fidelity:** preserve the exact objects, assumptions, and statement, and name
-  any changed version;
-- **warrant:** say what each kind of evidence supports and where its scope ends;
-- **recoverable intuition:** connect mental models and analogies to exact
-  mathematics, including what carries over, where the picture breaks, and what
-  remains to be justified; and
-- **calibration:** match every conclusion to the evidence and the active skill's
-  completion rule.
+- **Keep the object and claim fixed:** preserve the objects, maps, domains,
+  quantifiers, assumptions, and conventions, and treat a changed statement as a
+  new claim.
+- **Say what the evidence establishes:** distinguish what follows from an
+  example, counterexample, computation, heuristic, source, or unsuccessful
+  search.
+- **Make intuition recoverable:** connect mental models and analogies to the
+  exact mathematics they describe, including the point where they fail.
+- **State the mathematical status plainly:** separate truth from plausibility,
+  usefulness, explanatory value, provenance, and workflow.
 
 These checks guide the work, not the writing style. Canonical documents should
 lead with mathematical ideas, examples, arguments, and conclusions; internal
 digests, checklists, search logs, and file bookkeeping stay in compact technical
 notes or memory unless they help the reader understand the mathematics.
 
-Rigor is otherwise task-local. Exploration closes a discriminating test and a
-compact proof handoff; explanation closes an audience-relative mental model and
-checked examples; falsification and assumption review require their own local
-evidence. Only `research-mathematics` uses the complete claim-resolution chain:
+Rigor is otherwise task-local. Exploration finishes with a revealing test and,
+when useful, a compact proof handoff. Explanation finishes when its mental model
+and examples support the intended reader. Falsification and assumption review
+use the exact evidence their conclusions require. Only
+`research-mathematics` uses the complete claim-resolution chain:
 
 ```text
 TARGET -> EVIDENCE -> CHALLENGE -> VERIFY -> STATUS
