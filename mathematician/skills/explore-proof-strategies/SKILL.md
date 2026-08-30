@@ -75,10 +75,6 @@ and best next step. In reader-facing prose, name the actual missing lemma,
 estimate, construction, reduction, or check. The internal proof handoff may
 collect such items as conversion obligations.
 
-`research-mathematics` will state the target afresh and decide its status. A
-candidate argument remains uncertified, and the handoff does not upgrade the
-claim.
-
 ## Write the result
 
 Write a mathematical comparison. Begin with why the claim is plausible, then
@@ -90,5 +86,4 @@ evidence, and the next proof task in canonical Markdown. Memory may retain
 reusable parked or rejected ideas; its bookkeeping stays internal.
 
 Finish when the reader understands why the leading routes might work, where
-each could fail, and which exact mathematical step should come next. Recommend
-`$research-mathematics` for rigorous resolution.
+each could fail, and which exact mathematical step should come next.

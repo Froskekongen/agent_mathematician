@@ -101,10 +101,3 @@ Hand off a plain description of the mathematical subject and a suggested
 research key. The next writable skill decides whether to reuse that key or
 make a new one. This skill does not create companions, manage database state,
 or add canonical-section markers.
-
-Recommend `$explore-mathematical-structure` when the formalism needs a richer
-test bed for intuition, `$explore-proof-strategies` when a precise claim needs
-possible proof routes, or `$research-mathematics` when the user wants rigorous
-resolution. Hand off empirical validation, causal identification, systematic
-assumption review, consistency testing, and novelty research when those become
-separate tasks.

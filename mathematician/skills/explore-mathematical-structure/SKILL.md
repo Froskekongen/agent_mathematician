@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Explore Mathematical Structure
 
-Explore several ways of understanding the same mathematics before deciding
+Explore different ways of understanding the same mathematics before deciding
 which one to develop. Follow the
 [shared mathematical integrity](../research-mathematics/references/mathematical-integrity.md).
 Aim for a useful mental model, an exact realization, and a revealing example.
@@ -29,7 +29,7 @@ the alternatives. State its limits. Keep only viewpoints that change what the
 mathematics makes easy to see or do.
 
 If the intended meaning is still too unclear for comparison, ask one focused
-question. If the answer is still missing, recommend `$formalize-concepts`.
+question.
 
 ## 2. Separate the viewpoints with an example
 
@@ -48,15 +48,11 @@ computation actually checked and where its conclusion stops.
 
 ## 3. Explain what was learned
 
-Compare those expectations with the worked example. Distinguish a false
-viewpoint from one that is faithful but too coarse or unhelpful for the present
-question. Recommend the viewpoint that best explains the phenomenon or opens
-the most promising mathematics. Retain at most two useful alternatives, and
-name the next small test that could change the choice.
+Compare those expectations with the worked example. Recommend the viewpoint 
+that best explains the phenomenon or opens the most promising mathematics.
 
 If the recommendation rests on a heuristic, name the missing mathematical step
-in the explanation. An internal handoff may record it as a conversion
-obligation.
+in the explanation.
 
 ## 4. Prepare for proof only when useful
 
@@ -74,10 +70,10 @@ follow [literature-and-privacy.md](references/literature-and-privacy.md).
 ## Write the result
 
 Write the exploration as mathematics, not as a search record. Use a
-collaborative voice in chat and polished exposition in a canonical document.
-Lead with the phenomenon, then the mental models and their realizations, the
-example that tests them, and the direction it suggests. Add the proof
-handoff only when a precise claim is ready for later work.
+collaborative voice in chat and polished, yet intuitivie,  exposition in a 
+canonical document. Lead with the phenomenon, then the mental models and 
+their realizations, the example that tests them, and the direction it 
+suggests. Add the proof handoff only when a precise claim is ready for later work.
 
 For writable work, keep the readable exploration, selected definitions,
 important boundaries, and next mathematical question in canonical Markdown.
@@ -86,8 +82,5 @@ tests, and source findings. Do not copy memory mechanics into the document.
 
 Finish when the reader can explain each serious mental model, its mathematical
 realization, the example that distinguishes or limits it, and why the chosen
-direction is worth developing. Recommend `$explore-proof-strategies` when a
-precise claim needs a proof route. If an end-to-end argument appears, mark it
-in the internal handoff as
-`CANDIDATE FULL PROOF — NOT CERTIFIED` and recommend `$research-mathematics`
-for rigorous resolution.
+direction is worth developing. If an end-to-end argument appears, mark it
+in the internal handoff as `CANDIDATE FULL PROOF — NOT CERTIFIED`.

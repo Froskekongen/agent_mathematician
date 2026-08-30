@@ -65,9 +65,7 @@ prose.
 
 Proof is optional. When the argument illuminates the mechanism, give its main
 idea and explain what the major steps accomplish. Expand the crux; compress
-routine work the intended reader can reconstruct. Recommend
-`$write-proof-exposition` when the request requires a complete proof across
-specialty boundaries.
+routine work the intended reader can reconstruct.
 
 ## 5. Check the explanation against the mathematics
 
@@ -78,14 +76,10 @@ compare the account with the source theorem and proof.
 For a machine-checked result, explain both the human mathematical mechanism and
 the proposition represented by the formal encoding, including what the checker
 verified and assumed. If a source or important step fails to check, leave the
-issue unresolved and say why. Recommend `$destroy-theory` for a possible
-defect, `$audit-assumptions` for necessity, or `$research-mathematics` for
-repair or certification.
+issue unresolved and say why.
 
 For an authorized rewrite, draft separately and replace the target only after
-meaning, status, and provenance agree with the source. New mathematics belongs
-in the appropriate research skill; leave the source unchanged when a faithful
-explanation would require such a repair.
+meaning, status, and provenance agree with the source. 
 
 ## Write the result
 
@@ -93,8 +87,3 @@ Write a natural mathematical explanation. Let motivation, definitions,
 examples, exact statements, proof ideas, and boundaries appear where they best
 support understanding. Keep file rules, database terms, checks, and routing
 outside the explanation.
-
-Finish when the reader can identify the main objects, explain why the
-definitions are natural, follow the mechanism in a checked example, locate the
-limits of the mental model, and distinguish intuition from proof. Match the
-proof detail to the depth promised by the request.
