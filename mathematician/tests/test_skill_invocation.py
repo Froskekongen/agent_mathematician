@@ -129,9 +129,15 @@ class SkillInvocationTest(unittest.TestCase):
             (SKILLS / "research-mathematics" / "references" / "rigor.md").exists()
         )
 
-        integrity = " ".join(integrity_path.read_text(encoding="utf-8").split()).lower()
-        for invariant in ("fidelity", "warrant", "recoverable intuition", "calibration"):
-            self.assertIn(invariant, integrity)
+        integrity_text = integrity_path.read_text(encoding="utf-8").lower()
+        integrity = " ".join(integrity_text.split())
+        for heading in (
+            "keep the object and claim fixed",
+            "say what the evidence establishes",
+            "make intuition recoverable",
+            "state the mathematical status plainly",
+        ):
+            self.assertIn(f"## {heading}", integrity_text)
         self.assertIn("conversion obligation", integrity)
         self.assertIn("it is not a proof protocol", integrity)
         self.assertIn("use these rules behind the scenes", integrity)
