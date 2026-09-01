@@ -51,14 +51,14 @@ Each skill can be used on its own. For end-to-end work, a typical sequence is
 ## Citation
 
 > Aune, E. (2026). *Agent Mathematician: Agent skills for mathematical
-> research* (Version 0.1.0) [Computer software]. Zenodo.
+> research* (Version 0.1.1) [Computer software]. Zenodo.
 > https://doi.org/10.5281/zenodo.21996114
 
 ```bibtex
 @software{aune_agent_mathematician_2026,
   author = {Aune, Erlend},
   title = {Agent Mathematician: Agent Skills for Mathematical Research},
-  version = {0.1.0},
+  version = {0.1.1},
   year = {2026},
   publisher = {Zenodo},
   doi = {10.5281/zenodo.21996114},
