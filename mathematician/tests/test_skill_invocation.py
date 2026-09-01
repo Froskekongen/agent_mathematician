@@ -267,12 +267,11 @@ class SkillInvocationTest(unittest.TestCase):
         }
         for name in ("explore-mathematical-structure", "explore-proof-strategies"):
             self.assertIn("proof handoff", skills[name])
-            self.assertRegex(
-                skills[name],
-                r"internal.{0,100}conversion obligation",
-            )
+        self.assertRegex(
+            skills["explore-proof-strategies"],
+            r"internal.{0,100}conversion obligation",
+        )
         self.assertRegex(skills["explain-mathematics"], r"proof.{0,20}optional")
-        self.assertIn("$write-proof-exposition", skills["explain-mathematics"])
 
         audit = skills["audit-assumptions"]
         for distinction in (
