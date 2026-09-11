@@ -1,63 +1,62 @@
 # Shared Mathematical Integrity
 
-Use this reference in every mathematical skill. It keeps intuitive work honest
-without imposing a proof cadence on every task. It is not a proof protocol;
-each skill supplies the rigor appropriate to its purpose.
+The goal of this reference is to keep mathematics *intuitive*, yet precise.
+Develop the mathematical ideas so that it is clear why specific definitions are used, 
+what the assumptions make possible, and the mathematical reasoning for a
+result, conclusion, or similar statements.
 
-Use these rules behind the scenes whenever a choice could alter the mathematics
-or the reader's understanding of it. Let the main document follow the ideas,
-examples, and arguments. Keep workflow labels, digests, search logs, and
-database details in a technical note unless they help explain the mathematics.
+Build on concepts familiar to the intended reader. Introduce new terminology and 
+notation by explaining the mathematical role they play.
 
 ## Keep the object and claim fixed
 
-State the objects, maps, domains, quantifiers, assumptions, and conventions with
-the precision the task requires. Distinguish the literal claim from its intended
-meaning and from any repaired or restricted version. If a definition,
-assumption, or conclusion changes, treat the result as a new claim rather than
-silently carrying earlier evidence across.
+Make sure all assumptions, definitions, quantifiers, and other mathematical
+objects are clearly stated in the text. A claim should be stated intuitively, yet
+with mathematical precision, and it should be clear how this claim is 
+connected to assumptions, definitions, and other mathematical objects.
 
-Prose, formulas, diagrams, sources, programs, and formal encodings may represent
-the same mathematics in different ways. When moving between them, explain how
-the relevant objects and relations correspond and what the translation may
-lose.
+If a definition, assumption, quantifier, etc... changes, state the revised claim 
+and check which earlier arguments still apply.
+
+Use formulas, diagrams, plots, and algorithms as complementary ways of 
+developing the mathematical idea. Explain how the objects and relationships 
+in one view appear in another, and what each view reveals, assumes, or leaves out.
 
 ## Say what the evidence establishes
 
-Make the role of an argument clear whenever it could be mistaken for something
-stronger. Examples are local: a good one may reveal the mechanism, but it does
-not prove a general claim. A counterexample is decisive only after checking
-that it satisfies the hypotheses and violates the conclusion. A computation
-reaches no further than the statement encoded and the cases examined. Analogies and
-heuristics may organize the mathematics or suggest what should be true; an
-unresolved claim still needs an argument. An unsuccessful search reports its
-scope, not the absence of a defect.
 
-Check calculations, examples, translations, and source uses that carry a
-conclusion. Apply an imported theorem only after matching its statement,
-assumptions, and conventions to the present case.
+Examples should reveal insights about the mathematical object that is studied:
+A simple example can reveal the central mechanism; a boundary case can show 
+why an assumption matters or where the mathematical picture changes.
+Analogies and heuristics may organize the mathematics or suggest what should be 
+true. 
+Adhere to the following rules:
+ - A claim always needs an argument or intuition motivating it. 
+ - If a search is unsuccessful, the result must explicitly say what scope has been covered. 
+ - The scope of a computational experiment must be clearly defined, and the
+ result of the experiment must be connected to that scope.
+
+If a conclusion requires calculations, examples, translations, and theory
+references, verify them. Before applying a theorem, verify that its assumptions 
+and requirements are met.
 
 ## Make intuition recoverable
 
-Use mental models, examples, diagrams, and metaphors to make the mechanism
-visible. Identify the exact objects, relations, or operations they describe.
-For an analogy, say which relations survive the comparison and where it fails.
-A simple example and a boundary case are often enough to expose a misleading
-model.
+Use mental images, examples, diagrams, and metaphors to make a mathematical
+argument, mechanism, or similar intuitive and visible. For an analogy, say which 
+relations survive a comparison and where it fails.
 
-If a heuristic carries an unresolved claim, state what would turn it into an
-argument. Name the missing mathematics directly in reader-facing prose. An
-internal proof handoff may record the same item as a **conversion obligation**;
-naming it does not discharge it.
+For a heuristic, explain the intuition behind it, and what further reasoning would be 
+needed to turn the intuition into an argument.
 
 ## State the mathematical status plainly
 
-Use the status justified by the evidence and the active skill's completion
-rule. Keep truth separate from plausibility, confidence, usefulness,
-explanatory value, provenance, and workflow choice. Explaining, translating, or
-consolidating a result does not change whether it is proved, refuted,
-conjectural, incomplete, or unresolved.
+All mathematics should be stated plainly and intuitively. It is important
+to distinguish plausibility, confidence, usefulness, and explanatory value
+from a mathematical truth.  Explaining, translating, or consolidating a result 
+does not change whether it is proved, refuted, conjectural, incomplete, or unresolved.
 
 Check each claim in proportion to the role it plays. Routine local claims may
-need only a local check. When the evidence falls short, give the strongest
-supported conclusion and state the mathematical step that remains open.
+need only a local check. When the evidence of some argument or strategy falls short, 
+present the strongest supported conclusion and clearly state the mathematical steps 
+that remain open.
