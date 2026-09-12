@@ -1,7 +1,7 @@
 interface:
   display_name: "Explain Mathematics"
-  short_description: "Make advanced mathematics intuitive and exact"
-  default_prompt: "Use $explain-mathematics to explain this topic through motivation, an exact mental model, and revealing examples."
+  short_description: "Build intuitive mathematics on the reader's knowledge"
+  default_prompt: "Use $explain-mathematics to explain this topic intuitively, building on the reader's knowledge and developing the unfamiliar ideas."
 
 policy:
   allow_implicit_invocation: false

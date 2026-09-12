@@ -17,8 +17,8 @@ Ten skills for exploring, proving, reviewing, and explaining mathematics.
   and validity boundaries.
 - `audit-assumptions` determines what each hypothesis contributes to a theorem
   and its proof.
-- `explain-mathematics` makes advanced mathematics intuitive and exact for
-  readers outside the specialty.
+- `explain-mathematics` develops an intuitive exposition of mathematics from
+  the reader's existing knowledge.
 - `write-proof-exposition` reconstructs an established proof as a complete,
   cross-specialty account.
 - `consolidate-math-documents` reconciles several mathematical documents into

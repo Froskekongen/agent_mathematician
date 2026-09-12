@@ -1,89 +1,54 @@
 ---
 name: explain-mathematics
-description: Explain advanced mathematics to a mathematically mature reader outside the specialty while preserving its meaning and status.
+description: Explain mathematics intuitively by building on the reader's knowledge.
 disable-model-invocation: true
 ---
 
 # Explain Mathematics
 
-Make the main idea visible without changing the mathematics. Follow the
+Develop an intuitive exposition of the mathematics for a reader with a specific
+background. Follow the
 [shared mathematical integrity](../mathematical-integrity/SKILL.md).
-Develop motivation, a mental model, its exact realization, and revealing
-examples before adding technical detail. A complete proof is optional unless
-the request is genuinely proof-bearing.
+
+## Start from the reader's understanding
+
+Infer the reader's mathematical background from the request and conversation.
+Unless told otherwise, write for a mathematically mature reader who is new to
+this specialty. Decide which ideas are familiar, which need a reminder, and
+which need to be developed from the beginning.
+
+Begin with a question, problem, or phenomenon the reader can appreciate. Use it
+to give the new mathematics a purpose.
+
+## Develop the idea
+
+Choose a path that connects concepts that are familiar to the reader to the 
+central mathematical idea. A running example or mental image can give the 
+reader something to return to as the mathematics develops.
+
+Introduce definitions and notation where they help express an idea the reader
+is beginning to grasp. When a step is likely to feel unexpected, explain what
+suggests it and how it helps the argument along.
+
+## Give the reader the detail they need
+
+Spend the most time on the insight the reader is least likely to reconstruct
+alone. Work through unfamiliar connections and briefly recall familiar
+results. Let the reader's background guide the pace and depth of the account.
+
+A complete proof is optional unless the user explicitly requests one. When an
+argument helps explain the idea, show what its main steps accomplish and how
+they fit together. Develop a difficult step enough for the reader to follow
+the reasoning, and shorten routine work they can fill in themselves.
+
+The final exposition should present the mathematical ideas in an intuitive
+and understandable order. For longer expositions, some repetition of 
+crucial definitions and assumptions is warranted and even encouraged: expecting 
+that the reader remembers everything is unrealistic.
 
 ## File handling (internal)
 
-Default to chat. Supplying or naming a file is not authorization to change it;
-files and companions remain read-only unless the user explicitly asks to
-update or rewrite a named canonical target. For research history, read the
-[research-memory rules](../research-mathematics/references/research-memory.md)
-and query the companion read-only, describing anything retrieved as history.
-
-An in-place rewrite authorizes only that target's Markdown/SQLite pair. A
-separate explanation has its own companion and leaves the source pair
-read-only; no two Markdown documents share one database. For writable work,
-read the rules completely and act as sole writer.
-
-## 1. Find the point of the mathematics
-
-Infer the reader's relevant background from the request. Unless told otherwise,
-write for a mathematically mature reader who is new to this specialty. Decide
-which ideas can be assumed, which need a reminder, and which must be developed
-from the beginning.
-
-Start from the problem, obstruction, or phenomenon that calls for the new
-mathematics. Explain what the central definition or construction makes possible
-that was difficult to see before.
-
-## 2. Build a mental model and realize it exactly
-
-Give the reader a way to think about the mechanism in familiar mathematical
-language. Then identify the exact objects, maps, relations, or operations that
-realize that model. Use a picture or diagram when the reasoning is genuinely
-visual or geometric.
-
-An analogy should preserve a stated system of relations, not merely a surface
-resemblance. Say what corresponds to what, which consequences survive the
-comparison, and where it ceases to be reliable.
-
-## 3. Let examples do mathematical work
-
-Choose the shortest example in which the mechanism can be seen operating, then
-use a boundary case or nonexample to show its limit. One example may do both.
-Make the objects, assumptions, and calculation explicit enough to check, and
-say what the example explains without treating it as a proof of the general
-claim.
-
-## 4. Introduce the exact statement at the right moment
-
-Bring in definitions, conventions, and imported results when the reader can see
-why they are needed. Explain the form of each important definition, and state
-the main object or theorem with every qualifier that changes its meaning. Keep
-proved, conjectural, incomplete, and heuristic material distinct in ordinary
-prose.
-
-Proof is optional. When the argument illuminates the mechanism, give its main
-idea and explain what the major steps accomplish. Expand the crux; compress
-routine work the intended reader can reconstruct.
-
-## 5. Check the explanation against the mathematics
-
-Check every example, analogy boundary, theorem qualifier, citation, and passage
-from the mental model to the exact statement. For a substantial rewrite,
-compare the account with the source theorem and proof.
-
-For a machine-checked result, explain both the human mathematical mechanism and
-the proposition represented by the formal encoding, including what the checker
-verified and assumed. If a source or important step fails to check, leave the
-issue unresolved and say why.
-
-For an authorized rewrite, draft separately and replace the target only after
-meaning, status, and provenance agree with the source. 
-
-## Write the result
-
-Write a natural mathematical explanation. Let motivation, definitions,
-examples, exact statements, proof ideas, and boundaries appear where they best
-support understanding. Keep file rules, database terms, checks, and routing
-outside the explanation.
+When file edits or research-history retrieval are requested, read the 
+[research-memory rules](../research-mathematics/references/research-memory.md) 
+and follow the protocol. Keep file handling and research-memory details 
+outside the mathematical explanation.

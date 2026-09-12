@@ -26,7 +26,7 @@ EXPECTED_SKILLS = {
 REVIEW_WORKERS = {"audit-assumptions", "destroy-theory"}
 IMPLICIT_SKILLS = REVIEW_WORKERS | {"mathematical-integrity"}
 WORKFLOW_SKILLS = EXPECTED_SKILLS - {"mathematical-integrity"}
-MEMORY_WRITERS = WORKFLOW_SKILLS - {"formalize-concepts"}
+RESEARCH_MEMORY_WRITERS = WORKFLOW_SKILLS - {"formalize-concepts", "explain-mathematics"}
 SKILL_REFERENCE = re.compile(r"`\$([a-z0-9-]+)`")
 
 
@@ -203,47 +203,30 @@ class SkillInvocationTest(unittest.TestCase):
             normalized.index("freeze the resulting canonical digest"),
         )
 
-    def test_exactly_eight_skills_have_writable_memory_roles(self) -> None:
+    def test_research_skills_have_writable_memory_roles(self) -> None:
         skills = self.skill_texts()
-        self.assertEqual(len(MEMORY_WRITERS), 8)
-        for name in MEMORY_WRITERS:
+        for name in RESEARCH_MEMORY_WRITERS:
             normalized = " ".join(skills[name].split()).lower()
             self.assertRegex(normalized, r"\b(?:writable|file-backed)\b", name)
         formalize = " ".join(skills["formalize-concepts"].split()).lower()
         self.assertIn("this skill does not create companions", formalize)
         self.assertNotIn("sole writer", formalize)
 
-    def test_explanation_rewrite_uses_shared_memory_contract(self) -> None:
-        explain = " ".join(
-            self.skill_texts()["explain-mathematics"].split()
-        ).lower()
+    def test_explanation_links_to_shared_memory_protocol(self) -> None:
+        explain_path = SKILLS / "explain-mathematics" / "SKILL.md"
         protocol_path = (
             SKILLS / "research-mathematics" / "references" / "research-memory.md"
+        )
+        targets = re.findall(
+            r"\]\(([^)]+)\)", explain_path.read_text(encoding="utf-8")
+        )
+        self.assertIn(
+            protocol_path.resolve(),
+            {(explain_path.parent / target).resolve() for target in targets},
         )
         protocol = " ".join(
             protocol_path.read_text(encoding="utf-8").split()
         ).lower()
-
-        self.assertRegex(
-            explain,
-            r"(?:supplying|naming).{0,80}(?:does not authorize|is not authorization)",
-        )
-        self.assertIn("named canonical target", explain)
-        self.assertRegex(explain, r"in-place.{0,80}only.{0,80}markdown/sqlite pair")
-        self.assertRegex(
-            explain,
-            r"separate explanation.{0,100}own.{0,30}companion.{0,100}source pair"
-            r".{0,30}read-only",
-        )
-        self.assertRegex(
-            explain,
-            r"(?:no two markdown documents share|never share).{0,20}"
-            r"(?:one )?(?:sqlite )?database",
-        )
-        self.assertRegex(
-            explain,
-            r"(?:before writing|for writable work).{0,80}rules.{0,80}sole writer",
-        )
 
         for invariant in (
             r"same close transaction.{0,100}remap every card and artifact link",
