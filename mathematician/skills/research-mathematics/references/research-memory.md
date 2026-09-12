@@ -1,16 +1,39 @@
-# Research Memory Protocol
+# Research Memory
 
-Read this reference for an authorized file-backed mathematical round or when
-research history must be queried. The canonical Markdown is authoritative and
-self-contained: it contains every decision-bearing definition, claim status,
-evidence scope, validity boundary, and open obligation without requiring its
-SQLite companion or a workpad. The companion is bounded, indexed memory for
-useful noncanonical material; raw round state belongs in one OS-temporary
-workpad.
+## The mathematical account and its memory
 
-## Canonical contract
+Read this note for authorized file-backed work or research-history retrieval.
+Canonical Markdown is the authoritative mathematical account: its definitions,
+reasoning, conclusions, status, evidence scope, limitations, and open questions
+stand on their own. Let the mathematics determine its organization. The SQLite
+companion holds reusable background that would interrupt the account.
+Temporary working notes and raw outputs belong in one
+generated OS-temporary workpad.
 
-The document points to its companion with one scalar front-matter value:
+One coordinator owns the document, companion, and workpad. Specialists and
+readers of other theories remain read-only and create no database. Parallel
+workers return findings to the coordinator. Reconcile useful records by meaning;
+never binary-merge SQLite files.
+
+## Read existing work
+
+Read the canonical document first and respect its published companion locator.
+A missing declared companion requires recovery, not recreation. Reads and checks
+create nothing.
+
+Start with the key outline and known keys, cards, or artifacts and their linked
+summaries. Search by identifier or intersected facets when exact retrieval leaves
+a gap. Request `--full` for a selected record; follow at most one relation hop
+unless the task needs more.
+
+Reuse established values for a few useful facets: `field` and `subfield` for
+mathematical areas, `term` for standard concepts, `identifier` for namespaced
+identifiers such as `msc2020:05C31`, and `symbol` for distinctive notation paired
+with prose or a field filter. A successful read does not validate the whole pair.
+
+## Keep useful material
+
+The document declares its companion with one scalar front-matter value:
 
 ```yaml
 ---
@@ -18,8 +41,12 @@ research_memory: ./theory.research.sqlite
 ---
 ```
 
-An indexed section has exactly one human-semantic lowercase-kebab key on its
-first nonblank line:
+Give a key only to a mathematical subject worth returning to. Each key names one
+subject within its document; normally leave summaries and navigation unindexed. Split
+aggregates needing separate links; otherwise leave them unindexed. Keep the key
+while its subject stays the same, even when its heading, position, or status
+changes. An indexed section has exactly one lowercase-kebab key on its first
+nonblank line:
 
 ```markdown
 ## Rank-drop obstruction
@@ -27,43 +54,25 @@ first nonblank line:
 **Research key:** `rank-drop-obstruction`
 ```
 
-A research key is the stable identity of one durable mathematical referent,
-not a heading, report role, current status, recommendation, or workflow
-position. Apply three semantic checks:
+Use these markers without generated anchors or database deep links.
 
-1. **Necessity:** index only material worth durable retrieval or linking.
-   Summaries, navigation, and workflow wrappers normally remain unindexed.
-2. **Granularity:** one key names one subject. Split an aggregate section when
-   its subjects need distinct links; otherwise leave it unindexed.
-3. **Stability:** the key remains accurate after sections are reordered, later
-   rounds run, and statuses or recommendations change.
+A card is a self-contained note of reusable background, with a semantic slug,
+short summary, and optional detail. Say when it would be useful again: what
+would revive a parked approach or make an expensive negative search relevant.
+Retain only the reusable addition, with enough context to use it. A card must
+not merely duplicate a canonical result or artifact metadata. Routine attempts
+expire with the workpad.
 
-Keys are document-scoped; similar keys across separate invocations are not a
-goal. Preserve a key whenever its subject is unchanged. A genuine correction,
-split, or merge may rekey the subject, but the same close transaction must
-remap every card and artifact link; create no aliases. Markdown uses no
-generated anchors or database deep links. The tool validates marker syntax and
-relationship integrity, while the coordinator audits semantic fitness.
+Keep disposition (`open`, `active`, `parked`, `rejected`, `integrated`) separate
+from mathematical status: rejecting an approach need not refute its claim.
+Programs and datasets remain native files. For retained Python programs, use the
+`RESEARCH_ARTIFACT` metadata in
+[computational-checking.md](computational-checking.md). File integrity, declared
+run outcome, and mathematical evidence remain distinct.
 
-## Ownership
+## Finish the update
 
-One coordinator owns one canonical document, its companion, and one temporary
-workpad. Nested specialists and foreign-theory readers are read-only and create
-no database. Parallel lanes return findings to the coordinator. SQLite files
-are never binary-merged; worthwhile records are reapplied semantically.
-
-For a writable round, read the canonical file before calling `ensure`. An
-existing locator is authoritative; a missing located companion stops for
-recovery rather than silent recreation. When no locator exists, `ensure` may
-create or validate only the canonical-stem companion and returns the scalar
-locator for the coordinator to add. `read`, `apply`, and `check` require that
-published locator. An unsupported database version is rejected without
-migration or compatibility behavior.
-
-## Four-command interface
-
-The standard-library CLI is
-`research-mathematics/scripts/research_memory.py` and emits JSON:
+The JSON-emitting CLI is `research-mathematics/scripts/research_memory.py`:
 
 ```text
 research_memory.py ensure CANONICAL
@@ -72,105 +81,28 @@ research_memory.py apply CANONICAL        # changeset JSON on stdin
 research_memory.py check CANONICAL
 ```
 
-`read` selectors are `meta`, `keys`, `key`, `card`, `artifact`, `search`, and
-`all`. List and search reads return compact summaries. Use exact key, card, or
-artifact reads before search, request `--full` only for a selected record, and
-apply facet filters when they narrow a known question. Reads and checks never
-create a missing database.
+For writable work, call `ensure` after reading the document. If no locator
+exists, publish the returned canonical-stem locator before other commands.
+Consult `read --help` for selectors and flags, and `apply --help` for the
+operation grammar and example. The tool leaves Markdown and native files to
+the coordinator.
 
-`apply` accepts one revision- and canonical-digest-checked transaction. Consult
-`research_memory.py apply --help` for its compact normative operation grammar
-and minimal example instead of copying a second schema description.
-The tool edits neither canonical Markdown nor source artifacts and performs no
-Git operation, migration, source retirement, import, or code execution.
+Close in order:
 
-Every read reports the observed and indexed canonical digests plus
-`canonical_digest_current`; only `check` computes the stronger whole-pair
-`current` result. List reads are paginated; an exact key read applies its offset
-to both linked cards and artifacts, reports each total, and marks whether each
-card link matches the current card revision and section digest. Summary rows
-omit long state rationales, selected bodies are chunked, and every JSON response
-has a global size ceiling. `check` reports bounded structured issues with
-category, code, message, and entity identity when applicable.
+1. Finish the mathematical account, including important negative findings,
+   exact unfinished steps, and concise provenance. Audit which subjects need
+   keys and whether existing keys still identify them accurately.
+2. Synchronize affected card text, `term`/`symbol` facets, and links when
+   terminology changes; keep superseded wording only as provenance. Definitions
+   stay in Markdown, without a separate registry. A genuine
+   subject correction, split, or merge may change keys: remap every card and
+   artifact link in the same transaction, without aliases. Update and reindex
+   affected native metadata too; otherwise preserve the key or stop.
+3. Publish Markdown, freeze its digest, and apply one curated transaction with
+   the expected database revision and canonical digest.
+4. Run `check` to validate the pair, then exactly read every changed key, card,
+   and artifact. Complete authorized post-close actions and delete the workpad.
 
-## Cards and retrieval
-
-A card is a self-contained reusable context packet with a semantic slug, short
-summary, optional detail body, workflow disposition, optional mathematical
-status, and concrete reuse condition. Retain open obligations, demonstrated
-obstructions and counterexamples, expensive negative searches, parked routes
-with revival conditions, assumption relaxations, and source-applicability
-findings. Accepted load-bearing mathematics stays in Markdown; routine attempts
-expire with the workpad. Create a card only when it adds reusable noncanonical
-context—never merely to duplicate a canonical result or native artifact
-metadata.
-
-Use controlled facets rather than free-form tag soup:
-
-- `field`: broad mathematical area;
-- `subfield`: a more precise area;
-- `term`: standard object, theorem, construction, or technique;
-- `identifier`: namespaced public identifier such as `msc2020:05C31`,
-  `oeis:A000045`, or a library declaration; and
-- `symbol`: distinctive notation useful only with a prose or field filter.
-
-Reuse established facet values and cap them to the terms that improve
-retrieval. Fields and terms can seed bounded external literature queries, but
-the database tool never browses or stores generated queries.
-
-Retrieve progressively:
-
-1. read the lightweight canonical key outline;
-2. read the exact key and linked card or artifact summaries;
-3. search by identifier or intersected facets only if exact retrieval fails;
-4. request one selected full record; and
-5. follow at most one relation hop unless the task requires more.
-
-Keep disposition (`open`, `active`, `parked`, `rejected`, `integrated`)
-separate from truth status. A rejected route may be mathematically unresolved;
-a refuted claim may remain a useful active obstruction.
-
-## Native artifacts
-
-Programs, checkers, certificates, and necessary datasets remain native files,
-not database blobs. A retained Python program carries the literal
-`RESEARCH_ARTIFACT` dictionary defined by
-[computational-checking.md](computational-checking.md). The database caches its
-indexed metadata, file digest, references, and canonical/card links; it does
-not execute it or store raw logs. A tool-derived integrity result, a declared
-run outcome, and the card's mathematical status remain separate.
-
-If native-artifact metadata names a rekeyed subject, update and reindex the
-artifact in the same round; otherwise preserve the key or stop. A
-Markdown-first rekey may delete exact stored card or curated-artifact links
-after the old target disappears. Additions and updates still require current
-targets, and final validation atomically rejects an incomplete migration.
-
-## Write and close
-
-Create one generated OS-temporary workpad for candidates, assumption maps,
-proof graphs, probes, source notes, specialist reports, raw outputs, and the
-final changeset. Durable files contain their own metadata; the workpad is not a
-repository manifest.
-
-When canonical terminology changes, synchronize affected card fields and
-`term` or `symbol` facets, retain superseded wording only as provenance, and
-refresh affected links. Canonical terms and definitions stay in Markdown;
-create neither a registry nor cards that merely duplicate exposition.
-
-Close in this order:
-
-1. integrate accepted mathematics, exact open obligations, load-bearing
-   negative results, and concise provenance into canonical Markdown;
-2. audit every marker for necessity, granularity, and stability, and plan any
-   complete key/link migration;
-3. freeze the resulting canonical digest and curate only reusable memory;
-4. apply one transaction with the expected database revision and canonical
-   digest;
-5. run `check`, then exactly read every changed key, card, and artifact; and
-6. perform any authorized post-close action and delete the workpad.
-
-Markdown and SQLite cannot form one filesystem transaction. Publish Markdown
-first: if the database update fails, the canonical account remains
-authoritative and the mismatch is detectable. Retain the workpad and report a
-recovery path after any material close failure.
+Markdown and SQLite cannot be updated atomically together. Publishing Markdown
+first keeps the mathematics authoritative if the database update fails. After
+any material close failure, retain the workpad and report a recovery path.

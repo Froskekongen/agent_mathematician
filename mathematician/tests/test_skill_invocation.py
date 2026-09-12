@@ -192,16 +192,16 @@ class SkillInvocationTest(unittest.TestCase):
             / "references"
             / "research-memory.md"
         ).read_text(encoding="utf-8")
-        normalized = " ".join(protocol.split()).lower()
-        self.assertIn("stable identity of one durable mathematical referent", normalized)
-        for check in ("necessity", "granularity", "stability"):
-            self.assertIn(f"**{check}:**", normalized)
-        self.assertIn("keys are document-scoped", normalized)
-        self.assertIn("remap every card and artifact link", normalized)
-        self.assertLess(
-            normalized.index("audit every marker for necessity"),
-            normalized.index("freeze the resulting canonical digest"),
+        examples = dict(
+            re.findall(r"```(yaml|markdown)\n(.*?)\n```", protocol, re.DOTALL)
         )
+        scanner = runpy.run_path(
+            str(SKILLS / "research-mathematics" / "scripts" / "canonical_sections.py")
+        )
+        document = scanner["scan_bytes"](
+            (examples["yaml"] + "\n" + examples["markdown"]).encode("utf-8")
+        )
+        self.assertEqual(len(document.by_key), 1)
 
     def test_research_skills_have_writable_memory_roles(self) -> None:
         skills = self.skill_texts()
@@ -224,26 +224,6 @@ class SkillInvocationTest(unittest.TestCase):
             protocol_path.resolve(),
             {(explain_path.parent / target).resolve() for target in targets},
         )
-        protocol = " ".join(
-            protocol_path.read_text(encoding="utf-8").split()
-        ).lower()
-
-        for invariant in (
-            r"same close transaction.{0,100}remap every card and artifact link",
-            r"apply one (?:optimistic (?:memory )?)?transaction",
-            r"run `check`",
-            r"exactly (?:re)?read every changed key, card, and artifact",
-        ):
-            self.assertRegex(protocol, invariant)
-
-        terminology = protocol[protocol.index("canonical terminology") :]
-        for invariant in (
-            r"(?:update|synchronize) (?:every )?affected card field",
-            r"`term`.{0,20}`symbol`.{0,20}facet",
-            r"refresh affected links",
-        ):
-            self.assertRegex(terminology, invariant)
-
     def test_proof_exposition_has_distinct_scope_and_memory_ownership(self) -> None:
         exposition = " ".join(
             self.skill_texts()["write-proof-exposition"].split()
@@ -279,10 +259,6 @@ class SkillInvocationTest(unittest.TestCase):
         }
         for name in ("explore-mathematical-structure", "explore-proof-strategies"):
             self.assertIn("proof handoff", skills[name])
-        self.assertRegex(
-            skills["explore-proof-strategies"],
-            r"internal.{0,100}conversion obligation",
-        )
         self.assertRegex(skills["explain-mathematics"], r"proof.{0,20}optional")
 
         audit = skills["audit-assumptions"]

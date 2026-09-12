@@ -1,15 +1,16 @@
 ---
 name: explore-proof-strategies
-description: Explore why a clear claim might be true, compare proof ideas, and identify the most promising route and its crux.
+description: Explore different proof ideas, explaining what makes each promising, where its main difficulty lies, and what to try next.
 disable-model-invocation: true
 ---
 
 # Explore Proof Strategies
 
-Ask what could make the conclusion follow from the hypotheses, then develop a
-few plausible answers far enough to reveal their crux. Follow the
+*Primary goal:* Explore several *different* routes towards a proof for a claim.
+Follow the
 [shared mathematical integrity](../mathematical-integrity/SKILL.md).
-This skill finds a route; it does not certify a proof.
+The intention is not to certify a proof, but find several plausible directions
+and mechanisms that may lead to a full proof.
 
 Default to chat. For authorized writable work, read the shared
 [research-memory rules](../research-mathematics/references/research-memory.md).
@@ -22,23 +23,16 @@ intended statement are still unsettled, recommend `$formalize-concepts` or
 `$explore-mathematical-structure` before choosing a proof strategy.
 
 Work through small, boundary, or nearly failing cases. Use them to see which
-hypotheses are active, what mechanism might force the conclusion, and which
+hypotheses are active, what mechanism might force a conclusion, and which
 ideas already point in the wrong direction. An unsuccessful counterexample
 search reports only what was searched.
 
 ## 2. Develop genuinely different mechanisms
 
-A strategy is more than the name of a method. It should explain why this
-problem has the structure the method needs. Develop a small set of routes that
-differ in their governing idea: the intermediate statement they seek, the
-representation they introduce, or the reduction that would make the conclusion
-unavoidable.
-
-For each serious route, describe its main mathematical move, the resulting
-sequence of lemmas or reductions, the hypotheses and imported results it uses,
-and the step on which it is likely to succeed or fail. Keep an alternative
-because it illuminates the problem or offers a credible path around the leading
-route's obstruction.
+Explain why each approach fits the mathematical structure of the problem.
+Develop routes with different central ideas, such as an intermediate
+statement to establish, a useful representation, or a reduction that makes
+the conclusion accessible.
 
 When an idea comes from another field, identify the translated objects and the
 structure preserved by the translation. Explain how the desired conclusion
@@ -51,15 +45,14 @@ candidate invariant should survive a revealing example; a reduction should
 preserve the needed hypotheses; a proposed lemma should be checked at the
 boundary where it is least plausible.
 
-When material computation could change the choice, read
+When computational experiments could change the choice, read
 [computational-checking.md](../research-mathematics/references/computational-checking.md)
 and use `discover` or `falsify`. State the proposition encoded, the cases
 checked, and the limit of the result.
 
-Develop the leading routes into a lemma spine. Name the next calculation,
-example, source check, estimate, construction, or lemma that would most clearly
-advance or defeat each one. Stop branching once one route has a concrete crux
-or the useful alternatives have been exhausted.
+Develop the leading routes into a lemma spine. Suggest a next step that could
+advance that route toward a proof. Explore the alternatives far
+enough to show how their main ideas and central difficulties differ.
 
 If an end-to-end argument appears, record the exact theorem, assumptions,
 imports, fragile steps, and missing verification in the internal handoff under
@@ -71,19 +64,13 @@ verification.
 
 For each leading route, record the exact claim, guiding mechanism, lemma spine,
 assumptions, imported results, tests already made, known failure points, crux,
-and best next step. In reader-facing prose, name the actual missing lemma,
-estimate, construction, reduction, or check. The internal proof handoff may
-collect such items as conversion obligations.
+and best next step. In reader-facing prose, name the missing lemma, estimate,
+construction, reduction, or check.
 
 ## Write the result
 
-Write a mathematical comparison. Begin with why the claim is plausible, then
-explain each serious mechanism, the example or test that bears on it, and its
-decisive difficulty. Rank routes only when the comparison becomes clearer.
+Write a mathematical comparison of the routes. Explain what makes each route
+promising, illustrate its central idea, and describe its main difficulty.
+Where one route seems more promising, explain why; otherwise make the tradeoffs clear.
 
-For writable work, keep the selected route, its motivation, the important
-evidence, and the next proof task in canonical Markdown. Memory may retain
-reusable parked or rejected ideas; its bookkeeping stays internal.
-
-Finish when the reader understands why the leading routes might work, where
-each could fail, and which exact mathematical step should come next.
+For writable work keep bookkeeping internal.

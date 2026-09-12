@@ -9,8 +9,8 @@ Ten skills for exploring, proving, reviewing, and explaining mathematics.
 - `formalize-concepts` turns an informal idea into precise mathematics.
 - `explore-mathematical-structure` compares ways to understand a phenomenon
   through exact realizations and examples.
-- `explore-proof-strategies` compares possible proof mechanisms and identifies
-  the most promising route.
+- `explore-proof-strategies` compares different proof ideas, their main
+  difficulties, and useful next steps.
 - `research-mathematics` proves, refutes, repairs, or isolates the open step in
   a substantial claim.
 - `destroy-theory` searches for counterexamples, proof gaps, failed encodings,
