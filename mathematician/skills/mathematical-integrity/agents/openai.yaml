@@ -1,0 +1,7 @@
+interface:
+  display_name: "Intuitive and Precise Mathematics"
+  short_description: "Make mathematical exposition intuitive and precise"
+  default_prompt: "Use $mathematical-integrity to explain or revise this mathematics intuitively and precisely."
+
+policy:
+  allow_implicit_invocation: true

@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Explore different ways of understanding the same mathematics before deciding
 which one to develop. Follow the
-[shared mathematical integrity](../research-mathematics/references/mathematical-integrity.md).
+[shared mathematical integrity](../mathematical-integrity/SKILL.md).
 Aim for a useful mental model, an exact realization, and a revealing example.
 This skill clarifies structure; it does not certify a theorem.
 

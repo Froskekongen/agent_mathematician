@@ -11,7 +11,7 @@ Find the simplest mathematics that captures the intended behavior. Work in a
 example, then ask one question whose answer would change the formalism.
 
 Follow the
-[shared mathematical integrity](../research-mathematics/references/mathematical-integrity.md).
+[shared mathematical integrity](../mathematical-integrity/SKILL.md).
 
 ## Adapt to the mathematics the user knows
 

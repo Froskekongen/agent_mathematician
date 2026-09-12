@@ -6,8 +6,8 @@ disable-model-invocation: true
 
 # Explain Mathematics
 
-Make the governing idea visible without changing the mathematics. Follow the
-[shared mathematical integrity](../research-mathematics/references/mathematical-integrity.md).
+Make the main idea visible without changing the mathematics. Follow the
+[shared mathematical integrity](../mathematical-integrity/SKILL.md).
 Develop motivation, a mental model, its exact realization, and revealing
 examples before adding technical detail. A complete proof is optional unless
 the request is genuinely proof-bearing.

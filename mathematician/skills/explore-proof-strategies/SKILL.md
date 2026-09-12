@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Ask what could make the conclusion follow from the hypotheses, then develop a
 few plausible answers far enough to reveal their crux. Follow the
-[shared mathematical integrity](../research-mathematics/references/mathematical-integrity.md).
+[shared mathematical integrity](../mathematical-integrity/SKILL.md).
 This skill finds a route; it does not certify a proof.
 
 Default to chat. For authorized writable work, read the shared

@@ -6,7 +6,7 @@ description: Audit mathematical assumptions for well-posedness, proof use, neces
 # Audit Assumptions
 
 Determine what each hypothesis contributes. Follow the
-[shared mathematical integrity](../research-mathematics/references/mathematical-integrity.md).
+[shared mathematical integrity](../mathematical-integrity/SKILL.md).
 Keep three questions separate: does the assumption make the statement
 meaningful, does the present proof use it, and is it necessary for the theorem
 to be true? These questions need different evidence.

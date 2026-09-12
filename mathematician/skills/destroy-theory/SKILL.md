@@ -6,7 +6,7 @@ description: Attack mathematical claims, proofs, and encodings by finding checke
 # Destroy Theory
 
 Try to break the exact claim, proof, or encoding. Follow the
-[shared mathematical integrity](../research-mathematics/references/mathematical-integrity.md).
+[shared mathematical integrity](../mathematical-integrity/SKILL.md).
 A negative conclusion needs exact evidence: a checked counterexample,
 contradiction, or invalid inference. An unsuccessful search reports where it
 looked and nothing stronger.

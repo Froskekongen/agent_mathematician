@@ -9,7 +9,7 @@ disable-model-invocation: true
 Create one mathematical account from several documents. Preserve definitions,
 assumptions, validity limits, status, and provenance while organizing the result
 by mathematical meaning. Follow the
-[shared mathematical integrity](../research-mathematics/references/mathematical-integrity.md),
+[shared mathematical integrity](../mathematical-integrity/SKILL.md),
 [research-memory rules](../research-mathematics/references/research-memory.md),
 and, before retiring any source, the
 [source-retirement rules](references/source-retirement.md). Consolidation may

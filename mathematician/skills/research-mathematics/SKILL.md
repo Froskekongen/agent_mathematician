@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Resolve one substantial claim: prove it, refute it, repair it, or locate the
 exact point that remains open. Follow the
-[shared mathematical integrity](references/mathematical-integrity.md) and the
+[shared mathematical integrity](../mathematical-integrity/SKILL.md) and the
 complete research-only
 [claim-resolution process](references/claim-resolution.md). That process
 determines status, not the voice or order of the mathematics. If the objects are

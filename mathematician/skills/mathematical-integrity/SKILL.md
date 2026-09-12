@@ -1,3 +1,8 @@
+---
+name: mathematical-integrity
+description: Write and revise intuitive yet precise mathematical exposition, including shared guidance used by other mathematical skills.
+---
+
 # Shared Mathematical Integrity
 
 The goal of this reference is to keep mathematics *intuitive*, yet precise.

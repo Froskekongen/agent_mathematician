@@ -1,9 +1,11 @@
 # Agent Mathematician
 
-Nine opt-in skills for exploring, proving, reviewing, and explaining mathematics.
+Ten skills for exploring, proving, reviewing, and explaining mathematics.
 
 ## Skills
 
+- `mathematical-integrity` develops intuitive yet precise mathematical exposition
+  and supplies the shared principles used by the other skills.
 - `formalize-concepts` turns an informal idea into precise mathematics.
 - `explore-mathematical-structure` compares ways to understand a phenomenon
   through exact realizations and examples.
@@ -38,10 +40,16 @@ python3 mathematician/install_skills.py all     # All supported locations
 Restart the agent, then name the skill in your prompt:
 
 ```text
+$mathematical-integrity Rewrite this passage to make the mathematics intuitive and precise: ...
 $formalize-concepts Formalize this idea: ...
 $research-mathematics Prove or refute this claim: ...
 $explain-mathematics Explain this proof to a graduate student: ...
 ```
+
+`mathematical-integrity` can also be selected automatically for matching tasks.
+It works independently in conversation or on ordinary documents, without the
+research-memory or proof-resolution workflow. Its folder can be installed on
+its own; the suite installer above installs all ten skills.
 
 Each skill can be used on its own. For end-to-end work, a typical sequence is
 `formalize-concepts` → `explore-mathematical-structure` →

@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+import io
 import re
+import runpy
+import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 
 
@@ -15,11 +19,14 @@ EXPECTED_SKILLS = {
     "explore-mathematical-structure",
     "explore-proof-strategies",
     "formalize-concepts",
+    "mathematical-integrity",
     "research-mathematics",
     "write-proof-exposition",
 }
-MODEL_WORKERS = {"audit-assumptions", "destroy-theory"}
-MEMORY_WRITERS = EXPECTED_SKILLS - {"formalize-concepts"}
+REVIEW_WORKERS = {"audit-assumptions", "destroy-theory"}
+IMPLICIT_SKILLS = REVIEW_WORKERS | {"mathematical-integrity"}
+WORKFLOW_SKILLS = EXPECTED_SKILLS - {"mathematical-integrity"}
+MEMORY_WRITERS = WORKFLOW_SKILLS - {"formalize-concepts"}
 SKILL_REFERENCE = re.compile(r"`\$([a-z0-9-]+)`")
 
 
@@ -51,7 +58,7 @@ class SkillInvocationTest(unittest.TestCase):
             for callee in SKILL_REFERENCE.findall(text):
                 self.assertIn(callee, skills, f"{caller} names missing skill {callee}")
 
-    def test_only_cold_review_workers_are_model_invokable(self) -> None:
+    def test_review_workers_and_integrity_are_implicitly_available(self) -> None:
         actual: set[str] = set()
         for name, text in self.skill_texts().items():
             frontmatter = self.frontmatter(name, text)
@@ -78,7 +85,7 @@ class SkillInvocationTest(unittest.TestCase):
                 self.assertEqual(frontmatter["disable-model-invocation"], "true")
             if model_invokable:
                 actual.add(name)
-        self.assertEqual(actual, MODEL_WORKERS)
+        self.assertEqual(actual, IMPLICIT_SKILLS)
 
     def test_research_invokes_both_cold_review_workers(self) -> None:
         skills = self.skill_texts()
@@ -109,53 +116,75 @@ class SkillInvocationTest(unittest.TestCase):
             if caller != "research-mathematics":
                 self.assertIsNone(automatic.search(" ".join(text.split())), caller)
 
+    def assert_shared_integrity_links(self, root: Path) -> None:
+        integrity_path = root / "mathematical-integrity" / "SKILL.md"
+        self.assertTrue(integrity_path.is_file())
+        callers = [root / name / "SKILL.md" for name in WORKFLOW_SKILLS]
+        callers.extend(
+            root / "research-mathematics" / "references" / filename
+            for filename in ("claim-resolution.md", "evidence-based-methods.md")
+        )
+        for caller in callers:
+            targets = re.findall(r"\]\(([^)]+)\)", caller.read_text(encoding="utf-8"))
+            self.assertIn(
+                integrity_path.resolve(),
+                {(caller.parent / target).resolve() for target in targets},
+                str(caller),
+            )
+        obsolete = (
+            root / "research-mathematics" / "references" / "mathematical-integrity.md"
+        )
+        self.assertFalse(obsolete.exists())
+
     def test_integrity_is_shared_and_claim_resolution_is_research_only(self) -> None:
         skills = self.skill_texts()
-        integrity_path = (
-            SKILLS
-            / "research-mathematics"
-            / "references"
-            / "mathematical-integrity.md"
-        )
+        self.assert_shared_integrity_links(SKILLS)
         resolution_path = (
             SKILLS
             / "research-mathematics"
             / "references"
             / "claim-resolution.md"
         )
-        self.assertTrue(integrity_path.is_file())
         self.assertTrue(resolution_path.is_file())
         self.assertFalse(
             (SKILLS / "research-mathematics" / "references" / "rigor.md").exists()
         )
 
-        integrity_text = integrity_path.read_text(encoding="utf-8").lower()
-        integrity = " ".join(integrity_text.split())
-        for heading in (
-            "keep the object and claim fixed",
-            "say what the evidence establishes",
-            "make intuition recoverable",
-            "state the mathematical status plainly",
-        ):
-            self.assertIn(f"## {heading}", integrity_text)
-        self.assertIn("conversion obligation", integrity)
-        self.assertIn("it is not a proof protocol", integrity)
-        self.assertIn("use these rules behind the scenes", integrity)
-        self.assertIn("workflow labels", integrity)
-        self.assertLessEqual(
-            len(integrity_path.read_text(encoding="utf-8").splitlines()), 90
-        )
-
         for name, text in skills.items():
-            self.assertIn("mathematical-integrity.md", text, name)
             if name == "research-mathematics":
                 self.assertIn("claim-resolution.md", text, name)
             else:
                 self.assertNotIn("claim-resolution.md", text, name)
 
-    def test_every_skill_inherits_the_research_key_contract(self) -> None:
-        for name, text in self.skill_texts().items():
-            self.assertIn("research-memory.md", text, name)
+    def test_install_upgrade_replaces_integrity_reference_with_skill(self) -> None:
+        installer = runpy.run_path(str(REPO_ROOT / "mathematician" / "install_skills.py"))
+        with tempfile.TemporaryDirectory() as temporary:
+            destination = Path(temporary) / "skills"
+            obsolete = (
+                destination
+                / "research-mathematics"
+                / "references"
+                / "mathematical-integrity.md"
+            )
+            obsolete.parent.mkdir(parents=True)
+            obsolete.write_text("previous shared reference", encoding="utf-8")
+            with redirect_stdout(io.StringIO()):
+                installer["install"](SKILLS, destination, dry_run=False)
+            self.assertEqual(
+                {path.parent.name for path in destination.glob("*/SKILL.md")},
+                EXPECTED_SKILLS,
+            )
+            self.assertEqual(
+                (destination / "mathematical-integrity" / "SKILL.md").read_bytes(),
+                (SKILLS / "mathematical-integrity" / "SKILL.md").read_bytes(),
+            )
+            self.assert_shared_integrity_links(destination)
+
+    def test_only_workflow_skills_inherit_the_research_key_contract(self) -> None:
+        skills = self.skill_texts()
+        for name in WORKFLOW_SKILLS:
+            self.assertIn("research-memory.md", skills[name], name)
+        self.assertNotIn("research-memory.md", skills["mathematical-integrity"])
 
         protocol = (
             SKILLS

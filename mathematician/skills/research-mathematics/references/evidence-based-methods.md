@@ -4,7 +4,7 @@ Audited on **2026-08-30**. Claims about current capability below use work first 
 
 This file preserves the literature behind the suite's design and evaluation.
 It is maintainer rationale, not a runtime reference routed from public skills.
-Runtime decisions belong in `mathematical-integrity.md`,
+Runtime decisions belong in [shared mathematical integrity](../../mathematical-integrity/SKILL.md),
 `claim-resolution.md`, and `computational-checking.md`. Rare successes,
 benchmark scores, kernel acceptance, and institutional novelty claims do not
 establish general reliability.

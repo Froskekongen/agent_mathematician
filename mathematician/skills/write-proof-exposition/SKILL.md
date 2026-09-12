@@ -9,7 +9,7 @@ disable-model-invocation: true
 Reconstruct an established proof for a mathematically mature reader outside the
 specialty. The reader should be able to follow the argument and recover every
 essential step. Follow the
-[shared mathematical integrity](../research-mathematics/references/mathematical-integrity.md).
+[shared mathematical integrity](../mathematical-integrity/SKILL.md).
 The exposition keeps the source result's mathematical status; it does not
 prove, repair, or strengthen the result.
 
