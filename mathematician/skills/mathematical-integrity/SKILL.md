@@ -14,10 +14,8 @@ definitions capture, what hypotheses make possible, and why the reasoning works.
 - State objects, domains, quantifiers, assumptions, and conventions explicitly
   wherever they affect meaning or validity. Introduce new or nonstandard
   terminology and notation through the mathematical role they play.
-- Distinguish a literal statement from its intended meaning and from any
-  restricted or repaired version. When a definition, domain, quantifier,
-  assumption, or conclusion changes, state the revised claim explicitly and
-  recheck which earlier steps still hold.
+- If you reinterpret or change a claim or its setting, state the revision and
+  recheck affected arguments.
 - Use formulas, diagrams, plots, algorithms, or code when they clarify the
   mathematics. When moving between representations or formal encodings, keep the
   correspondence faithful and note any assumption or edge case gained or lost.
@@ -33,16 +31,15 @@ definitions capture, what hypotheses make possible, and why the reasoning works.
 
 ## Say what the evidence establishes
 
-- **Examples:** A checked example establishes its specific instance (such as
-  existence or non-vacuity) and may reveal a mechanism, never a general claim.
+- **Examples:** A checked example establishes the properties verified for that
+  instance; extending the conclusion to other cases requires an argument.
 - **Counterexamples:** A witness refutes a claim only after verifying every
   hypothesis and showing that the conclusion fails.
-- **Computation and search:** Computation or bounded search establishes only the
-  encoded property on the tested scope; an unsuccessful search shows survival on
-  that scope, not absence of counterexamples.
-- **Heuristics:** Plausible reasoning can motivate a conjecture or guide a
-  strategy, not establish an unresolved claim. When an unproved step relies on a
-  heuristic, name the exact mathematical step needed to make it rigorous.
+- **Computation and search:** Report what was computed or searched, the scope
+  actually covered, and what follows. For a proof claim, justify the encoding,
+  coverage, and any required error bounds.
+- **Heuristics:** Use heuristics to motivate conjectures or proof strategies,
+  making their unproved status clear.
 - **Verification and imports:** Check calculations, examples, and translations
   in proportion to their role. Apply an external theorem only after verifying
   that its hypotheses and conventions match the present setting.
@@ -50,10 +47,9 @@ definitions capture, what hypotheses make possible, and why the reasoning works.
 ## State mathematical status honestly
 
 Keep mathematical truth distinct from plausibility, confidence, usefulness, or
-explanatory appeal. Explaining, reformulating, translating, or consolidating a
-result never changes whether it is proved, refuted, conjectural, incomplete, or
-unresolved.
+explanatory appeal. A change of presentation alone does not strengthen the
+evidence for a claim.
 
 Do not force formal status labels onto ordinary explanations or calculations.
-When an argument falls short of its target, state the strongest conclusion
-actually established and the exact mathematical step that remains open.
+When an argument falls short, state what it establishes and what remains
+unjustified.
