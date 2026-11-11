@@ -1,67 +1,59 @@
 ---
 name: mathematical-integrity
-description: Write and revise intuitive yet precise mathematical exposition, including shared guidance used by other mathematical skills.
+description: Reason about, explain, and write mathematics intuitively and precisely, grounding ideas in exact structure and matching conclusions to their evidence, including shared guidance used by other mathematical skills.
 ---
 
 # Shared Mathematical Integrity
 
-The goal of this reference is to keep mathematics *intuitive*, yet precise.
-Develop the mathematical ideas so that it is clear why specific definitions are used, 
-what the assumptions make possible, and the mathematical reasoning for a
-result, conclusion, or similar statements.
-
-Build on concepts familiar to the intended reader. Introduce new terminology and 
-notation by explaining the mathematical role they play.
+Make mathematics both *intuitive* and *exact*. Adapt depth and pace to the
+reader and task: build from familiar ground, and make clear what new
+definitions capture, what hypotheses make possible, and why the reasoning works.
 
 ## Keep the object and claim fixed
 
-Make sure all assumptions, definitions, quantifiers, and other mathematical
-objects are clearly stated in the text. A claim should be stated intuitively, yet
-with mathematical precision, and it should be clear how this claim is 
-connected to assumptions, definitions, and other mathematical objects.
-
-If a definition, assumption, quantifier, etc... changes, state the revised claim 
-and check which earlier arguments still apply.
-
-Use formulas, diagrams, plots, and algorithms as complementary ways of 
-developing the mathematical idea. Explain how the objects and relationships 
-in one view appear in another, and what each view reveals, assumes, or leaves out.
-
-## Say what the evidence establishes
-
-
-Examples should reveal insights about the mathematical object that is studied:
-A simple example can reveal the central mechanism; a boundary case can show 
-why an assumption matters or where the mathematical picture changes.
-Analogies and heuristics may organize the mathematics or suggest what should be 
-true. 
-Adhere to the following rules:
- - A claim always needs an argument or intuition motivating it. 
- - If a search is unsuccessful, the result must explicitly say what scope has been covered. 
- - The scope of a computational experiment must be clearly defined, and the
- result of the experiment must be connected to that scope.
-
-If a conclusion requires calculations, examples, translations, and theory
-references, verify them. Before applying a theorem, verify that its assumptions 
-and requirements are met.
+- State objects, domains, quantifiers, assumptions, and conventions explicitly
+  wherever they affect meaning or validity. Introduce new or nonstandard
+  terminology and notation through the mathematical role they play.
+- Distinguish a literal statement from its intended meaning and from any
+  restricted or repaired version. When a definition, domain, quantifier,
+  assumption, or conclusion changes, state the revised claim explicitly and
+  recheck which earlier steps still hold.
+- Use formulas, diagrams, plots, algorithms, or code when they clarify the
+  mathematics. When moving between representations or formal encodings, keep the
+  correspondence faithful and note any assumption or edge case gained or lost.
 
 ## Make intuition recoverable
 
-Use mental images, examples, diagrams, and metaphors to make a mathematical
-argument, mechanism, or similar intuitive and visible. For an analogy, say which 
-relations survive a comparison and where it fails.
+- Use concrete examples, boundary cases, mental models, and analogies to make
+  mechanisms visible: a simple case shows how an idea works; a boundary or
+  near-miss case shows why an assumption matters.
+- Tie intuitive pictures to the exact objects, quantities, or relations they
+  describe. When an analogy carries weight, state which structure transfers and
+  where the comparison breaks down.
 
-For a heuristic, explain the intuition behind it, and what further reasoning would be 
-needed to turn the intuition into an argument.
+## Say what the evidence establishes
 
-## State the mathematical status plainly
+- **Examples:** A checked example establishes its specific instance (such as
+  existence or non-vacuity) and may reveal a mechanism, never a general claim.
+- **Counterexamples:** A witness refutes a claim only after verifying every
+  hypothesis and showing that the conclusion fails.
+- **Computation and search:** Computation or bounded search establishes only the
+  encoded property on the tested scope; an unsuccessful search shows survival on
+  that scope, not absence of counterexamples.
+- **Heuristics:** Plausible reasoning can motivate a conjecture or guide a
+  strategy, not establish an unresolved claim. When an unproved step relies on a
+  heuristic, name the exact mathematical step needed to make it rigorous.
+- **Verification and imports:** Check calculations, examples, and translations
+  in proportion to their role. Apply an external theorem only after verifying
+  that its hypotheses and conventions match the present setting.
 
-All mathematics should be stated plainly and intuitively. It is important
-to distinguish plausibility, confidence, usefulness, and explanatory value
-from a mathematical truth.  Explaining, translating, or consolidating a result 
-does not change whether it is proved, refuted, conjectural, incomplete, or unresolved.
+## State mathematical status honestly
 
-Check each claim in proportion to the role it plays. Routine local claims may
-need only a local check. When the evidence of some argument or strategy falls short, 
-present the strongest supported conclusion and clearly state the mathematical steps 
-that remain open.
+Keep mathematical truth distinct from plausibility, confidence, usefulness, or
+explanatory appeal. Explaining, reformulating, translating, or consolidating a
+result never changes whether it is proved, refuted, conjectural, incomplete, or
+unresolved.
+
+Do not force formal status labels onto ordinary explanations or calculations.
+When an argument falls short of its target, state the strongest conclusion
+actually established and the exact mathematical step that remains open.
