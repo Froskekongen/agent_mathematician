@@ -1,66 +1,51 @@
-# Computational Checking Role
+# Computational Checking
 
-This is a shared internal role, not a user-facing skill. A public mathematical
-skill loads it only when computation or executable checking can materially
-change a research decision, then dispatches the work to a fresh specialist
-context. The specialist returns evidence to the coordinator and writes neither
-canonical Markdown nor research memory.
+Use computation in proportion to its mathematical role:
 
-Keep hand-checkable arithmetic and disposable examples in the calling skill.
-Dispatch this role for broad, randomized, selected, expensive, or
-load-bearing computation; claimed exhaustiveness; a promoted counterexample;
-or an executable certificate or checker.
+- `discover`: explore examples, patterns, or parameter regimes. Output is
+  heuristic or conjectural.
+- `falsify`: search for a counterexample to an exact statement. A directly
+  verified witness establishes `REFUTED`; an unsuccessful search establishes
+  only survival on the tested scope.
+- `certify`: prove a scoped proposition via exhaustive enumeration or an
+  explicit certificate check, subject to auditing that the code matches the
+  mathematical statement.
+- `replay`: independently re-verify a retained checker or certificate in a
+  clean context.
 
-## Modes and evidence ceilings
+## Running experiments and checks
 
-Choose one mode:
+1. **Be explicit about the encoding and scope.** State the mathematical
+   property encoded, the domain or candidate family actually tested, any
+   selection or filtering, and the stopping condition (matching actual control
+   flow, including early exits).
+2. **Use any appropriate tool or language.** Choose exact or interval
+   arithmetic for witnesses and certificates. When floating-point approximation
+   carries a claim, state tolerances and error bounds; exploratory numerical
+   probing needs only clear scope.
+3. **Scale verification to the claim, avoiding redundant runs:**
+   - *Exploratory (`discover`):* sanity-check on a known small case and iterate
+     freely.
+   - *Counterexample found (`falsify`):* verify the witness itself directly
+     (analytically or with a minimal exact check) against every hypothesis and
+     the negated conclusion. Do not re-run or audit the search that found it.
+   - *Proof-bearing check (`certify`):* test known-positive, known-negative,
+     and boundary cases. Raise explicit exceptions on failed checks—never rely
+     on removable `assert` statements. Prefer emitting an independently
+     checkable certificate over trusting a complex search.
+4. **Verify cheaply before replaying.** When verifying a load-bearing
+   computational step in a fresh context, audit that the encoded check matches
+   the intended theorem and verify the witness or certificate. Re-run a full
+   exhaustive computation only when no compact certificate exists and runtime
+   permits; otherwise state the unverified compute in the trust boundary.
 
-- `discover`: expose structure or candidates. Output remains heuristic or
-  conjectural.
-- `falsify`: seek a witness to an exact negation. A fully checked witness may
-  establish `REFUTED`; a failed search establishes only survival on its scope.
-- `certify`: check an exhaustive computation or explicit certificate. It may
-  prove the encoded scoped proposition after the trust boundary and semantic
-  correspondence are audited.
-- `replay`: independently reproduce a retained result without the builder's
-  hidden state. Replay validates the recorded artifact, not a broader claim.
+## Retained Python artifacts (file-backed memory only)
 
-## Input contract
-
-Receive the frozen target and digest, exact computational question, mode,
-permitted evidence ceiling, search or certificate scope, resource budget, and
-artifact-retention policy. Clarify an ambiguity only when it changes the
-encoded proposition or evidential force.
-
-## Build the smallest decisive artifact
-
-1. State the mathematical proposition and its encoding. Identify fixed and
-   search variables, valid-candidate predicate, evaluator, denominator,
-   selection rule, budget, and stopping rule as applicable. Match the stopping
-   description to actual control flow, including any justified early exit and
-   which branches remain exhaustive.
-2. Design the smallest experiment or checker that answers the question.
-   Prefer exact arithmetic for witnesses and certificates. For numerical work,
-   state precision, tolerance, conditioning, and error policy.
-3. Run known-positive, known-negative, boundary, vacuity, and malformed-input
-   controls relevant to the artifact. Use mutation or a structurally different
-   cross-check for a load-bearing checker. Make certificate obligations fail
-   closed: do not carry them only in removable assertions, and for Python
-   either replay under `-O` or statically establish that optimization cannot
-   bypass a required check.
-4. Execute within the recorded budget. Preserve failures and the total attempt
-   denominator, not only selected successes.
-5. Distinguish mathematical failure, encoding mismatch, implementation error,
-   and resource exhaustion.
-
-## Self-describing Python artifacts
-
-A retained executable artifact is a Python source file with one top-level
-literal dictionary named `RESEARCH_ARTIFACT`. The program reads the same
-dictionary at runtime; tooling may inspect the assignment with Python's
-standard `ast` module and `ast.literal_eval` without importing or executing the
-file. Keep the value literal: strings, numbers, booleans, `None`, lists, and
-dictionaries only.
+Chat-only and exploratory scripts need no special wrapper. When indexing a
+retained `.py` file in `research_memory.py`, include one top-level literal dict
+`RESEARCH_ARTIFACT` (strings, finite numbers, booleans, `None`, lists, and
+string-keyed dicts only; `schema` is integer `1`, `slug`/`kind` are
+lowercase-kebab, `target_digest` is 64-hex SHA-256, and `budget` is nonempty):
 
 ```python
 RESEARCH_ARTIFACT = {
@@ -88,45 +73,16 @@ RESEARCH_ARTIFACT = {
 }
 ```
 
-The dictionary is the artifact metadata; create no sidecar manifest. Use an
-argument vector rather than a shell command. Put replay-critical local files in
-optional `references` entries with their role, repository-relative path, and
-SHA-256. Optional `result` records the declared outcome. The research-memory
-tool computes the whole source-file hash because a source cannot contain its
-own hash. Raw logs and routine outputs stay in the temporary workpad; retain a
-dataset or certificate only when later inspection or replay requires it.
+Use only the keys shown above (`parameters`, `seeds`, and `limitations` are
+optional), plus optional top-level `result` (dict) and `references` (list of
+`{"role", "path", "sha256"}` entries with lowercase-kebab `role` and
+repository-relative `path` for replay inputs, certificates, or checkers in
+other languages). Keep raw logs in the temporary workpad.
 
-The retained contract requires integer schema `1` (not a boolean), one of the
-four controlled modes, `target_digest`, `encoded_target`, `evidence_ceiling`,
-and a reproduction block containing `argv`, `runtime`, a nonempty `budget`,
-and `stopping_rule`. This is deliberately stricter than disposable computation:
-if evidence is worth retaining, its target, ceiling, and termination must be
-recoverable without the builder's context.
+## Reporting
 
-Python is the initial reproducible envelope. A checker implemented in another
-language may be invoked by the Python artifact and listed in its inputs with a
-digest; adding another metadata convention waits for a demonstrated need.
-
-## Fresh replay for load-bearing results
-
-The builder cannot perform the final replay of its own load-bearing artifact.
-Give a fresh specialist the frozen target, retained files, and documented
-command, but no hidden builder state or persuasive narrative. The replayer:
-
-- validates artifact and input hashes;
-- reconstructs the environment declared by the artifact;
-- runs controls before the main command;
-- compares the observed and expected outcomes;
-- inspects the encoded-target/intended-target correspondence; and
-- reports the trust boundary, including runtime, libraries, parser, checker,
-  certificate format, and allowed assumptions.
-
-## Return contract
-
-Return the mode, target digest, encoded proposition and scope, method, attempt
-denominator, result, evidence class and ceiling, controls and cross-checks,
-artifact path and observed hash, reproduction command, trust boundary,
-limitations, and exact open obligations. For `replay`, include every mismatch
-or abstention. The role is complete only when another agent can tell precisely
-what was tested, reproduce it from retained artifacts, and avoid inferring a
-stronger mathematical conclusion.
+State plainly what proposition was encoded, what scope or attempt denominator
+was tested, what resulted, and what mathematical gap (if any) remains between
+the computation and the full claim. For proof-bearing checks, note the trust
+boundary (runtime, solver or libraries, and whether a certificate or full
+search was independently checked).

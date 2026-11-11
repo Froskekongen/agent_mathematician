@@ -43,7 +43,7 @@ transparent rather than forcing an opposition.
 Keep hand-checkable tests local. For material computation, solver work,
 executable checking, or a witness that will carry a later claim, read
 [computational-checking.md](../research-mathematics/references/computational-checking.md)
-and use its `discover`, `falsify`, or `certify` role as appropriate. Say what the
+and use it as appropriate. Say what the
 computation actually checked and where its conclusion stops.
 
 ## 3. Explain what was learned

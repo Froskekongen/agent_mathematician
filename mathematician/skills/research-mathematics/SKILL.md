@@ -44,9 +44,9 @@ exploration, recommend `$explore-proof-strategies`.
 
 Use material computation only when it can decide the claim, the choice of
 route, or an essential step. Then read
-[computational-checking.md](references/computational-checking.md) and dispatch
-the appropriate internal mode. Decide materiality first; do not load that
-reference merely to classify a hand-checkable calculation.
+[computational-checking.md](references/computational-checking.md) and apply the
+appropriate mode. Decide materiality first; do not load that reference merely
+to classify a hand-checkable calculation.
 
 Choose a route only for a mathematical reason; otherwise make an explicit
 proof-strategy handoff.
@@ -92,9 +92,10 @@ qualified human may also provide the check. Withhold the submitted proof when
 asking for an independent derivation and withhold persuasive narrative during
 correctness review.
 
-An essential executable artifact also receives a fresh `replay` under the
-computational-checking rules. Resolve every discrepancy against the same
-version; a material change restarts challenge and verification.
+For an essential computation, have the fresh verifier check the witness or
+certificate, or replay the checker under the computational-checking rules.
+Resolve every discrepancy against the same version; a material change restarts
+challenge and verification.
 
 Do not report `PROVED` until an independent check covers the central argument
 and every discrepancy has been resolved. Record any failure or inability to
