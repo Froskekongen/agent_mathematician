@@ -1,86 +1,63 @@
 ---
 name: explore-mathematical-structure
-description: Explore different ways of understanding a mathematical phenomenon, test them on revealing examples, and identify the viewpoint worth developing.
+description: Explore different ways of understanding a mathematical phenomenon, test them on revealing examples, and identify the structure worth developing.
 disable-model-invocation: true
 ---
 
 # Explore Mathematical Structure
 
-Explore different ways of understanding the same mathematics before deciding
-which one to develop. Follow the
-[shared mathematical integrity](../mathematical-integrity/SKILL.md).
-Aim for a useful mental model, an exact realization, and a revealing example.
-This skill clarifies structure; it does not certify a theorem.
+Explore genuinely different ways of understanding a mathematical object,
+problem, or phenomenon before committing to one formulation or proof route.
+Follow the [shared mathematical integrity](../mathematical-integrity/SKILL.md).
+This skill uncovers structure, invariants, obstructions, and sharp questions;
+it does not certify a theorem.
 
-Chat-only work creates no files. For an authorized file-backed round, read the
-shared [research-memory rules](../research-mathematics/references/research-memory.md)
-and act as sole writer. Unless the user asks for a one-shot survey or a larger
-search, run one focused round of exploration.
+## 1. Ground the phenomenon and develop distinct viewpoints
 
-## 1. Start from the phenomenon
+Start in the problem's native setting and work through a concrete case until
+the feature needing explanation is clear. If the problem itself is ambiguous,
+clarify what matters before branching.
 
-Begin with the problem in its original setting. Work through one concrete case
-until the feature needing explanation is visible, then develop two to four
-genuinely different ways of seeing it.
+Develop genuinely distinct mathematical viewpoints—such as algebraic,
+geometric, analytic, combinatorial, spectral, variational, or probabilistic
+lenses—keeping only those that change what becomes visible or tractable. For
+each viewpoint, connect the intuitive picture to its exact mathematical
+realization (the definitions, invariants, maps, estimates, or constructions
+that carry it) and note where that picture breaks down or loses information.
 
-For each viewpoint, explain the mental model, identify the objects, maps, and
-relations that realize it, and draw one consequence that can be compared with
-the alternatives. State its limits. Keep only viewpoints that change what the
-mathematics makes easy to see or do.
+## 2. Probe with revealing examples
 
-If the intended meaning is still too unclear for comparison, ask one focused
-question.
+Test the viewpoints on small, boundary, degenerate, or deformed cases:
 
-## 2. Separate the viewpoints with an example
+- When viewpoints suggest different behavior, find a minimal case where they
+  part ways and trace why.
+- When viewpoints are mathematically equivalent, compare what each makes
+  transparent, routine, or opaque—and look for whether the translation between
+  them is itself the key insight.
 
-Before choosing, say what each viewpoint leads one to expect. Find the smallest
-example on which those expectations diverge or one viewpoint gives a clearly
-better analysis. A boundary case or simple deformation may be more revealing
-than another typical example. Work it far enough to expose the reason for the
-difference. If two viewpoints are equivalent, compare what each makes
-transparent rather than forcing an opposition.
+Keep hand-checkable calculations inline. When material computation, solver
+search, or executable checking can clarify the structure, use
+[computational-checking.md](../research-mathematics/references/computational-checking.md).
 
-Keep hand-checkable tests local. For material computation, solver work,
-executable checking, or a witness that will carry a later claim, read
-[computational-checking.md](../research-mathematics/references/computational-checking.md)
-and use it as appropriate. Say what the
-computation actually checked and where its conclusion stops.
+## 3. Synthesize and point forward
 
-## 3. Explain what was learned
+Write the exploration as natural mathematics rather than a search log, letting
+the ideas and examples determine the organization. Explain what the examples
+reveal—such as a governing invariant, hidden symmetry, obstruction, or
+candidate claim—and identify the viewpoint (or bridge between viewpoints) most
+worth developing next, along with the main open mathematical step.
 
-Compare those expectations with the worked example. Recommend the viewpoint 
-that best explains the phenomenon or opens the most promising mathematics.
+If a precise conjecture or claim emerges, include a compact **proof handoff**
+stating the exact claim and assumptions, the guiding mechanism, the cases
+checked, and the likely crux. Treat any end-to-end argument that appears during
+exploration as an unverified candidate and name what still needs rigorous
+checking.
 
-If the recommendation rests on a heuristic, name the missing mathematical step
-in the explanation.
+## Internal protocol (file-backed work and sources)
 
-## 4. Prepare for proof only when useful
-
-If a precise claim emerges, prepare a compact proof handoff. State the claim and
-assumptions, the proposed mechanism and the mental model behind it, the examples
-already checked, the missing mathematics, and the likely crux. This handoff is
-a starting point, not a proof or an upgrade in mathematical status.
-
-## Literature and privacy
-
-Before major investment in an apparently new direction, or whenever prior art,
-attribution, or sensitive unpublished material affects the decision, read and
-follow [literature-and-privacy.md](references/literature-and-privacy.md).
-
-## Write the result
-
-Write the exploration as mathematics, not as a search record. Use a
-collaborative voice in chat and polished, yet intuitivie,  exposition in a 
-canonical document. Lead with the phenomenon, then the mental models and 
-their realizations, the example that tests them, and the direction it 
-suggests. Add the proof handoff only when a precise claim is ready for later work.
-
-For writable work, keep the readable exploration, selected definitions,
-important boundaries, and next mathematical question in canonical Markdown.
-Memory may retain reusable abandoned directions, obstructions, expensive
-tests, and source findings. Do not copy memory mechanics into the document.
-
-Finish when the reader can explain each serious mental model, its mathematical
-realization, the example that distinguishes or limits it, and why the chosen
-direction is worth developing. If an end-to-end argument appears, mark it
-in the internal handoff as `CANDIDATE FULL PROOF — NOT CERTIFIED`.
+Default to chat (creating no files). For authorized file-backed writable work
+or history retrieval, follow
+[research-memory.md](../research-mathematics/references/research-memory.md) as
+sole writer, keeping memory mechanics out of the mathematical prose. When prior
+art, attribution, or unpublished material affects the direction, follow
+[literature-and-privacy.md](references/literature-and-privacy.md).
