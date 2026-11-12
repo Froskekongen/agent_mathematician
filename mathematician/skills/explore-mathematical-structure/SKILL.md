@@ -13,16 +13,8 @@ This skill uncovers structure, invariants, obstructions, and sharp questions.
 
 ## 1. Ground the phenomenon and develop distinct viewpoints
 
-Start in the problem's native setting and work through a concrete case until
-the feature needing explanation is clear. If the problem itself is ambiguous,
-clarify what matters before branching.
-
-Develop genuinely distinct mathematical viewpoints—such as algebraic,
-geometric, analytic, combinatorial, spectral, variational, or probabilistic
-lenses—keeping only those that change what becomes visible or tractable. For
-each viewpoint, connect the intuitive picture to its exact mathematical
-realization (the definitions, invariants, maps, estimates, or constructions) 
-and note where that picture breaks down or loses information.
+Develop genuinely distinct mathematical viewpoints—such as (but not limitied to)
+algebraic, geometric, analytic, combinatorial, spectral, variational, or probabilistic lenses—keeping only those that change what becomes visible or tractable. For each viewpoint, connect the intuition to its exact mathematical realization (the definitions, invariants, maps, estimates, or constructions) and note where it differs from the other viewpoints.
 
 ## 2. Probe with revealing examples
 
@@ -46,7 +38,7 @@ reveal—such as a governing invariant, hidden symmetry, obstruction, or
 candidate claim—and identify the viewpoint (or bridge between viewpoints) most
 worth developing next, along with the main open mathematical step.
 
-If a precise conjecture or claim emerges, include a compact **proof handoff**
+If a precise conjecture or claim emerges, say so explicitly
 stating the exact claim and assumptions, the guiding mechanism, the cases
 checked, and the likely crux. Treat any end-to-end argument that appears during
 exploration as an unverified candidate and name what still needs rigorous
