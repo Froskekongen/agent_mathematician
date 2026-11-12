@@ -7,10 +7,9 @@ disable-model-invocation: true
 # Explore Mathematical Structure
 
 Explore genuinely different ways of understanding a mathematical object,
-problem, or phenomenon before committing to one formulation or proof route.
+problem, or phenomenon.
 Follow the [shared mathematical integrity](../mathematical-integrity/SKILL.md).
-This skill uncovers structure, invariants, obstructions, and sharp questions;
-it does not certify a theorem.
+This skill uncovers structure, invariants, obstructions, and sharp questions.
 
 ## 1. Ground the phenomenon and develop distinct viewpoints
 
@@ -22,8 +21,8 @@ Develop genuinely distinct mathematical viewpoints—such as algebraic,
 geometric, analytic, combinatorial, spectral, variational, or probabilistic
 lenses—keeping only those that change what becomes visible or tractable. For
 each viewpoint, connect the intuitive picture to its exact mathematical
-realization (the definitions, invariants, maps, estimates, or constructions
-that carry it) and note where that picture breaks down or loses information.
+realization (the definitions, invariants, maps, estimates, or constructions) 
+and note where that picture breaks down or loses information.
 
 ## 2. Probe with revealing examples
 
@@ -41,8 +40,8 @@ search, or executable checking can clarify the structure, use
 
 ## 3. Synthesize and point forward
 
-Write the exploration as natural mathematics rather than a search log, letting
-the ideas and examples determine the organization. Explain what the examples
+Write the exploration as natural, textbook mathematics. Structure the exposition
+in a way that is systematic and easy to understand. Explain what the examples
 reveal—such as a governing invariant, hidden symmetry, obstruction, or
 candidate claim—and identify the viewpoint (or bridge between viewpoints) most
 worth developing next, along with the main open mathematical step.

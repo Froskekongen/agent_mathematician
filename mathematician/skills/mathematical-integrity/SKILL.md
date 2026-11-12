@@ -9,6 +9,10 @@ Make mathematics both *intuitive* and *exact*. Adapt depth and pace to the
 reader and task: build from familiar ground, and make clear what new
 definitions capture, what hypotheses make possible, and why the reasoning works.
 
+*Crucial*: Follow the expository conventions of a clear mathematical textbook.
+Develop arguments and structure in connected prose, weaving formulas into
+sentences rather than defaulting to bulleted notes or templates.
+
 ## Keep the object and claim fixed
 
 - State objects, domains, quantifiers, assumptions, and conventions explicitly
